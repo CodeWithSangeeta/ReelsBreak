@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.theme
+package com.sangeeta.reelbreak.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

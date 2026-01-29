@@ -23,6 +23,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             ReelBreakTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+
+                    ReelsBreakApp(mainViewModel)
+
+
+
+
+
+
+
+
+
                     val dataStore = DataStoreManager(this)
 
                     val onboardingState by dataStore.isOnboardingCompleted.collectAsState(initial = null)

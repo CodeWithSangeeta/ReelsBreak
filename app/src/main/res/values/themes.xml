@@ -2,4 +2,17 @@
 <resources>
 
     <style name="Theme.ReelBreak" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.ReelBreak.Splash" parent="Theme.SplashScreen">
+    <!-- Background color of splash -->
+    <item name="windowSplashScreenBackground">@color/splash_background</item>
+
+    <!-- Big icon in center (use launcher icon or custom logo) -->
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+
+    <!-- Optional: duration in ms -->
+    <item name="windowSplashScreenAnimationDuration">300</item>
+
+    <!-- After splash, which theme to use -->
+    <item name="postSplashScreenTheme">@style/Theme.ReelBreak</item>
+</style>
 </resources>
