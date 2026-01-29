@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.onboarding.component
+package com.sangeeta.reelbreak.ui.onboarding.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

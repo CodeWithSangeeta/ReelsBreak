@@ -1,4 +1,4 @@
-package com.practice.reelbreak
+package com.sangeeta.reelbreak
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,11 +9,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.practice.reelbreak.data.DataStoreManager
-import com.practice.reelbreak.navigation.AppNavigation
-import com.practice.reelbreak.ui.theme.ReelBreakTheme
+import com.sangeeta.reelbreak.data.DataStoreManager
+import com.sangeeta.reelbreak.navigation.AppNavigation
+import com.sangeeta.reelbreak.ui.theme.ReelBreakTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

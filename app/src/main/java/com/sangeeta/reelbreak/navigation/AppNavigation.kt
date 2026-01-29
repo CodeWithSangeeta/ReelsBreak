@@ -1,13 +1,12 @@
-package com.practice.reelbreak.navigation
+package com.sangeeta.reelbreak.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.practice.reelbreak.HomeScreen
-import com.practice.reelbreak.data.DataStoreManager
-import com.practice.reelbreak.ui.onboarding.OnboardingScreen
+import com.sangeeta.reelbreak.HomeScreen
+import com.sangeeta.reelbreak.data.DataStoreManager
+import com.sangeeta.reelbreak.ui.onboarding.OnboardingScreen
 
 @Composable
 fun AppNavigation(isOnboardingDone: Boolean,dataStore : DataStoreManager) {
