@@ -26,6 +26,7 @@ fun ReelsBreakApp(mainViewModel: MainViewModel) {
 
     AppNavigation(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        mainViewModel = mainViewModel
     )
 }

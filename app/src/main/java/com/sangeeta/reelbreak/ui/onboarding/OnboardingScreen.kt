@@ -31,13 +31,14 @@ import com.sangeeta.reelbreak.ui.onboarding.component.GradientColor
 import com.sangeeta.reelbreak.ui.onboarding.component.IndicatorRow
 import com.sangeeta.reelbreak.ui.onboarding.component.OnboardDescription
 import com.sangeeta.reelbreak.ui.onboarding.component.OnboardHeading
+import com.sangeeta.reelbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 
 @Composable
 fun OnboardingScreen(
     navController: NavController,
-    dataStore : DataStoreManager
+    mainViewModel: MainViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pageState = rememberPagerState(pageCount = {4})
@@ -51,13 +52,11 @@ fun OnboardingScreen(
         if(pageState.currentPage !=3) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = {
-                    coroutineScope.launch {
-                        dataStore.saveOnboardingCompleted()
+                    mainViewModel.completeOnboarding()
+                    navController.navigate(Routes.DASHBOARD) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
-                    navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.OnBoarding) { inclusive = true }
-                    }
-                }) {git status
+                }) {
 
                     Text(
                         text = "Skip",
@@ -96,11 +95,10 @@ fun OnboardingScreen(
 
                 }
                 else{
-                    coroutineScope.launch {
-                        dataStore.saveOnboardingCompleted()
-                    }
-                    navController.navigate(Routes.HOME) {
-                        popUpTo(Routes.OnBoarding) { inclusive = true }
+                   mainViewModel.completeOnboarding()
+
+                    navController.navigate(Routes.DASHBOARD) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
                 }
             }
@@ -190,7 +188,12 @@ fun OnboardPagePermissions(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(32.dp))
         OnboardHeading("We Respect Your Privacy")
         Spacer(modifier = Modifier.height(16.dp))
-        OnboardDescription("To track reels and show live counters, ReelsBreak needs Accessibility & Usage permissions. We only use what's required.")
+        OnboardDescription(
+            "ReelsBreak needs limited permissions to detect reel scrolling and show live counters.\n\n" +
+                    "• We do NOT read messages\n" +
+                    "• We do NOT capture screens\n" +
+                    "• We do NOT collect personal data"
+        )
     }
 }
 

@@ -1,17 +1,37 @@
 package com.sangeeta.reelbreak.viewmodel
 
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sangeeta.reelbreak.data.datastore.OnboardingPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _isOnboardingCompleted = MutableStateFlow(false)
     val isOnboardingCompleted: StateFlow<Boolean> = _isOnboardingCompleted
 
-    // Temporary (we’ll replace with DataStore later)
-    fun setOnboardingCompleted(completed: Boolean) {
-        _isOnboardingCompleted.value = completed
+    init {
+        observeOnboardingState()
+    }
+
+    private fun observeOnboardingState() {
+        viewModelScope.launch {
+            OnboardingPreferences
+                .isOnboardingCompleted(getApplication())
+                .collect { completed ->
+                    _isOnboardingCompleted.value = completed
+                }
+        }
+    }
+
+    fun completeOnboarding() {
+        viewModelScope.launch {
+            OnboardingPreferences.setOnboardingCompleted(getApplication())
+        }
     }
 }
