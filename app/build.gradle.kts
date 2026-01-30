@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.practice.reelbreak"
+    namespace = "com.sangeeta.reelbreak"
     compileSdk = 36
 
     defaultConfig {
@@ -49,6 +49,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -58,10 +59,25 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     //Accompanist pager dependency for onboarding screen
-    implementation("com.google.accompanist:accompanist-pager:0.36.0")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.32.0")
+    val accompanistVersion = "0.36.0"
+    implementation("com.google.accompanist:accompanist-pager:$accompanistVersion")
+    implementation("com.google.accompanist:accompanist-pager-indicators:$accompanistVersion")
+
 
     // Navigation
     val nav_version = "2.9.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    //DataStore dependency
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    //Splash screen dependency
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    //Lifecycle ViewModel (Compose) dependency
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+    //Coroutines (ViewModel scope) dependency
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+
 }
