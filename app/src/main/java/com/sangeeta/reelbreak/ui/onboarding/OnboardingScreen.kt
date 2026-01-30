@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sangeeta.reelbreak.R
 import com.sangeeta.reelbreak.data.DataStoreManager
-import com.sangeeta.reelbreak.navigation.routes
+import com.sangeeta.reelbreak.ui.navigation.Routes
 import com.sangeeta.reelbreak.ui.onboarding.component.ButtonGradient
 import com.sangeeta.reelbreak.ui.onboarding.component.FloatingImage
 import com.sangeeta.reelbreak.ui.onboarding.component.GradientColor
@@ -54,10 +54,11 @@ fun OnboardingScreen(
                     coroutineScope.launch {
                         dataStore.saveOnboardingCompleted()
                     }
-                    navController.navigate(routes.HOME) {
-                        popUpTo(routes.OnBoarding) { inclusive = true }
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.OnBoarding) { inclusive = true }
                     }
-                }) {
+                }) {git status
+
                     Text(
                         text = "Skip",
                         fontSize = 18.sp,
@@ -98,8 +99,8 @@ fun OnboardingScreen(
                     coroutineScope.launch {
                         dataStore.saveOnboardingCompleted()
                     }
-                    navController.navigate(routes.HOME) {
-                        popUpTo(routes.OnBoarding) { inclusive = true }
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.OnBoarding) { inclusive = true }
                     }
                 }
             }
