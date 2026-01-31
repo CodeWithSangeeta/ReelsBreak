@@ -31,6 +31,7 @@ import com.sangeeta.reelbreak.ui.onboarding.component.GradientColor
 import com.sangeeta.reelbreak.ui.onboarding.component.IndicatorRow
 import com.sangeeta.reelbreak.ui.onboarding.component.OnboardDescription
 import com.sangeeta.reelbreak.ui.onboarding.component.OnboardHeading
+import com.sangeeta.reelbreak.ui.onboarding.component.OnboardPage
 import com.sangeeta.reelbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
@@ -41,7 +42,15 @@ fun OnboardingScreen(
     mainViewModel: MainViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val pageState = rememberPagerState(pageCount = {4})
+    val pages = listOf(
+        OnboardPage.Welcome,
+        OnboardPage.Counter,
+        OnboardPage.Break,
+        OnboardPage.Permission
+    )
+
+    val pageState = rememberPagerState(pageCount = { pages.size })
+
 
 
     Column(modifier = Modifier.fillMaxSize()
@@ -69,16 +78,20 @@ fun OnboardingScreen(
             }
         }
 
-    HorizontalPager(state = pageState,
-        modifier = Modifier.weight(1f)){page ->
-        when(page){
-            0 -> OnboardPageWelcome()
-            1 -> OnboardPageCounterVisible()
-            2 -> OnboardPageBreak()
-            3 -> OnboardPagePermissions()
+        HorizontalPager(
+            state = pageState,
+            modifier = Modifier.weight(1f)
+        ) { index ->
+
+            when (pages[index]) {
+                is OnboardPage.Welcome -> OnboardPageWelcome()
+                is OnboardPage.Counter -> OnboardPageCounterVisible()
+                is OnboardPage.Break -> OnboardPageBreak()
+                is OnboardPage.Permission -> OnboardPagePermissions()
+            }
         }
-    }
-      Spacer(modifier = Modifier.height(40.dp))
+
+        Spacer(modifier = Modifier.height(40.dp))
         IndicatorRow(
             currentPage = pageState.currentPage,
             totalPages = 4
@@ -86,9 +99,9 @@ fun OnboardingScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         ButtonGradient(
-            text = if(pageState.currentPage==3) "Grant Permission" else "Continue",
+            text ="Continue",
             onClick = {
-                if(pageState.currentPage < 3){
+                if(pageState.currentPage < pages.size){
                     coroutineScope.launch {
                         pageState.animateScrollToPage(pageState.currentPage+1)
                     }

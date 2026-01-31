@@ -26,7 +26,12 @@ fun AppNavigation(
         }
 
         composable(Routes.DASHBOARD) {
-           DashboardScreen()
+           DashboardScreen(
+//              onNavigateAnalytics = { navController.navigate(Routes.ANALYTICS) },
+//               onNavigateFocus = {navController.navigate(Routes.FOCUS)},
+//               onNavigateLimit = {navController.navigate(Routes.LIMIT)},
+//               onNavigateAlerts = {navController.navigate(Routes.ALERTS)}
+           )
         }
     }
 }
