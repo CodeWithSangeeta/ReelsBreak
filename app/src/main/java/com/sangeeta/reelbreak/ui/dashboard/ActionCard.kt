@@ -7,8 +7,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItemDefaults.containerColor
-import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,10 +25,7 @@ fun ActionCard(
     isDarkMode: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-
 ) {
-
-    // Dynamic colors based on theme
     val containerColor = if (isDarkMode) Color(0xFF1D0E42) else Color.White
     val contentColor = if (isDarkMode) Color.White else Color.Black
     val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.Transparent

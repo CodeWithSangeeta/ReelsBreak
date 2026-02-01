@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lint.kotlin.metadata.Visibility
 
 @Composable
 fun DashboardHeader(
@@ -39,10 +44,18 @@ fun DashboardHeader(
             Text(text = "You are doing great today ✨", color = Color.Gray, fontSize = 12.sp)
         }
 
-        // Theme Toggle Buttons
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // eye icon button...
-            // theme icon button (Sun/Moon)...
+            HeaderIconButton(
+                icon = Icons.Outlined.Visibility,
+                isDarkMode = isDarkMode,
+                onClick = onVisibilityToggle
+            )
+            HeaderIconButton(
+                // Dynamically change icon based on mode
+                icon = if (isDarkMode) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
+                isDarkMode = isDarkMode,
+                onClick = onThemeToggle
+            )
         }
     }
 }
