@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,21 +34,18 @@ import java.time.format.TextStyle
 @Composable
 fun StatisticsCard(
     state: DashboardState,
-    isDarkMode: Boolean
 ) {
-    // 1. Define the Brushes
     val textGradient = Brush.horizontalGradient(listOf(Color(0xFFB490FF), Color(0xFF53D9FF)))
 
-    // 2. Dynamic Colors based on Theme
-    val cardBg = if (isDarkMode) Color(0xFF1D0E42) else Color.White
-    val subCardBg = if (isDarkMode) Color.White.copy(alpha = 0.05f) else Color(0xFFF5F5F5)
-    val textColor = if (isDarkMode) Color.White else Color.Black
+    val cardBg = MaterialTheme.colorScheme.surface
+    val subCardBg = MaterialTheme.colorScheme.surfaceVariant
+    val textColor = MaterialTheme.colorScheme.onSurface
+
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(32.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        elevation = CardDefaults.cardElevation(if (isDarkMode) 0.dp else 4.dp)
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
             Row(
@@ -60,7 +58,7 @@ fun StatisticsCard(
                     Text("Today's Reels", color = Color.Gray, fontSize = 14.sp)
                     Text(
                         text = "${state.reelsCount}",
-                        style = TextStyle(brush = textGradient),
+                        color = textColor,
                         fontSize = 64.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -110,11 +108,11 @@ fun StatisticsCard(
                     Spacer(Modifier.width(12.dp))
                     Column {
                         Text("Time Spent Today", color = Color.Gray, fontSize = 12.sp)
-                        Text(state.timeSpent, color = textColor, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                        Text(state.timeSpentFormatted, color = textColor, fontSize = 24.sp, fontWeight = FontWeight.Bold)
                     }
                     Spacer(Modifier.weight(1f))
                     Column(horizontalAlignment = Alignment.End) {
-                        Text("Limit: ${state.dailyLimit}", color = Color.Gray, fontSize = 12.sp)
+                        Text("Limit: ${state.dailyLimitMinutes}", color = Color.Gray, fontSize = 12.sp)
                         if (state.isOverLimit) Text("Over limit!", color = Color(0xFFE57373), fontWeight = FontWeight.Bold)
                     }
                 }

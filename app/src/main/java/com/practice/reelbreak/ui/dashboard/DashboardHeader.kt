@@ -22,7 +22,7 @@ import androidx.lint.kotlin.metadata.Visibility
 @Composable
 fun DashboardHeader(
     userName: String,
-    isDarkMode: Boolean,
+    onVisibilityToggle: () -> Unit,
     onThemeToggle: () -> Unit
 ) {
     Row(
@@ -35,25 +35,25 @@ fun DashboardHeader(
                 text = "ReelsGuard",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = if (isDarkMode) Color.White else Color.Black
-            )
+                color = MaterialTheme.colorScheme.onBackground            )
             Text(
                 text = "Stay mindful, $userName.",
-                color = if (isDarkMode) Color(0xFFB490FF) else Color(0xFF6200EE)
+                color = MaterialTheme.colorScheme.primary
             )
-            Text(text = "You are doing great today ✨", color = Color.Gray, fontSize = 12.sp)
+            Text(text = "You are doing great today ✨",
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                fontSize = 12.sp
+                )
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             HeaderIconButton(
                 icon = Icons.Outlined.Visibility,
-                isDarkMode = isDarkMode,
                 onClick = onVisibilityToggle
             )
             HeaderIconButton(
                 // Dynamically change icon based on mode
-                icon = if (isDarkMode) Icons.Outlined.LightMode else Icons.Outlined.DarkMode,
-                isDarkMode = isDarkMode,
+                icon = Icons.Outlined.DarkMode,
                 onClick = onThemeToggle
             )
         }

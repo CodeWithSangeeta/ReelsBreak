@@ -13,6 +13,8 @@ import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.ElectricBolt
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.ShowChart
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,7 +25,6 @@ import androidx.compose.ui.unit.dp
 fun FloatingNavBar(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
-    isDarkMode: Boolean,
     modifier: Modifier = Modifier
 ) {
     val navItems = listOf(
@@ -35,11 +36,12 @@ fun FloatingNavBar(
     )
 
     Surface(
-        // Background matches the card color in Dark mode or light gray in Light mode
-        color = if (isDarkMode) Color(0xFF1D0E42).copy(alpha = 0.9f) else Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(50.dp),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f)),
-        elevation = 8.dp,
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
+        shadowElevation = 8.dp,
         modifier = modifier
             .padding(horizontal = 24.dp)
             .fillMaxWidth()
@@ -53,7 +55,6 @@ fun FloatingNavBar(
                 NavIconButton(
                     icon = icon,
                     isSelected = selectedTab == index,
-                    isDarkMode = isDarkMode,
                     onClick = { onTabSelected(index) }
                 )
             }

@@ -135,13 +135,14 @@ fun PermissionEducationScreen(
         Spacer(Modifier.weight(1f))
 
         Button(
-            onClick = onContinue,
+            onClick = {
+                viewModel.completeOnboarding()
+                onContinue()
+            },
             enabled = canContinue,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp)
         ) {
-            Text(text = "Can continue = $canContinue")
-
             Text(if (canContinue) "Continue" else "Grant required permissions")
         }
     }

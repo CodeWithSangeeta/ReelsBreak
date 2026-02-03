@@ -101,16 +101,14 @@ fun OnboardingScreen(
         ButtonGradient(
             text ="Continue",
             onClick = {
-                if(pageState.currentPage < pages.size){
+                if(pageState.currentPage < pages.size-1){
                     coroutineScope.launch {
                         pageState.animateScrollToPage(pageState.currentPage+1)
                     }
 
                 }
                 else{
-                   mainViewModel.completeOnboarding()
-
-                    navController.navigate(Routes.DASHBOARD) {
+                    navController.navigate(Routes.PERMISSION) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
                 }

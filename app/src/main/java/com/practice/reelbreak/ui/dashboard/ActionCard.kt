@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,22 +23,21 @@ fun ActionCard(
     title: String,
     icon: ImageVector,
     iconColor: Color,
-    isDarkMode: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val containerColor = if (isDarkMode) Color(0xFF1D0E42) else Color.White
-    val contentColor = if (isDarkMode) Color.White else Color.Black
-    val borderColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.Transparent
     Card(
         modifier = modifier
             .padding(8.dp)
             .aspectRatio(1.2f)
             .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = containerColor),
-        border = BorderStroke(1.dp, borderColor),
-        elevation = CardDefaults.cardElevation(if (isDarkMode) 0.dp else 4.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(
+            1.dp,
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)),
+      //  elevation = CardDefaults.cardElevation(if (isDarkMode) 0.dp else 4.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -55,7 +55,7 @@ fun ActionCard(
 
             Text(
                 text = title,
-                color = contentColor,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold
             )

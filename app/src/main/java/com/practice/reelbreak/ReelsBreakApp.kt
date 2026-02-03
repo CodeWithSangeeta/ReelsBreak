@@ -4,6 +4,7 @@ package com.sangeeta.reelbreak
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.sangeeta.reelbreak.ui.navigation.AppNavigation
 import com.sangeeta.reelbreak.ui.navigation.Routes
@@ -18,11 +19,14 @@ fun ReelsBreakApp(mainViewModel: MainViewModel) {
 
     val navController = rememberNavController()
 
-    val startDestination = if (isOnboardingCompleted) {
-        Routes.DASHBOARD
-    } else {
-        Routes.ONBOARDING
+    val startDestination = remember {
+        if (isOnboardingCompleted) {
+            Routes.DASHBOARD
+        } else {
+            Routes.ONBOARDING
+        }
     }
+
 
     AppNavigation(
         navController = navController,

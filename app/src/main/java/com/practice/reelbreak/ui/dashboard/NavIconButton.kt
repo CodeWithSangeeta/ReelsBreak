@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 fun NavIconButton(
     icon: ImageVector,
     isSelected: Boolean,
-    isDarkMode: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -33,7 +32,9 @@ fun NavIconButton(
             .size(56.dp) // Standard size for the touch target
             .clip(RoundedCornerShape(16.dp))
             .background(
-                if (isSelected) selectedGradient else Color.Transparent
+                if (isSelected) MaterialTheme.colorScheme.onPrimary
+                else
+                    MaterialTheme.colorScheme.onSurfaceVariant
             )
             .clickable { onClick() },
         contentAlignment = Alignment.Center
