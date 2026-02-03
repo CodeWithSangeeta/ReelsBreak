@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.sangeeta.reelbreak"
+    namespace = "com.practice.reelbreak"
     compileSdk = 36
 
     defaultConfig {
@@ -53,6 +53,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.animation.core.lint)
+    implementation(libs.androidx.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -81,6 +84,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
     //Coroutines (ViewModel scope) dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
+
+    implementation("androidx.compose.material:material-icons-extended")
 
 
 }
