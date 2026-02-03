@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.domain.model
+package com.practice.reelbreak.domain.model
 
 
 data class PermissionState(

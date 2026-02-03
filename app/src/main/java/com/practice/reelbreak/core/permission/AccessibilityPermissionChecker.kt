@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.core.permission
+package com.practice.reelbreak.core.permission
 
 
 import android.content.Context

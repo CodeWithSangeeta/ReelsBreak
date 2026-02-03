@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.permission
+package com.practice.reelbreak.ui.permission
 
 sealed class PermissionAction {
     object OpenAccessibilitySettings : PermissionAction()

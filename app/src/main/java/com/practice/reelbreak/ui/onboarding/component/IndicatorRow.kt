@@ -1,8 +1,7 @@
-package com.sangeeta.reelbreak.ui.onboarding.component
+package com.practice.reelbreak.ui.onboarding.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Arrangement.Absolute.spacedBy
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

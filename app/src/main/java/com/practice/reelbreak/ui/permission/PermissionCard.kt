@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.permission
+package com.practice.reelbreak.ui.permission
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column

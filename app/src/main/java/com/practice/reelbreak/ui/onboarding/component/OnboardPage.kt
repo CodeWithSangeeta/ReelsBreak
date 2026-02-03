@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.onboarding.component
+package com.practice.reelbreak.ui.onboarding.component
 
 sealed class OnboardPage {
     object Welcome : OnboardPage()

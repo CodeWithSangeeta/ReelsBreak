@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.permission
+package com.practice.reelbreak.ui.permission
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -21,14 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sangeeta.reelbreak.viewmodel.MainViewModel
+import com.practice.reelbreak.viewmodel.MainViewModel
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.sangeeta.reelbreak.core.permission.AccessibilityPermissionChecker
-import com.sangeeta.reelbreak.core.permission.UsagePermissionChecker
+import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
+import com.practice.reelbreak.core.permission.UsagePermissionChecker
 
 @Composable
 fun PermissionEducationScreen(

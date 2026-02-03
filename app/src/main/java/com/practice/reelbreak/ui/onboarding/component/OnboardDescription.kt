@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.onboarding.component
+package com.practice.reelbreak.ui.onboarding.component
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

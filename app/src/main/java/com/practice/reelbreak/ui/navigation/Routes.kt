@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.navigation
+package com.practice.reelbreak.ui.navigation
 
 
 object Routes{

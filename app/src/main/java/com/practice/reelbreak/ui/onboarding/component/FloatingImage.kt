@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.onboarding.component
+package com.practice.reelbreak.ui.onboarding.component
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode

@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak
+package com.practice.reelbreak
 
 
 import androidx.compose.runtime.Composable
@@ -6,9 +6,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
-import com.sangeeta.reelbreak.ui.navigation.AppNavigation
-import com.sangeeta.reelbreak.ui.navigation.Routes
-import com.sangeeta.reelbreak.viewmodel.MainViewModel
+import com.practice.reelbreak.ui.navigation.AppNavigation
+import com.practice.reelbreak.ui.navigation.Routes
+import com.practice.reelbreak.viewmodel.MainViewModel
 
 @Composable
 fun ReelsBreakApp(mainViewModel: MainViewModel) {

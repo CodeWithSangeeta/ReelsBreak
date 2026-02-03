@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.onboarding
+package com.practice.reelbreak.ui.onboarding
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,18 +22,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.sangeeta.reelbreak.R
-import com.sangeeta.reelbreak.data.DataStoreManager
-import com.sangeeta.reelbreak.ui.navigation.Routes
-import com.sangeeta.reelbreak.ui.onboarding.component.ButtonGradient
-import com.sangeeta.reelbreak.ui.onboarding.component.FloatingImage
-import com.sangeeta.reelbreak.ui.onboarding.component.GradientColor
-import com.sangeeta.reelbreak.ui.onboarding.component.IndicatorRow
-import com.sangeeta.reelbreak.ui.onboarding.component.OnboardDescription
-import com.sangeeta.reelbreak.ui.onboarding.component.OnboardHeading
-import com.sangeeta.reelbreak.ui.onboarding.component.OnboardPage
-import com.sangeeta.reelbreak.viewmodel.MainViewModel
+import com.practice.reelbreak.ui.navigation.Routes
+import com.practice.reelbreak.ui.onboarding.component.ButtonGradient
+import com.practice.reelbreak.ui.onboarding.component.FloatingImage
+import com.practice.reelbreak.ui.onboarding.component.GradientColor
+import com.practice.reelbreak.ui.onboarding.component.IndicatorRow
+import com.practice.reelbreak.ui.onboarding.component.OnboardDescription
+import com.practice.reelbreak.ui.onboarding.component.OnboardHeading
+import com.practice.reelbreak.ui.onboarding.component.OnboardPage
+import com.practice.reelbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import com.practice.reelbreak.R
+
+
+
 
 
 @Composable

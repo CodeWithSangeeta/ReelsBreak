@@ -1,14 +1,14 @@
-package com.sangeeta.reelbreak.ui.navigation
+package com.practice.reelbreak.ui.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sangeeta.reelbreak.ui.dashboard.DashboardScreen
-import com.sangeeta.reelbreak.ui.onboarding.OnboardingScreen
-import com.sangeeta.reelbreak.ui.permission.PermissionEducationScreen
-import com.sangeeta.reelbreak.viewmodel.MainViewModel
+import com.practice.reelbreak.ui.dashboard.DashboardScreen
+import com.practice.reelbreak.ui.onboarding.OnboardingScreen
+import com.practice.reelbreak.ui.permission.PermissionEducationScreen
+import com.practice.reelbreak.viewmodel.MainViewModel
 
 @Composable
 fun AppNavigation(
