@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">ReelBreak</string>
+    <string name="app_name">ReelsBreak</string>
+    <string name="accessibility_service_description">
+    ReelsBreak uses accessibility access only to detect reel scrolling patterns and provide mindful usage reminders. No content or personal data is collected.
+</string>
+
 </resources>

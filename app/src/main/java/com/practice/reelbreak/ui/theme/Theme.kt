@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.theme
+package com.practice.reelbreak.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme

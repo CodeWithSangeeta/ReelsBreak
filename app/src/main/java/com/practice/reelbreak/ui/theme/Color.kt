@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.theme
+package com.practice.reelbreak.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

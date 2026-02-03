@@ -1,7 +1,7 @@
-package com.sangeeta.reelbreak.viewmodel
+package com.practice.reelbreak.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.sangeeta.reelbreak.ui.dashboard.DashboardState
+import com.practice.reelbreak.ui.dashboard.DashboardState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

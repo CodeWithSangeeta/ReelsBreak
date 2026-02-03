@@ -1,17 +1,16 @@
-package com.sangeeta.reelbreak.viewmodel
+package com.practice.reelbreak.viewmodel
 
 
 import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sangeeta.reelbreak.core.permission.AccessibilityPermissionChecker
-import com.sangeeta.reelbreak.core.permission.UsagePermissionChecker
-import com.sangeeta.reelbreak.data.datastore.OnboardingPreferences
-import com.sangeeta.reelbreak.domain.model.PermissionState
-import com.sangeeta.reelbreak.ui.permission.PermissionAction
+import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
+import com.practice.reelbreak.core.permission.UsagePermissionChecker
+import com.practice.reelbreak.data.datastore.OnboardingPreferences
+import com.practice.reelbreak.domain.model.PermissionState
+import com.practice.reelbreak.ui.permission.PermissionAction
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
