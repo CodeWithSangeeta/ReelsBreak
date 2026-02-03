@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.dashboard
+package com.practice.reelbreak.ui.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.time.format.TextStyle
 
 @Composable
 fun StatisticsCard(

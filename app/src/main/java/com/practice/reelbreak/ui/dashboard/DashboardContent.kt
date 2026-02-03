@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.dashboard
+package com.practice.reelbreak.ui.dashboard
 
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.*
@@ -8,7 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
-import com.sangeeta.reelbreak.viewmodel.DashboardViewModel
+import com.practice.reelbreak.viewmodel.DashboardViewModel
 
 
 @Composable

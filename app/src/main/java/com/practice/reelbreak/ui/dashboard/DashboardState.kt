@@ -1,4 +1,4 @@
-package com.sangeeta.reelbreak.ui.dashboard
+package com.practice.reelbreak.ui.dashboard
 
 //
 //data class DashboardState(
