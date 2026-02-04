@@ -24,8 +24,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
 
     //Permission state
-    private val _permissionState =
-        MutableStateFlow(PermissionState())
+    private val _permissionState = MutableStateFlow(PermissionState())
 
     val permissionState: StateFlow<PermissionState> =
         _permissionState
@@ -68,7 +67,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _permissionState.value = PermissionState(
             accessibilityGranted = accessibilityGranted,
             usageStatsGranted = usageGranted,
-            overlayGranted = false
+          //  overlayGranted = false
         )
     }
 
