@@ -1,5 +1,7 @@
 package com.practice.reelbreak.ui.permission
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,19 +9,72 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
+import com.practice.reelbreak.core.permission.UsagePermissionChecker
+import com.practice.reelbreak.ui.onboarding.component.GradientColor
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
 @Composable
-fun PermissionScreen(viewModel: PermissionsViewModel) {
-    // 1. Observe the State from ViewModel
-    val uiState by viewModel.viewState.collectAsState()
+fun PermissionScreen(viewModel: PermissionsViewModel,
+                     onContinue : () -> Unit) {
+    val context = LocalContext.current
+    val uiState by viewModel.uiState.collectAsState()
 
-    ReelsGuardBackground {
+    LaunchedEffect(Unit) {
+        viewModel.refreshPermissionState(context)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { action ->
+            when (action) {
+                PermissionAction.OpenAccessibilitySettings ->
+                    AccessibilityPermissionChecker.openAccessibilitySettings(context)
+
+                PermissionAction.OpenUsageAccessSettings ->
+                    UsagePermissionChecker.openUsageAccessSettings(context)
+
+                PermissionAction.OpenOverlaySettings -> {
+                    // TODO implement open overlay settings
+                }
+            }
+        }
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refreshPermissionState(context)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black)
+    ) {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -27,48 +82,32 @@ fun PermissionScreen(viewModel: PermissionsViewModel) {
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // --- HEADER SECTION ---
             PermissionHeader()
 
-            // --- SCROLLABLE CONTENT ---
-            // We use a LazyColumn to handle small screens gracefully
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                item { PrivacyNote() }
+                // item { PrivacyNote() }
 
-                // Accessibility Card
-                item {
+                items(uiState.permissionCards.size) { index ->
+                    val card = uiState.permissionCards[index]
+
                     PermissionCard(
-                        model = createAccessibilityModel(uiState.isAccessibilityGranted),
-                        onButtonClick = { /* Trigger Intent */ }
+                        model = card,
+                        onEnableClick = {
+                            viewModel.onPermissionEnableClicked(card.id)
+                        }
                     )
                 }
-
-                // Usage Access Card
-                item {
-                    PermissionCard(
-                        model = createUsageModel(uiState.isUsageGranted),
-                        onButtonClick = { /* Trigger Intent */ }
-                    )
-                }
-
-                // Overlay Card (Optional)
-                item {
-                    PermissionCard(
-                        model = createOverlayModel(uiState.isOverlayGranted),
-                        onButtonClick = { /* Trigger Intent */ }
-                    )
-                }
-
-                item { HelpSection() }
             }
 
-            // --- BOTTOM ACTION ---
+
+            //   item { HelpSection() }
+
             FooterSection(
                 isContinueEnabled = uiState.isContinueEnabled,
-                onContinue = { /* Navigate to Home */ }
+                onContinue = onContinue
             )
         }
     }

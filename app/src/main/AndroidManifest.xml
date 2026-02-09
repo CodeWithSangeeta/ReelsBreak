@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name=".core.accessibility.ReelsAccessibilityService"
+            android:name="com.practice.reelbreak.core.accessibility.ReelsAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="false">
 

@@ -1,5 +1,7 @@
 package com.practice.reelbreak.ui.permission
 
+import com.practice.reelbreak.domain.model.PermissionState
+
 sealed class PermissionStatus {
     object Granted : PermissionStatus()
     object NotGranted : PermissionStatus()
@@ -17,6 +19,11 @@ data class PermissionUiModel(
 )
 
 
+data class PermissionUiState(
+    val permissionState: PermissionState = PermissionState(),
+    val permissionCards: List<PermissionUiModel> = emptyList(),
+    val isContinueEnabled: Boolean = false
+)
 
 enum class PermissionType {
     ACCESSIBILITY,

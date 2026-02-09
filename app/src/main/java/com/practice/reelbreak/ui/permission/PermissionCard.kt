@@ -33,12 +33,11 @@ fun PermissionCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-           // .glassmorphism() // Our custom glass effect
+           .glassmorphism() // Our custom glass effect
             .padding(16.dp)
             .animateContentSize() // Smoothly expand when "Learn more" is clicked
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            // Icon & Title Logic here...
             Text(
                 text = model.title,
                 style = MaterialTheme.typography.titleMedium,
@@ -57,11 +56,9 @@ fun PermissionCard(
             modifier = Modifier.padding(top = 4.dp)
         )
 
-        // Status Indicator (Red/Green Dot)
-        StatusIndicator(status = model.status)
 
         Button(
-            onClick = onButtonClick,
+            onClick = onEnableClick,
             enabled = model.status is PermissionStatus.NotGranted,
             modifier = Modifier.fillMaxWidth().padding(top = 12.dp),
             colors = ButtonDefaults.buttonColors(
@@ -72,6 +69,6 @@ fun PermissionCard(
             Text(if (model.status is PermissionStatus.Granted) "Enabled ✓" else "Enable")
         }
 
-        // "Learn more" dropdown logic goes here...
+
     }
 }

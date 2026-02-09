@@ -64,7 +64,7 @@ fun OnboardingScreen(
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = {
                     mainViewModel.completeOnboarding()
-                    navController.navigate(Routes.DASHBOARD) {
+                    navController.navigate(Routes.PERMISSION) {
                         popUpTo(Routes.ONBOARDING) { inclusive = true }
                     }
                 }) {

@@ -2,19 +2,21 @@ package com.practice.reelbreak.ui.navigation
 
 import android.util.Log
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.practice.reelbreak.ui.dashboard.DashboardScreen
 import com.practice.reelbreak.ui.onboarding.OnboardingScreen
-import com.practice.reelbreak.ui.permission.PermissionEducationScreen
+import com.practice.reelbreak.ui.permission.PermissionScreen
 import com.practice.reelbreak.viewmodel.MainViewModel
+import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
 @Composable
 fun AppNavigation(
     navController: NavHostController,
     startDestination: String,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
 ) {
     NavHost(
         navController = navController,
@@ -28,9 +30,9 @@ fun AppNavigation(
         }
 
         composable(Routes.PERMISSION) {
-            Log.d("NAV", "PERMISSION route entered")
-            PermissionEducationScreen(
-                viewModel = mainViewModel,
+            val permissionViewModel: PermissionsViewModel = viewModel()
+            PermissionScreen(
+                viewModel = permissionViewModel,
                 onContinue = {
                     navController.navigate(Routes.DASHBOARD) {
                         popUpTo(Routes.PERMISSION) { inclusive = true }

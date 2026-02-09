@@ -17,21 +17,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun PermissionHeader() {
     Column(
-        modifier = Modifier.padding(vertical = 24.dp),
+        modifier = Modifier.padding(vertical = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Enable Permissions",
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+//            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+            fontSize = 26.sp,
+            fontWeight = FontWeight.Bold,
             color = Color.White
         )
         Text(
             text = "To track reel usage responsibly, we need two system permissions.",
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyLarge,
             color = Color.White.copy(alpha = 0.7f),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(top = 8.dp)
