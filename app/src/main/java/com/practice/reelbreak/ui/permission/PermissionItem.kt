@@ -21,7 +21,8 @@ data class PermissionUiModel(
     val buttonTextGranted: String = "Enabled ✓",
     val buttonTextNotGranted: String,
     val buttonColorGranted: Color = Color.Black,
-    val buttonColorNotGranted: Color
+    val buttonColorNotGranted: Color,
+    val bulletIconMap: Map<String, BulletIconType> = emptyMap()
 )
 
 

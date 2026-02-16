@@ -6,5 +6,7 @@
     <string name="need_system_permissions">To track reel usage responsibly, we need two system permissions.</string>
     <string name="enable_permissions">Enable Permissions</string>
     <string name="disable_permissions_anytime">You can disable permissions anytime from Settings.</string>
+    <string name="privacy_first">Privacy First</string>
+    <string name="privacy_message">We never collect personal data.We only detect scrolling patterns.</string>
 
 </resources>

@@ -67,16 +67,16 @@ private fun buildPermissionCards(state: PermissionState): List<PermissionUiModel
             icon = Icons.Default.Visibility,
             description = "Used only to detect when you scroll reels and trigger mindful breaks.",
             status = if (state.accessibilityGranted) PermissionStatus.Granted else PermissionStatus.NotGranted,
-            buttonTextGranted = "Enabled ✓",
+            buttonTextGranted = "Enabled",
             buttonTextNotGranted = "Enable",
             buttonColorGranted = Color(0xFF8E44AD),
             buttonColorNotGranted = Color(0xFF8E44AD),
-//            bulletPoints = listOf(
-//                "Detect reel scrolling event",
-//                "No reading messages",
-//                "No screen recording",
-//                "No personal content access"
-//            )
+            bulletPoints = listOf(
+                "Detect reel scrolling event",
+                "No reading messages",
+                "No screen recording",
+                "No personal content access"
+            ),
             bulletIconMap = mapOf(
                 "Detect reel scrolling event" to BulletIconType.Check,
                 "No reading messages" to BulletIconType.Cross,
@@ -92,15 +92,15 @@ private fun buildPermissionCards(state: PermissionState): List<PermissionUiModel
             icon = Icons.Default.BarChart,
             description = "Used to calculate daily time spent on Instagram, YouTube Shorts, TikTok, etc.",
             status = if (state.usageStatsGranted) PermissionStatus.Granted else PermissionStatus.NotGranted,
-            buttonTextGranted = "Enabled ✓",
+            buttonTextGranted = "Enabled",
             buttonTextNotGranted = "Enable",
             buttonColorGranted = Color(0xFF3498DB),
             buttonColorNotGranted = Color(0xFF3498DB),
-//            bulletPoints = listOf(
-//                "Measure time spent per app",
-//                "Daily usage summary",
-//                "No browsing history collected"
-//            )
+            bulletPoints = listOf(
+                "Measure time spent per app",
+                "Daily usage summary",
+                "No browsing history collected"
+            ),
             bulletIconMap = mapOf(
                 "Measure time spent per app" to BulletIconType.Check,
                 "Daily usage summary" to BulletIconType.Check,
@@ -118,15 +118,15 @@ private fun buildPermissionCards(state: PermissionState): List<PermissionUiModel
             buttonTextNotGranted = "Allow Overlay",
             buttonColorGranted = Color(0xFF3498DB),
             buttonColorNotGranted = Color(0xFF3498DB),
-//            bulletPoints = listOf(
-//                "Why is this useful?",
-//            "Track reels in real time with small counter bubble",
-//            "ReelsGuard does not record screen or collect data"
-//            )
+            bulletPoints = listOf(
+                "Why is this useful?",
+            "Track reels in real time with small counter bubble",
+            "ReelsBreak does not record screen or collect data"
+            ),
             bulletIconMap = mapOf(
                 "Why is this useful?" to BulletIconType.Question,
                 "Track reels in real time with small counter bubble" to BulletIconType.Check,
-                "ReelsGuard does not record screen or collect data" to BulletIconType.Check
+                "ReelsBreak does not record screen or collect data" to BulletIconType.Check
             )
         )
     )

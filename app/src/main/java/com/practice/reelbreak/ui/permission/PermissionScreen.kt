@@ -95,15 +95,9 @@ fun PermissionScreen(viewModel: PermissionsViewModel,
                         )
                       //  Spacer(modifier = Modifier.height(24.dp))
                     }
-//                    HelpSection()
-//
-//                    Spacer(modifier = Modifier.height(24.dp))
-//
-//                    PermissionFooter(
-//                        isContinueEnabled = uiState.isContinueEnabled,
-//                        onContinue = onContinue
-//                    )
-
+                    items(count = 1) { index ->
+                        HelpSection()
+                    }
                 }
                 PermissionFooter(
                     isContinueEnabled = uiState.isContinueEnabled,
