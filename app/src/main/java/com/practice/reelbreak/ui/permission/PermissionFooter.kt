@@ -30,7 +30,7 @@ fun PermissionFooter(isContinueEnabled: Boolean, onContinue: () -> Unit) {
     Column(
         modifier = Modifier
             .navigationBarsPadding()
-            .padding(bottom = 16.dp),
+            .padding(top = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -43,17 +43,16 @@ fun PermissionFooter(isContinueEnabled: Boolean, onContinue: () -> Unit) {
                 disabledContentColor = Color.White),
                 modifier = Modifier
                 .fillMaxWidth()
-                .height(52.dp)
+                .height(46.dp)
                 .background(
                     brush = if (isContinueEnabled) GradientColor.button
                     else Brush.horizontalGradient(listOf(Color.Gray, Color.DarkGray)),
                     RoundedCornerShape(16.dp))
-                    .then(
-                        if (!isContinueEnabled) Modifier.border(
+                    .then(Modifier.border(
                             width = 1.dp,
-                            color = Color.White.copy(alpha = 0.7f),
+                            color = Color.White.copy(alpha = 0.5f),
                             shape = RoundedCornerShape(16.dp)
-                        ) else Modifier
+                    )
                     ),
             contentPadding = ButtonDefaults.ContentPadding
         ) {
@@ -70,6 +69,5 @@ fun PermissionFooter(isContinueEnabled: Boolean, onContinue: () -> Unit) {
             color = Color.White.copy(alpha = 0.5f),
             modifier = Modifier.padding(bottom = 8.dp)
         )
-       // Spacer(Modifier.height(16.dp))
     }
 }

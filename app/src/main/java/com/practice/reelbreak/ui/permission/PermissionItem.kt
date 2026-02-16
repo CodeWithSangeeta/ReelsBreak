@@ -37,3 +37,8 @@ enum class PermissionType {
     USAGE_ACCESS,
     OVERLAY
 }
+
+
+enum class BulletIconType {
+    Check, Cross, Question
+}

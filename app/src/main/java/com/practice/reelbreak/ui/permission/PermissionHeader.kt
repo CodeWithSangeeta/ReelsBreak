@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -30,7 +31,7 @@ import com.practice.reelbreak.R
 
 @Composable
 fun PermissionHeader() {
-    Column(
+    Column(modifier = Modifier.padding(top=12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -51,28 +52,28 @@ fun PermissionHeader() {
         Spacer(modifier = Modifier.height(8.dp))
 
         Card(modifier = Modifier
-            .height(56.dp)
-            .align(Alignment.CenterHorizontally)
-            .padding(8.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
+            .height(28.dp)
+            .align(Alignment.CenterHorizontally),
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(containerColor = Color.Gray),
             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
             ) {
             Row(
-                modifier = Modifier.fillMaxSize()
-                    .padding(4.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(2.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Lock,
-                    contentDescription = "Privacy First",
-                    tint = Color(0xFF135476),
-                    modifier = Modifier.size(20.dp)
+                    contentDescription = stringResource(R.string.privacy_first),
+                    tint = Color(0xFF2437A5).copy(alpha = 0.7f),
+                    modifier = Modifier.size(18.dp)
                 )
+                Spacer(modifier=Modifier.width(4.dp))
                 Text(
-                    text = "We never collect personal data. We only detect scrolling patterns.",
-                    fontSize = 13.sp,
+                    text = stringResource(R.string.privacy_message),
+                    fontSize = 11.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )
             }

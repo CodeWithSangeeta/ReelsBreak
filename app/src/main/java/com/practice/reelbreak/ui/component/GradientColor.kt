@@ -17,10 +17,9 @@ object GradientColor {
 
     val button = Brush.Companion.linearGradient(
         colors = listOf(
-            Color(0xFFC643E5),
             Color(0xFF8B2CE8),
-            Color(0xFF1E87DE),
-            Color(0xFF12CEAD)
+            Color(0xFF581176),
+            Color(0xFF263CB3)
         )
     )
 }
