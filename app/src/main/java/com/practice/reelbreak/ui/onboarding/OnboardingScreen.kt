@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import com.practice.reelbreak.ui.navigation.Routes
 import com.practice.reelbreak.ui.onboarding.component.ButtonGradient
 import com.practice.reelbreak.ui.onboarding.component.FloatingImage
-import com.practice.reelbreak.ui.onboarding.component.GradientColor
+import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.onboarding.component.IndicatorRow
 import com.practice.reelbreak.ui.onboarding.component.OnboardDescription
 import com.practice.reelbreak.ui.onboarding.component.OnboardHeading

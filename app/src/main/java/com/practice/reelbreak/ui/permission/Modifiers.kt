@@ -11,15 +11,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 fun Modifier.glassmorphism(
-    cornerRadius: Dp = 24.dp,
+    cornerRadius: Dp = 16.dp,
     borderWidth: Dp = 1.dp
 ) = this.then(
     Modifier
         .graphicsLayer {
             clip = true
             shape = RoundedCornerShape(cornerRadius)
-            // Note: Real-time blur (RenderEffect) requires Android 12+.
-            // For older versions, we use high transparency.
         }
         .background(
             Brush.verticalGradient(

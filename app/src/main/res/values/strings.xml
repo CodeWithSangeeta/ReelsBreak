@@ -3,5 +3,8 @@
     <string name="accessibility_service_description">
     ReelsBreak uses accessibility access only to detect reel scrolling patterns and provide mindful usage reminders. No content or personal data is collected.
 </string>
+    <string name="need_system_permissions">To track reel usage responsibly, we need two system permissions.</string>
+    <string name="enable_permissions">Enable Permissions</string>
+    <string name="disable_permissions_anytime">You can disable permissions anytime from Settings.</string>
 
 </resources>
