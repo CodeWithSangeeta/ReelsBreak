@@ -34,6 +34,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private val _isDarkMode = MutableStateFlow(false)
+    val isDarkMode: StateFlow<Boolean> = _isDarkMode
+
+    fun toggleTheme() {
+        _isDarkMode.value = !_isDarkMode.value
+    }
+
 }
 
 

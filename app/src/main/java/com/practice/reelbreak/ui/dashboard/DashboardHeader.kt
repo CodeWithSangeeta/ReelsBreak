@@ -3,7 +3,10 @@ package com.practice.reelbreak.ui.dashboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.Visibility
@@ -24,33 +27,34 @@ fun DashboardHeader(
     onThemeToggle: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top= 14.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
         Column {
             Text(
-                text = "ReelsGuard",
+                text = "ReelsBreak",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground            )
+                color = MaterialTheme.colorScheme.onBackground )
+            Spacer(modifier=Modifier.height(2.dp))
             Text(
                 text = "Stay mindful, $userName.",
                 color = MaterialTheme.colorScheme.primary
             )
+
             Text(text = "You are doing great today ✨",
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                 fontSize = 12.sp
                 )
         }
 
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             HeaderIconButton(
                 icon = Icons.Outlined.Visibility,
                 onClick = onVisibilityToggle
             )
             HeaderIconButton(
-                // Dynamically change icon based on mode
                 icon = Icons.Outlined.DarkMode,
                 onClick = onThemeToggle
             )

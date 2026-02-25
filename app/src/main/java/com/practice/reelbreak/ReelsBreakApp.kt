@@ -8,11 +8,12 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.rememberNavController
 import com.practice.reelbreak.ui.navigation.AppNavigation
 import com.practice.reelbreak.ui.navigation.Routes
+import com.practice.reelbreak.ui.theme.ReelsBreakTheme
 import com.practice.reelbreak.viewmodel.MainViewModel
 
 @Composable
 fun ReelsBreakApp(mainViewModel: MainViewModel) {
-
+    val isDarkMode by mainViewModel.isDarkMode.collectAsState()
     val isOnboardingCompleted by mainViewModel
         .isOnboardingCompleted
         .collectAsState()
@@ -27,10 +28,14 @@ fun ReelsBreakApp(mainViewModel: MainViewModel) {
         }
     }
 
-
+ReelsBreakTheme(
+    darkTheme = isDarkMode,
+    content = {}
+) {
     AppNavigation(
         navController = navController,
         startDestination = startDestination,
         mainViewModel = mainViewModel
     )
+}
 }

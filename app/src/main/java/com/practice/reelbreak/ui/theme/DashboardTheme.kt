@@ -22,8 +22,9 @@ private val LightDashboardColors = lightColorScheme(
     onBackground = Color.Black,
     onSurface = Color.Black
 )
+
 @Composable
-fun DashboardTheme(
+fun ReelsBreakTheme(
     isDarkMode: Boolean,
     content: @Composable () -> Unit
 ) {

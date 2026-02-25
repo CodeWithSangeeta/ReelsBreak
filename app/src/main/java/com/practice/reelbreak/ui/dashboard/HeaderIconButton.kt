@@ -22,9 +22,9 @@ fun HeaderIconButton(
 ) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = modifier.size(40.dp)
+        modifier = modifier.size(46.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {
             Icon(
