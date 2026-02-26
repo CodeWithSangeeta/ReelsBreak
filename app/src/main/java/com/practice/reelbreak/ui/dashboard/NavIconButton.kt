@@ -29,7 +29,7 @@ fun NavIconButton(
 
     Box(
         modifier = modifier
-            .size(56.dp) // Standard size for the touch target
+            .size(56.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(
                 if (isSelected) MaterialTheme.colorScheme.onPrimary

@@ -10,7 +10,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -23,22 +25,37 @@ fun FloatingImage(
     size : Dp
 ) {
 
-    val infiniteTransition = rememberInfiniteTransition()
+//    val infiniteTransition = rememberInfiniteTransition()
+//
+//    val offsetY by infiniteTransition.animateFloat(
+//        initialValue = 0f,
+//        targetValue =floatingDistance,
+//        animationSpec = infiniteRepeatable(
+//            animation = tween(700, easing = LinearEasing),
+//            repeatMode = RepeatMode.Reverse
+//        )
+//    )
 
-    val offsetY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue =floatingDistance,
-        animationSpec = infiniteRepeatable(
-            animation = tween(700, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        )
-    )
+    val offsetY = remember { androidx.compose.animation.core.Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            offsetY.animateTo(
+                targetValue = floatingDistance,
+                animationSpec = tween(900, easing = LinearEasing)
+            )
+            offsetY.animateTo(
+                targetValue = 0f,
+                animationSpec = tween(900, easing = LinearEasing)
+            )
+        }
+    }
 
     Image(
         painter = painterResource(id = imageResId),
         contentDescription = null,
         modifier = Modifier
             .size(size)
-            .offset(y = with(LocalDensity.current) { offsetY.toDp() })
+            .offset(y = with(LocalDensity.current) { offsetY.value.toDp() })
     )
 }

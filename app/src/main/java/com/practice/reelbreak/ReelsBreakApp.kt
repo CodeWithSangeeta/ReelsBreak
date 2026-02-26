@@ -19,13 +19,13 @@ fun ReelsBreakApp(mainViewModel: MainViewModel) {
 
     val navController = rememberNavController()
 
-    val startDestination = remember {
+    val startDestination =
         if (isOnboardingCompleted) {
             Routes.DASHBOARD
         } else {
             Routes.ONBOARDING
         }
-    }
+
 
     AppNavigation(
         navController = navController,

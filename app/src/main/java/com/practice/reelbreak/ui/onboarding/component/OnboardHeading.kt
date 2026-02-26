@@ -1,6 +1,7 @@
 package com.practice.reelbreak.ui.onboarding.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,7 +16,7 @@ import androidx.compose.ui.unit.sp
 fun OnboardHeading(text :String) {
     Text(
         text = text,
-        fontSize = 33.sp,
+        style = MaterialTheme.typography.headlineLarge,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
         color = Color.White,

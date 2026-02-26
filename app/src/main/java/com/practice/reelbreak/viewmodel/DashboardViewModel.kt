@@ -1,5 +1,6 @@
 package com.practice.reelbreak.viewmodel
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.practice.reelbreak.ui.dashboard.DashboardState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,7 +8,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 class DashboardViewModel : ViewModel() {
-
+    private val _selectedTab = mutableStateOf(0)
+    val selectedTab: State<Int> = _selectedTab
     private val _uiState = MutableStateFlow(
         DashboardState(
             userName = "Sangeeta",

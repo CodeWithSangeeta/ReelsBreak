@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import com.practice.reelbreak.ui.dashboard.DashboardScreen
 import com.practice.reelbreak.ui.onboarding.OnboardingScreen
 import com.practice.reelbreak.ui.permission.PermissionScreen
+import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.MainViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
@@ -29,19 +30,19 @@ fun AppNavigation(
             )
         }
 
+        composable(Routes.DASHBOARD) {
+           DashboardScreen(navController=navController,viewModel = DashboardViewModel())
+        }
+
+
         composable(Routes.PERMISSION) {
             val permissionViewModel: PermissionsViewModel = viewModel()
             PermissionScreen(
                 viewModel = permissionViewModel,
                 onContinue = {
-                    navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.PERMISSION) { inclusive = true }
-                    }
+                    navController.popBackStack()
                 }
             )
-        }
-        composable(Routes.DASHBOARD) {
-           DashboardScreen()
         }
     }
 }

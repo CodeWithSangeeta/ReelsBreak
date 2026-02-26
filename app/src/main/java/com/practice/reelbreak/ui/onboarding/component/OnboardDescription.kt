@@ -1,5 +1,6 @@
 package com.practice.reelbreak.ui.onboarding.component
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -11,7 +12,7 @@ import androidx.compose.ui.unit.sp
 fun OnboardDescription(text : String) {
     Text(
         text = text,
-        fontSize = 16.sp,
+        style = MaterialTheme.typography.bodyLarge,
         fontWeight = FontWeight.Normal,
         color = Color(0xFFAAA4A4),
         textAlign = TextAlign.Center

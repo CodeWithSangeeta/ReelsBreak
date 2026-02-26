@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.*
@@ -16,41 +17,52 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel = viewModel()) {
-    val state by viewModel.uiState.collectAsState()
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ){
-        Column(
+fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel ) {
+    Scaffold(
+        bottomBar = {
+            FloatingNavBar(
+                selectedTab = viewModel.selectedTab,
+                onTabSelected = { tabIndex ->
+                    viewModel.updateSelectedTab(tabIndex)
+                    when (tabIndex) {
+                        0 -> navController.navigate("dashboard") { popUpTo(navController.graph.startDestinationId) }
+                        1 -> navController.navigate("stats")
+                        // Add other tabs
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
+        val state by viewModel.uiState.collectAsState()
+
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            DashboardHeader(
-                userName = state.userName,
-                onVisibilityToggle = { viewModel.toggleCounterVisibility() },
-                onThemeToggle = { viewModel.toggleTheme() }
-            )
-            StatisticsCard(state)
-            ActionGrid()
-            Spacer(modifier = Modifier.height(100.dp)) // Space for the floating nav
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                DashboardHeader(
+                    userName = state.userName,
+                    onVisibilityToggle = { viewModel.toggleCounterVisibility() },
+                    onThemeToggle = { viewModel.toggleTheme() }
+                )
+                StatisticsCard(state)
+                ActionGrid()
+                Spacer(modifier = Modifier.height(100.dp)) // Space for the floating nav
+            }
 
-        FloatingNavBar(
-            selectedTab = state.selectedTab,
-            onTabSelected = { viewModel.updateSelectedTab(it) },
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp)
-        )
-    }
+        }
+      }
     }
 
 
