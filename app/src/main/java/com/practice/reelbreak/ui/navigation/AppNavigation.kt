@@ -23,26 +23,49 @@ fun AppNavigation(
         navController = navController,
         startDestination = startDestination
     ) {
+//        composable(Routes.ONBOARDING) {
+//            OnboardingScreen(
+//                navController = navController,
+//                mainViewModel = mainViewModel
+//            )
+//        }
+//
+//        composable(Routes.DASHBOARD) {
+//           DashboardScreen(navController=navController,viewModel = DashboardViewModel())
+//        }
+
+//        composable(Routes.PERMISSION) {
+//            val permissionViewModel: PermissionsViewModel = viewModel()
+//            PermissionScreen(
+//                viewModel = permissionViewModel,
+//                onContinue = {
+//                    navController.popBackStack()
+//                }
+//            )
+//        }
+
+
         composable(Routes.ONBOARDING) {
             OnboardingScreen(
-                navController = navController,
-                mainViewModel = mainViewModel
-            )
-        }
-
-        composable(Routes.DASHBOARD) {
-           DashboardScreen(navController=navController,viewModel = DashboardViewModel())
-        }
-
-
-        composable(Routes.PERMISSION) {
-            val permissionViewModel: PermissionsViewModel = viewModel()
-            PermissionScreen(
-                viewModel = permissionViewModel,
-                onContinue = {
-                    navController.popBackStack()
+                onComplete = {
+                    mainViewModel.completeOnboarding()
+                    navController.navigate(Routes.DASHBOARD) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
+                    }
+                },
+                onSkip = {
+                    mainViewModel.completeOnboarding()
+                    navController.navigate(Routes.DASHBOARD) {
+                        popUpTo(Routes.ONBOARDING) { inclusive = true }
+                    }
                 }
             )
         }
+        composable(Routes.DASHBOARD) { DashboardScreen(navController) }
+        composable(Routes.PERMISSION) { PermissionScreen(navController) }
+        composable(Routes.FOCUS) { FocusScreen() }
+        composable(Routes.ANALYTICS) { AnalyticsScreen(navController) }
+        composable(Routes.LIMITS) { LimitsScreen() }
+        composable(Routes.ALERTS) { AlertsScreen() }
     }
 }

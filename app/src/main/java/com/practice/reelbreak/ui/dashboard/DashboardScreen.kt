@@ -16,35 +16,61 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.dashboardViewModel.compose.dashboardViewModel
 import androidx.navigation.NavController
+import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.navigation.Routes
+import com.practice.reelbreak.ui.permission.PermissionNudgeCard
+import com.practice.reelbreak.dashboardViewModel.DashboarddashboardViewModel
 import com.practice.reelbreak.viewmodel.DashboardViewModel
+import com.practice.reelbreak.viewmodel.PermissionsViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
-fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel ) {
+fun DashboardScreen(navController: NavController, dashboardViewModel: DashboardViewModel,
+                    permissionsViewModel : PermissionsViewModel
+) {
+    val dashboardState by dashboardViewModel.uiState.collectAsState()
+    val permissionState by permissionsViewModel.permissionState.collectAsState()
+    var showPermissionNudge by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(3000)
+        if (!permissionState.permissionsGranted) showPermissionNudge = true
+    }
+
     Scaffold(
         bottomBar = {
             FloatingNavBar(
-                selectedTab = viewModel.selectedTab,
-                onTabSelected = { tabIndex ->
-                    viewModel.updateSelectedTab(tabIndex)
-                    when (tabIndex) {
-                        0 -> navController.navigate("dashboard") { popUpTo(navController.graph.startDestinationId) }
-                        1 -> navController.navigate("stats")
-                        // Add other tabs
+                selectedTab = permissionsViewModel.selectedTab,
+                onTabSelected = { index ->
+                    dashboardViewModel.updateSelectedTab(index)
+                    when (index) {
+                        0 -> navController.navigate(Routes.DASHBOARD)
+                        1 -> navController.navigate(Routes.ANALYTICS)
+                        2 -> navController.navigate(Routes.FOCUS)
+                        3 -> navController.navigate(Routes.LIMITS)
+                        4 -> navController.navigate(Routes.ALERTS)
                     }
                 }
             )
         }
-    ) { paddingValues ->
-        val state by viewModel.uiState.collectAsState()
-
-        Box(
+    )
+        { paddingValues ->
+          Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(GradientColor.background)
+              .padding(paddingValues)
         ) {
+              // Floating Permission Nudge
+              if (showPermissionNudge && !state.permissionsGranted) {
+                  PermissionNudgeCard(
+                      onClick = { navController.navigate(Routes.PERMISSION) }
+                  )
+              }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -53,11 +79,16 @@ fun DashboardScreen(navController: NavController, viewModel: DashboardViewModel 
             ) {
                 DashboardHeader(
                     userName = state.userName,
-                    onVisibilityToggle = { viewModel.toggleCounterVisibility() },
-                    onThemeToggle = { viewModel.toggleTheme() }
+                    onVisibilityToggle = { dashboardViewModel.toggleCounterVisibility() },
+                    onThemeToggle = { dashboardViewModel.toggleTheme() }
                 )
                 StatisticsCard(state)
-                ActionGrid()
+                ActionGrid(
+                    onAnalyticsClick = { navController.navigate(Routes.ANALYTICS) },
+                    onFocusClick = { navController.navigate(Routes.FOCUS) },
+                    onLimitsClick = { navController.navigate(Routes.LIMITS) },
+                    onAlertsClick = { navController.navigate(Routes.ALERTS) }
+                )
                 Spacer(modifier = Modifier.height(100.dp)) // Space for the floating nav
             }
 

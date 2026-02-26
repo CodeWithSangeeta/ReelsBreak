@@ -9,7 +9,9 @@ import kotlinx.coroutines.flow.update
 
 class DashboardViewModel : ViewModel() {
     private val _selectedTab = mutableStateOf(0)
-    val selectedTab: State<Int> = _selectedTab
+  //  val selectedTab: State<Int> = _selectedTab
+
+
     private val _uiState = MutableStateFlow(
         DashboardState(
             userName = "Sangeeta",
@@ -23,6 +25,20 @@ class DashboardViewModel : ViewModel() {
         )
     )
     val uiState: StateFlow<DashboardState> = _uiState
+
+    // DashboardViewModel.kt
+    init {
+        _uiState.value = DashboardState(
+            userName = "Sangeeta",
+            isDarkMode = true,
+            reelsCount = 0,           // ZERO by default
+            percentageIncrease = 0,
+            dailyLimitMinutes = 60,
+            timeSpentMinutes = 0,     // ZERO by default
+            selectedTab = 0,
+            isCounterVisible = false  // Hidden until permissions
+        )
+    }
 
     fun toggleTheme() {
         _uiState.update {
