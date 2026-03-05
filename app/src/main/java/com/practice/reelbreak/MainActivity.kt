@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.practice.reelbreak.ui.theme.ReelBreakTheme
 import com.practice.reelbreak.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +16,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent{
-            ReelsBreakApp(mainViewModel)
+            ReelBreakTheme {
+                ReelsBreakApp(mainViewModel)
+            }
         }
     }
 }

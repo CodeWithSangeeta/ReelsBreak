@@ -6,7 +6,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.practice.reelbreak.ui.alert.AlertsScreen
+import com.practice.reelbreak.ui.dashboard.AnalyticsScreen
 import com.practice.reelbreak.ui.dashboard.DashboardScreen
+import com.practice.reelbreak.ui.focused_mode.FocusScreen
+import com.practice.reelbreak.ui.limit.LimitsScreen
 import com.practice.reelbreak.ui.onboarding.OnboardingScreen
 import com.practice.reelbreak.ui.permission.PermissionScreen
 import com.practice.reelbreak.viewmodel.DashboardViewModel
@@ -18,6 +22,7 @@ fun AppNavigation(
     navController: NavHostController,
     startDestination: String,
     mainViewModel: MainViewModel,
+    permissionsViewModel: PermissionsViewModel
 ) {
     NavHost(
         navController = navController,
