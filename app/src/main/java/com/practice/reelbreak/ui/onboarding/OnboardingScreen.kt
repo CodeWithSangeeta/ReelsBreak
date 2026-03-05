@@ -37,8 +37,8 @@ import com.practice.reelbreak.R
 
 @Composable
 fun OnboardingScreen(
-    navController: NavController,
-    mainViewModel: MainViewModel
+    onComplete: () -> Unit,
+    onSkip: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pages = remember {
@@ -61,19 +61,12 @@ fun OnboardingScreen(
 
         if(pageState.currentPage !=pages.lastIndex) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = {
-                    mainViewModel.completeOnboarding()
-                    navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.ONBOARDING) { inclusive = true }
-                    }
-                }) {
-
+                TextButton(onClick = onSkip){
                     Text(
                         text = "Skip",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFFC2B5B5),
-
                         )
                 }
             }
@@ -104,10 +97,7 @@ fun OnboardingScreen(
 
                 }
                 else{
-                    mainViewModel.completeOnboarding()
-                    navController.navigate(Routes.DASHBOARD) {
-                        popUpTo(Routes.ONBOARDING) { inclusive = true }
-                    }
+                  onComplete()
                 }
             }
         )

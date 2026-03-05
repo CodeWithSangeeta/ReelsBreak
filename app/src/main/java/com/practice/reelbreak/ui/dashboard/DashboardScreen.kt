@@ -30,17 +30,15 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun DashboardScreen(navController: NavController,
-                    dashboardViewModel: DashboardViewModel = viewModel(),
-                    permissionViewModel : PermissionsViewModel = viewModel())
+                    dashboardViewModel: DashboardViewModel = viewModel())
 {
     val dashboardState by dashboardViewModel.uiState.collectAsState()
-    val permissionState by permissionViewModel.permissionState.collectAsState()
     var showPermissionNudge by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        delay(3000)
-        if (!permissionState.permissionGranted) showPermissionNudge = true
-    }
+//    LaunchedEffect(Unit) {
+//        delay(3000)
+//        if (!permissionState.permissionGranted) showPermissionNudge = true
+//    }
 
     Scaffold(
         bottomBar = {
@@ -66,19 +64,19 @@ fun DashboardScreen(navController: NavController,
                 .background(GradientColor.background)
               .padding(paddingValues)
         ) {
-              // Floating Permission Nudge
-              AnimatedVisibility(
-                  visible = showPermissionNudge && !permissionState.requiredGranted,
-                  enter = fadeIn(),
-                  exit = fadeOut(),
-                  modifier = Modifier
-                      .align(Alignment.BottomCenter)
-                      .padding(bottom = 100.dp) // Space for nav bar
-              ) {
-                  PermissionNudgeCard(
-                      onClick = { navController.navigate(Routes.PERMISSION) }
-                  )
-              }
+//              // Floating Permission Nudge
+//              AnimatedVisibility(
+//                  visible = showPermissionNudge && !permissionState.requiredGranted,
+//                  enter = fadeIn(),
+//                  exit = fadeOut(),
+//                  modifier = Modifier
+//                      .align(Alignment.BottomCenter)
+//                      .padding(bottom = 100.dp) // Space for nav bar
+//              ) {
+//                  PermissionNudgeCard(
+//                      onClick = { navController.navigate(Routes.PERMISSION) }
+//                  )
+//              }
 
             Column(
                 modifier = Modifier
