@@ -7,10 +7,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.component.MainScaffold
 import com.practice.reelbreak.ui.navigation.Routes
 import com.practice.reelbreak.ui.permission.PermissionNudgeCard
 import com.practice.reelbreak.viewmodel.DashboardViewModel
@@ -29,74 +33,73 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-fun DashboardScreen(navController: NavController,
-                    dashboardViewModel: DashboardViewModel = viewModel())
-{
+fun DashboardScreen(
+    navController: NavController,
+    dashboardViewModel: DashboardViewModel = viewModel(),
+    permissionsViewModel: PermissionsViewModel = viewModel(),
+    selectedTab: Int = 0,
+    onTabSelected: (Int) -> Unit = {}
+) {
     val dashboardState by dashboardViewModel.uiState.collectAsState()
-    var showPermissionNudge by remember { mutableStateOf(false) }
+    val permissionUiState by permissionsViewModel.uiState.collectAsState()
 
-//    LaunchedEffect(Unit) {
-//        delay(3000)
-//        if (!permissionState.permissionGranted) showPermissionNudge = true
-//    }
+    MainScaffold(
+        selectedTab = selectedTab,
+        onTabSelected = onTabSelected
+    ) { paddingValues ->
 
-    Scaffold(
-        bottomBar = {
-            FloatingNavBar(
-                selectedTab = dashboardState.selectedTab,
-                onTabSelected = { index ->
-                    dashboardViewModel.updateSelectedTab(index)
-                    when (index) {
-                        0 -> navController.navigate(Routes.DASHBOARD)
-                        1 -> navController.navigate(Routes.ANALYTICS)
-                        2 -> navController.navigate(Routes.FOCUS)
-                        3 -> navController.navigate(Routes.LIMITS)
-                        4 -> navController.navigate(Routes.ALERTS)
-                    }
-                }
-            )
-        }
-    )
-        { paddingValues ->
-          Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(paddingValues)
                 .background(GradientColor.background)
-              .padding(paddingValues)
+            .padding(horizontal = 24.dp),
         ) {
-//              // Floating Permission Nudge
+            DashboardHeader(
+                userName = dashboardState.userName,
+                onVisibilityToggle = { dashboardViewModel.toggleCounterVisibility() },
+                onThemeToggle = { dashboardViewModel.toggleTheme() }
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(bottom = 120.dp)
+            ) {
+
 //              AnimatedVisibility(
-//                  visible = showPermissionNudge && !permissionState.requiredGranted,
+//                  visible = showPermissionNudge && !permissionUiState.isContinueEnabled,
 //                  enter = fadeIn(),
 //                  exit = fadeOut(),
 //                  modifier = Modifier
 //                      .align(Alignment.BottomCenter)
-//                      .padding(bottom = 100.dp) // Space for nav bar
+//                      .padding(bottom = 100.dp)
 //              ) {
 //                  PermissionNudgeCard(
 //                      onClick = { navController.navigate(Routes.PERMISSION) }
 //                  )
 //              }
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                DashboardHeader(
-                    userName = dashboardState.userName,
-                    onVisibilityToggle = { dashboardViewModel.toggleCounterVisibility() },
-                    onThemeToggle = { dashboardViewModel.toggleTheme() }
-                )
-                StatisticsCard(dashboardState)
-                ActionGrid()
-                Spacer(modifier = Modifier.height(100.dp)) // Space for the floating nav
+
+                if (!permissionUiState.isContinueEnabled) {
+                    item {
+                        PermissionNudgeCard(
+                            onClick = { navController.navigate(Routes.PERMISSION) }
+                        )
+                    }
+                }
+
+                item { StatisticsCard(dashboardState) }
+                item { ActionGrid() }
             }
 
         }
-      }
     }
+}
+
 
 
 

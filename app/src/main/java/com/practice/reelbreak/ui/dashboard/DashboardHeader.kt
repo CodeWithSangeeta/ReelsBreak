@@ -15,10 +15,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lint.kotlin.metadata.Visibility
+
 
 @Composable
 fun DashboardHeader(
@@ -27,7 +27,7 @@ fun DashboardHeader(
     onThemeToggle: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(top= 14.dp),
+        modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
@@ -36,17 +36,13 @@ fun DashboardHeader(
                 text = "ReelsBreak",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground )
+                color = Color.White
+            )
             Spacer(modifier=Modifier.height(2.dp))
             Text(
                 text = "Stay mindful, $userName.",
                 color = MaterialTheme.colorScheme.primary
             )
-
-            Text(text = "You are doing great today ✨",
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                fontSize = 12.sp
-                )
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {

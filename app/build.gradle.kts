@@ -63,6 +63,7 @@ dependencies {
     implementation(libs.runtime)
     implementation(libs.androidx.foundation.layout)
     implementation(libs.androidx.compose.remote.creation.core)
+    implementation(libs.androidx.compose.runtime.runtime)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
