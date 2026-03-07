@@ -1,10 +1,6 @@
 package com.practice.reelbreak.ui.dashboard
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.NotificationsActive
@@ -14,11 +10,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.practice.reelbreak.ui.navigation.Routes
 
 @Composable
-fun ActionGrid() {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-
+fun ActionGrid(
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ActionCard(
                 title = "Analytics",
@@ -31,7 +34,7 @@ fun ActionGrid() {
                 title = "Focus Mode",
                 icon = Icons.Outlined.Shield,
                 iconColor = Color(0xFF4CAF50),
-                onClick = { },
+                onClick = { navController.navigate(Routes.FOCUS) }, // ✅ Navigate to Focus
                 modifier = Modifier.weight(1f)
             )
         }
@@ -40,14 +43,14 @@ fun ActionGrid() {
                 title = "Set Limit",
                 icon = Icons.Outlined.TrackChanges,
                 iconColor = Color(0xFF33D1FF),
-                onClick = {},
+                onClick = { },
                 modifier = Modifier.weight(1f)
             )
             ActionCard(
                 title = "Smart Alerts",
                 icon = Icons.Outlined.NotificationsActive,
                 iconColor = Color(0xFFFF9800),
-                onClick = {},
+                onClick = { },
                 modifier = Modifier.weight(1f)
             )
         }
