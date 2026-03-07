@@ -1,6 +1,10 @@
 package com.practice.reelbreak.ui.dashboard
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.NotificationsActive
@@ -11,30 +15,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.navigation.Routes
 
 @Composable
-fun ActionGrid(
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-    ) {
+fun ActionGrid(navController: NavController) {
+    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
             ActionCard(
                 title = "Analytics",
                 icon = Icons.Outlined.BarChart,
                 iconColor = Color(0xFF4A90E2),
-                onClick = { },
+                onClick = { navController.navigate("analytics") },
                 modifier = Modifier.weight(1f)
             )
             ActionCard(
                 title = "Focus Mode",
                 icon = Icons.Outlined.Shield,
                 iconColor = Color(0xFF4CAF50),
-                onClick = { navController.navigate(Routes.FOCUS) }, // ✅ Navigate to Focus
+                onClick = { navController.navigate("focus") },
                 modifier = Modifier.weight(1f)
             )
         }
@@ -43,14 +40,14 @@ fun ActionGrid(
                 title = "Set Limit",
                 icon = Icons.Outlined.TrackChanges,
                 iconColor = Color(0xFF33D1FF),
-                onClick = { },
+                onClick = { navController.navigate("limits") },
                 modifier = Modifier.weight(1f)
             )
             ActionCard(
                 title = "Smart Alerts",
                 icon = Icons.Outlined.NotificationsActive,
                 iconColor = Color(0xFFFF9800),
-                onClick = { },
+                onClick = { navController.navigate("alerts") },
                 modifier = Modifier.weight(1f)
             )
         }

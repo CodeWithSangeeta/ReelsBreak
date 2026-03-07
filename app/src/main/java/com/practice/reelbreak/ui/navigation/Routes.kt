@@ -9,7 +9,5 @@ object Routes{
     const val ANALYTICS = "analytics"
     const val FOCUS = "focus"
     const val LIMITS = "limit"
-    const val ALERTS = "alerts"
-    const val PROFILE = "profile"
 
 }

@@ -93,7 +93,6 @@ fun PermissionScreen(viewModel: PermissionsViewModel,
                                 viewModel.onPermissionEnableClicked(card.id)
                             }
                         )
-                      //  Spacer(modifier = Modifier.height(24.dp))
                     }
                     items(count = 1) { index ->
                         HelpSection()

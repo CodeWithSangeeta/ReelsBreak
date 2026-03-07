@@ -9,12 +9,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.practice.reelbreak.ui.alert.AlertsScreen
 import com.practice.reelbreak.ui.dashboard.AnalyticsScreen
 import com.practice.reelbreak.ui.dashboard.DashboardScreen
-import com.practice.reelbreak.ui.focused_mode.FocusScreen
+import com.practice.reelbreak.ui.focusedmode.FocusScreen
 import com.practice.reelbreak.ui.limit.LimitsScreen
 import com.practice.reelbreak.ui.onboarding.OnboardingScreen
+import com.practice.reelbreak.ui.permission.PermissionScreen
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.MainViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
@@ -51,6 +51,12 @@ fun AppNavigation(
             )
         }
 
+        composable(Routes.PERMISSION) {
+            PermissionScreen(
+                viewModel = permissionsViewModel,
+                onContinue = {}
+            )
+        }
 
         composable(Routes.DASHBOARD) {
             DashboardScreen(
@@ -61,39 +67,42 @@ fun AppNavigation(
                 onTabSelected = { index ->
                     selectedTab = index
                     when (index) {
-                        0 -> navController.navigate(Routes.DASHBOARD) { popUpTo(0) { inclusive = true } }
-                        1 -> navController.navigate(Routes.ANALYTICS) { popUpTo(0) { inclusive = true } }
-                        2 -> navController.navigate(Routes.FOCUS) { popUpTo(0) { inclusive = true } }
-                        3 -> navController.navigate(Routes.LIMITS) { popUpTo(0) { inclusive = true } }
-                        4 -> navController.navigate(Routes.ALERTS) { popUpTo(0) { inclusive = true } }
+                        1 -> navController.navigate(Routes.ANALYTICS)
+                        2 -> navController.navigate(Routes.FOCUS)
+                        3 -> navController.navigate(Routes.LIMITS)
                     }
                 }
             )
         }
 
-//        composable(Routes.ANALYTICS) {
-//            AnalyticsScreen(
-//                navController = navController,
-//                selectedTab = selectedTab,
-//                onTabSelected = { index ->
-//                    selectedTab = index
-//                    navController.navigate(Routes.ANALYTICS) { popUpTo(0) { inclusive = true } }
-//                }
-//            )
-//        }
-//        composable(Routes.ANALYTICS) {
-//            AnalyticsScreen(
-//                navController = navController,
-//                selectedTab = selectedTab,
-//                onTabSelected = { index ->
-//                    selectedTab = index
-//                    navController.navigate(Routes.ANALYTICS) { popUpTo(0) { inclusive = true } }
-//                }
-//            )
-//        }
-        composable(Routes.FOCUS) { FocusScreen() }
-        composable(Routes.ANALYTICS) { AnalyticsScreen(navController) }
-        composable(Routes.LIMITS) { LimitsScreen() }
-        composable(Routes.ALERTS) { AlertsScreen() }
+        composable(Routes.ANALYTICS) {
+            AnalyticsScreen(
+                navController = navController,
+                selectedTab = selectedTab,
+                onTabSelected = { index ->
+                    selectedTab = index
+                }
+            )
+        }
+        composable(Routes.FOCUS) {
+            FocusScreen(
+                navController = navController,
+                selectedTab = selectedTab,
+                onTabSelected = { index ->
+                    selectedTab = index
+                }
+            )
+        }
+
+        composable(Routes.LIMITS) {
+            LimitsScreen(
+                navController = navController,
+                selectedTab = selectedTab,
+                onTabSelected = { index ->
+                    selectedTab = index
+                }
+            )
+        }
+
     }
 }
