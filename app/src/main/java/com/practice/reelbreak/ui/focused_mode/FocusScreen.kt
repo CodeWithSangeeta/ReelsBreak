@@ -45,28 +45,22 @@ fun FocusScreen(
         selectedTab = selectedTab,
         onTabSelected = onTabSelected
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(
-                    brush = Brush.verticalGradient(
-                        0f to Color(0xFF1A0033),
-                        1f to Color(0xFF2D1B69)
-                    )
-                )
-                .padding(24.dp)
-        ) {
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                   // .padding(paddingValues)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            0f to Color(0xFF1A0033),
+                            1f to Color(0xFF2D1B69)
+                        )
+                    ),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
             ) {
-                // Header with back button
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 32.dp),
+                        .padding(top = 32.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -100,7 +94,6 @@ fun FocusScreen(
                     fontSize = 18.sp
                 )
 
-                // Add your focus mode content here
                 Text(
                     text = "Focus mode features coming soon...",
                     color = Color.White.copy(alpha = 0.6f),
@@ -110,4 +103,4 @@ fun FocusScreen(
             }
         }
     }
-}
+
