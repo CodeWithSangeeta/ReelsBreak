@@ -10,21 +10,60 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.practice.reelbreak.ui.dashboard.FloatingButtonGroup
 
+//@Composable
+//fun MainScaffold(
+//    selectedTab: Int,
+//    onTabSelected: (Int) -> Unit,
+//    content: @Composable (PaddingValues) -> Unit
+//) {
+//    Box(modifier = Modifier.fillMaxSize()) {
+//        content(PaddingValues())
+//
+//        FloatingButtonGroup(
+//            selectedTab = selectedTab,
+//            onTabSelected = onTabSelected,
+//            modifier = Modifier
+//                .align(Alignment.BottomCenter)
+//                .padding(bottom = 24.dp)
+//        )
+//    }
+//}
+
+
+
+
 @Composable
 fun MainScaffold(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
+    // Map Int index → route string for the new FloatingButtonGroup
+    val selectedRoute = when (selectedTab) {
+        0 -> "dashboard"
+        1 -> "focus"
+        2 -> "settings"
+        else -> "dashboard"
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         content(PaddingValues())
 
         FloatingButtonGroup(
-            selectedTab = selectedTab,
-            onTabSelected = onTabSelected,
+            selectedRoute = selectedRoute,
+            onItemSelected = { route ->
+                // Map route string → Int index for the existing callers
+                val index = when (route) {
+                    "dashboard" -> 0
+                    "focus"     -> 1
+                    "settings"  -> 2
+                    else        -> 0
+                }
+                onTabSelected(index)
+            },
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
+                .padding(top= 20.dp, bottom = 24.dp)
         )
     }
 }
