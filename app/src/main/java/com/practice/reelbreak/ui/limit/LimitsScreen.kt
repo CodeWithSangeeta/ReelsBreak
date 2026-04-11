@@ -9,22 +9,33 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.viewmodel.LimitsViewModel
+
 
 @Composable
 fun LimitsScreen(
     navController: NavController,
     selectedTab: Int = 2,
-    onTabSelected: (Int) -> Unit
+    onTabSelected: (Int) -> Unit,
+    viewModel: LimitsViewModel = viewModel()
 ) {
-    // Local UI state (wire to ViewModel later)
-    var reelLimit by remember { mutableIntStateOf(10) }
-    var dailyTimeLimit by remember { mutableIntStateOf(30) }
-    var cooldownMinutes by remember { mutableIntStateOf(5) }
+    // Read current saved values from ViewModel (one-time initial values)
+    val savedReelLimit by viewModel.dailyReelLimit.collectAsState()
+    val savedTimeLimit by viewModel.dailyTimeLimitMinutes.collectAsState()
+    val isStrictMode by viewModel.isStrictMode.collectAsState()
+
+    // Local mutable state for sliders — user can drag freely
+    // 'by remember(savedReelLimit)' means: when the saved value changes
+    // (e.g. first load from DataStore), sync the local state to it
+    var reelLimit by remember(savedReelLimit) { mutableIntStateOf(savedReelLimit) }
+    var dailyTimeLimit by remember(savedTimeLimit) { mutableIntStateOf(savedTimeLimit) }
+
+    // These toggles save immediately on tap — no need for local copy
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var strictModeEnabled by remember { mutableStateOf(false) }
     var weekendModeEnabled by remember { mutableStateOf(true) }
 
     MainScaffold(
@@ -43,12 +54,9 @@ fun LimitsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 100.dp)
             ) {
-                // ── Header ─────────────────────────────────────────────────
                 LimitsHeader()
-
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // ── Reel Count Limit ───────────────────────────────────────
                 LimitsSectionLabel(
                     icon = Icons.Filled.VideoLibrary,
                     title = "Reel Count Limit",
@@ -61,12 +69,11 @@ fun LimitsScreen(
                     steps = 48,
                     displayValue = "$reelLimit reels",
                     trackColor = GradientColor.PurplePrimary,
-                    onValueChange = { reelLimit = it.toInt() }
+                    onValueChange = { reelLimit = it.toInt() }  // ✅ local var, no error
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ── Daily Time Limit ───────────────────────────────────────
                 LimitsSectionLabel(
                     icon = Icons.Filled.AccessTime,
                     title = "Daily Time Limit",
@@ -79,30 +86,11 @@ fun LimitsScreen(
                     steps = 22,
                     displayValue = "${dailyTimeLimit}m",
                     trackColor = GradientColor.BlueAccent,
-                    onValueChange = { dailyTimeLimit = it.toInt() }
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // ── Cooldown Period ────────────────────────────────────────
-                LimitsSectionLabel(
-                    icon = Icons.Filled.HourglassBottom,
-                    title = "Cooldown Period",
-                    subtitle = "Wait time after a block is triggered"
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                SliderCard(
-                    value = cooldownMinutes.toFloat(),
-                    valueRange = 1f..30f,
-                    steps = 28,
-                    displayValue = "${cooldownMinutes}m cooldown",
-                    trackColor = GradientColor.SuccessGreen,
-                    onValueChange = { cooldownMinutes = it.toInt() }
+                    onValueChange = { dailyTimeLimit = it.toInt() }  // ✅ local var
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                // ── Toggle Settings ────────────────────────────────────────
                 LimitsSectionLabel(
                     icon = Icons.Filled.Tune,
                     title = "Preferences",
@@ -124,8 +112,9 @@ fun LimitsScreen(
                     iconTint = GradientColor.ErrorRed,
                     title = "Strict Mode",
                     subtitle = "Block immediately, no grace period",
-                    isEnabled = strictModeEnabled,
-                    onToggle = { strictModeEnabled = it }
+                    isEnabled = isStrictMode,
+                    // ✅ Toggles save immediately — calls ViewModel directly
+                    onToggle = { viewModel.setStrictMode(it) }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 ToggleCard(
@@ -139,12 +128,16 @@ fun LimitsScreen(
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                // ── Save Button ────────────────────────────────────────────
-                SaveSettingsButton(onClick = { /* wire to ViewModel later */ })
+                // ✅ Save button saves slider values to DataStore
+                SaveSettingsButton(
+                    onClick = {
+                        viewModel.setDailyReelLimit(reelLimit)
+                        viewModel.setDailyTimeLimit(dailyTimeLimit)
+                    }
+                )
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 }
-

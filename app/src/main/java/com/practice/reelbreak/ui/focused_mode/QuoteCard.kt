@@ -1,6 +1,5 @@
 package com.practice.reelbreak.ui.focused_mode
 
-import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

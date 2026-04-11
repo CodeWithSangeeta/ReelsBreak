@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.remote.creation.core)
     implementation(libs.androidx.compose.runtime.runtime)
     implementation(libs.androidx.benchmark.traceprocessor)
+    implementation(libs.androidx.compose.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -95,6 +96,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
     implementation("androidx.compose.material:material-icons-extended")
-
 
 }
