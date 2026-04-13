@@ -148,3 +148,86 @@ class ReelsDetectionManager(
         session.scrollCount = 0
     }
 }
+
+//
+//class ReelsDetectionManager(
+//    private val actionController: ActionController,
+//    private val engine: BlockingDecisionEngine
+//) {
+//    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+//    private val session = ReelsSession()
+//
+//    private var lastBlockTimeMs: Long = 0L
+//    private val BLOCK_COOLDOWN_MS = 5000L
+//
+//    private var lastPackageName: String = ""
+//
+//    fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
+//        val packageName = event.packageName?.toString() ?: return
+//
+//        if (!SupportedAppsRegistry.isSupported(packageName)) {
+//            resetSession()
+//            return
+//        }
+//
+//        if (packageName != lastPackageName) {
+//            Log.d("REELSBREAK", "App switched → resetting session")
+//            resetSession()
+//            lastPackageName = packageName
+//        }
+//
+//        val timeSinceLastBlock = System.currentTimeMillis() - lastBlockTimeMs
+//
+//        // ── Smart Cooldown ────────────────────────────────────────────────
+//        if (timeSinceLastBlock < BLOCK_COOLDOWN_MS) {
+//            // Don't blindly skip — silently check if user is on a safe screen.
+//            // If NORMAL_SCREEN is confirmed → clear cooldown immediately.
+//            // This means: as soon as user lands on Home Feed after a block,
+//            // the cooldown resets and the next Reels visit blocks instantly.
+//            val resultDuringCooldown = AppDetectorRouter.getDetector(packageName).detect(rootNode)
+//
+//            if (resultDuringCooldown == DetectionResult.NORMAL_SCREEN) {
+//                // User is confirmed on a safe screen — no need to wait anymore
+//                lastBlockTimeMs = 0L
+//                Log.d("REELSBREAK", "✅ Safe screen confirmed during cooldown — cooldown cleared")
+//            } else {
+//                Log.d("REELSBREAK", "Cooldown active + still on Reels — skipping block")
+//            }
+//
+//            // Either way, don't fire a block during this window
+//            // The actual block will fire on the NEXT event cycle
+//            return
+//        }
+//        // ─────────────────────────────────────────────────────────────────
+//
+//        val result = AppDetectorRouter.getDetector(packageName).detect(rootNode)
+//        Log.d("REELSBREAK", "Detection → $result for $packageName")
+//
+//        if (result == DetectionResult.REELS_SCREEN) {
+//            session.reelsMode = true
+//            session.currentApp = packageName
+//            handleReelsScreen()
+//        } else {
+//            session.reelsMode = false
+//            session.scrollCount = 0
+//        }
+//    }
+//
+//    private fun handleReelsScreen() {
+//        scope.launch {
+//            when (engine.decide()) {
+//                BlockingDecisionEngine.Decision.BLOCK -> {
+//                    Log.d("REELSBREAK", "BLOCK → firing")
+//                    lastBlockTimeMs = System.currentTimeMillis()
+//                    actionController.triggerBlock()
+//                }
+//                else -> {}
+//            }
+//        }
+//    }
+//
+//    private fun resetSession() {
+//        session.reelsMode = false
+//        session.scrollCount = 0
+//    }
+//}

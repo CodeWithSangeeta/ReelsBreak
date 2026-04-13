@@ -25,6 +25,7 @@ remoteCreationCore = "1.0.0-alpha05"
 androidxRuntimeVersion = "1.10.4"
 benchmarkTraceprocessor = "1.4.1"
 ui = "1.10.6"
+cameraCamera2Pipe = "1.6.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -58,6 +59,7 @@ androidx-compose-remote-creation-core = { group = "androidx.compose.remote", nam
 androidx-compose-runtime-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "androidxRuntimeVersion" }
 androidx-benchmark-traceprocessor = { group = "androidx.benchmark", name = "benchmark-traceprocessor", version.ref = "benchmarkTraceprocessor" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version.ref = "ui" }
+androidx-camera-camera2-pipe = { group = "androidx.camera", name = "camera-camera2-pipe", version.ref = "cameraCamera2Pipe" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

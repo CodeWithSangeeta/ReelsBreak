@@ -3,7 +3,7 @@ package com.practice.reelbreak.core.detection.detectors
 import android.view.accessibility.AccessibilityNodeInfo
 import com.practice.reelbreak.domain.model.DetectionResult
 
-class YouTubeDetector : AppDetector {
+class YouTubeReelsDetector : AppDetector {
 
     override fun detect(rootNode: AccessibilityNodeInfo?): DetectionResult {
 

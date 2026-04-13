@@ -3,44 +3,92 @@ package com.practice.reelbreak.core.detection.detectors
 
 import android.view.accessibility.AccessibilityNodeInfo
 import com.practice.reelbreak.domain.model.DetectionResult
+import android.util.Log
 
-/**
- * Snapchat detection strategy:
- * Snapchat Spotlight is the short-video feed. We check for:
- * - "spotlight" in view IDs → Spotlight feed containers
- * - "story_player" → Story/video player views
- * - Screen description check → Snapchat labels Spotlight screens
- */
+//class SnapchatSpotlightDetector : AppDetector {
+//
+//    override fun detect(rootNode: AccessibilityNodeInfo?): DetectionResult {
+//        // ✅ ONE null guard here — after this line, rootNode is guaranteed non-null
+//        if (rootNode == null) return DetectionResult.NORMAL_SCREEN
+//
+//        // Signal 1: dflargestory only appears in Spotlight feed
+//        val spotlightVideoNodes = rootNode.findAccessibilityNodeInfosByViewId(
+//            "com.snapchat.android:id/dflargestory"
+//        )
+//        if (spotlightVideoNodes.isNotEmpty()) {  // ✅ no error — list is non-null now
+//            return DetectionResult.REELS_SCREEN
+//        }
+//
+//        // Signal 2: Spotlight tab selected + not on other screens
+//        val spotlightTab = rootNode.findAccessibilityNodeInfosByViewId(
+//            "com.snapchat.android:id/ngsspotlighticoncontainer"
+//        )
+//        val isSpotlightTabSelected: Boolean = spotlightTab.any { node ->  // ✅ Boolean not Boolean?
+//            node.isSelected || node.contentDescription?.contains("Spotlight", ignoreCase = true) == true
+//                    && !hasCameraButton(rootNode)
+//                    && !hasChatItems(rootNode)
+//                    && !hasFriendCards(rootNode)
+//        }
+//
+//        if (isSpotlightTabSelected) {  // ✅ no error — plain Boolean
+//            return DetectionResult.REELS_SCREEN
+//        }
+//
+//        return DetectionResult.NORMAL_SCREEN
+//    }
+//
+//    private fun hasCameraButton(root: AccessibilityNodeInfo): Boolean =
+//        root.findAccessibilityNodeInfosByViewId(
+//            "com.snapchat.android:id/camera_capture_button"
+//        ).isNotEmpty()
+//
+//    private fun hasChatItems(root: AccessibilityNodeInfo): Boolean =
+//        root.findAccessibilityNodeInfosByViewId(
+//            "com.snapchat.android:id/ffitem"
+//        ).isNotEmpty()
+//
+//    private fun hasFriendCards(root: AccessibilityNodeInfo): Boolean =
+//        root.findAccessibilityNodeInfosByViewId(
+//            "com.snapchat.android:id/friendcardframe"
+//        ).isNotEmpty()
+//}
+
+
 class SnapchatSpotlightDetector : AppDetector {
 
-    private val spotlightViewIds = listOf(
-        "spotlight",
-        "story_player",
-        "video_player_surface",
-        "snap_story"
-    )
-
     override fun detect(rootNode: AccessibilityNodeInfo?): DetectionResult {
-        if (rootNode == null) return DetectionResult.UNKNOWN
-        return if (containsSpotlightNode(rootNode)) {
-            DetectionResult.REELS_SCREEN
-        } else {
-            DetectionResult.NORMAL_SCREEN
-        }
-    }
+        if (rootNode == null) return DetectionResult.NORMAL_SCREEN
 
-    private fun containsSpotlightNode(node: AccessibilityNodeInfo?): Boolean {
-        if (node == null) return false
+        // 🔍 DEBUG: Log which key IDs are found on current screen
+        val dfLargeStory = rootNode.findAccessibilityNodeInfosByViewId(
+            "com.snapchat.android:id/dflargestory"
+        )
+        val spotlightTab = rootNode.findAccessibilityNodeInfosByViewId(
+            "com.snapchat.android:id/ngsspotlighticoncontainer"
+        )
+        val cameraButton = rootNode.findAccessibilityNodeInfosByViewId(
+            "com.snapchat.android:id/camera_capture_button"
+        )
+        val chatItems = rootNode.findAccessibilityNodeInfosByViewId(
+            "com.snapchat.android:id/ffitem"
+        )
+        val friendCards = rootNode.findAccessibilityNodeInfosByViewId(
+            "com.snapchat.android:id/friendcardframe"
+        )
 
-        val viewId = node.viewIdResourceName ?: ""
-        val contentDesc = node.contentDescription?.toString() ?: ""
+        // Log the isSelected state of spotlight tab
+        val spotlightSelected = spotlightTab.firstOrNull()?.isSelected
+        val spotlightDesc = spotlightTab.firstOrNull()?.contentDescription
 
-        if (spotlightViewIds.any { viewId.contains(it, ignoreCase = true) }) return true
-        if (contentDesc.contains("Spotlight", ignoreCase = true)) return true
+        Log.d("SNAPCHAT_DEBUG", "=== SCREEN ANALYSIS ===")
+        Log.d("SNAPCHAT_DEBUG", "dflargestory count   : ${dfLargeStory.size}")
+        Log.d("SNAPCHAT_DEBUG", "spotlightTab selected: $spotlightSelected")
+        Log.d("SNAPCHAT_DEBUG", "spotlightTab desc    : $spotlightDesc")
+        Log.d("SNAPCHAT_DEBUG", "cameraButton found   : ${cameraButton.isNotEmpty()}")
+        Log.d("SNAPCHAT_DEBUG", "chatItems found      : ${chatItems.isNotEmpty()}")
+        Log.d("SNAPCHAT_DEBUG", "friendCards found    : ${friendCards.isNotEmpty()}")
+        Log.d("SNAPCHAT_DEBUG", "=======================")
 
-        for (i in 0 until node.childCount) {
-            if (containsSpotlightNode(node.getChild(i))) return true
-        }
-        return false
+        return DetectionResult.NORMAL_SCREEN // not blocking yet, just observing
     }
 }
