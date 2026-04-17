@@ -13,154 +13,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-/**
- * ReelsDetectionManager — Detects reel screens and triggers blocking.
- *
- * RESPONSIBILITIES:
- * 1. Receive accessibility events from the service
- * 2. Detect if the current screen is a reels/shorts screen
- * 3. Ask BlockingDecisionEngine what to do
- * 4. Execute the decision via ActionController
- *
- * WHY CoroutineScope here?
- * BlockingDecisionEngine.decide() is a suspend function (reads DataStore).
- * We need a scope to launch coroutines from non-suspend code
- * (onAccessibilityEvent is a regular callback, not a coroutine).
- *
- * SupervisorJob: if one coroutine fails, others keep running.
- * Dispatchers.IO: runs on background thread, safe for DataStore reads.
- */
-class ReelsDetectionManager(
-    private val actionController: ActionController,
-    private val engine: BlockingDecisionEngine
-) {
-    // Coroutine scope for this manager
-    // Lives as long as the AccessibilityService lives
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    private val session = ReelsSession()
-    private val MIN_SCROLL_INTERVAL = 1200L
-
-    fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
-        val packageName = event.packageName?.toString() ?: return
-
-        // Ignore unsupported apps
-        if (!SupportedAppsRegistry.isSupported(packageName)) {
-            resetSession()
-            return
-        }
-
-
-        // ── DEBUG TREE DUMP (remove after finding view IDs) ───────────────
-        // This prints every view ID visible on screen right now.
-        // Open Instagram Reels screen → watch Logcat → find unique IDs.
-        // Do the same for Snapchat Spotlight.
-        if (packageName == "com.instagram.android" ||
-            packageName == "com.snapchat.android"
-        ) {
-            dumpTree(rootNode, packageName)
-        }
-
-        // Detect if this is a shorts/reels screen
-        val detector = AppDetectorRouter.getDetector(packageName)
-        val result = detector.detect(rootNode)
-
-        Log.d("REELSBREAK", "Detection result: $result for $packageName")
-
-        if (result == DetectionResult.REELS_SCREEN) {
-            session.reelsMode = true
-            session.currentApp = packageName
-            // Ask engine → act on decision
-            handleReelsScreen()
-        } else {
-            session.reelsMode = false
-            session.scrollCount = 0
-        }
-    }
-
-    // ── Tree Dump Helper ──────────────────────────────────────────────────
-    /**
-     * Prints the entire accessibility view tree to Logcat.
-     * Filter by tag "REELSBREAK_TREE" in Logcat.
-     *
-     * HOW TO READ the output:
-     * Each line = one view node on screen
-     * [com.instagram.android:id/some_view_name] → this is the view ID
-     * text=  → visible text inside that view
-     * desc=  → content description (accessibility label)
-     *
-     * WHAT TO LOOK FOR:
-     * Open app normally (home feed) → note which IDs appear
-     * Open Reels tab → note which NEW IDs appear
-     * Those NEW IDs that only appear on Reels = your detection targets
-     */
-    private fun dumpTree(
-        node: AccessibilityNodeInfo?,
-        packageName: String,
-        depth: Int = 0
-    ) {
-        if (node == null) return
-
-        val indent = "  ".repeat(depth)
-        val viewId = node.viewIdResourceName ?: "no-id"
-        val text = node.text?.toString() ?: ""
-        val desc = node.contentDescription?.toString() ?: ""
-
-        // Only print nodes that have a view ID or visible text
-        // (skips invisible/empty container nodes to reduce noise)
-        if (viewId != "no-id" || text.isNotEmpty()) {
-            Log.d(
-                "REELSBREAK_TREE",
-                "$indent [$viewId] text=$text desc=$desc"
-            )
-        }
-
-        for (i in 0 until node.childCount) {
-            dumpTree(node.getChild(i), packageName, depth + 1)
-        }
-    }
-
-
-    /**
-     * Called when a reels screen is confirmed.
-     * Launches a coroutine to ask BlockingDecisionEngine what to do.
-     */
-    private fun handleReelsScreen() {
-        scope.launch {
-            when (engine.decide()) {
-                BlockingDecisionEngine.Decision.BLOCK -> {
-                    Log.d("REELSBREAK", "Decision: BLOCK → triggering action")
-                    actionController.triggerBlock()
-                }
-                BlockingDecisionEngine.Decision.ALLOW -> {
-                    Log.d("REELSBREAK", "Decision: ALLOW → user can watch")
-                    // Future: increment counter here
-                }
-                BlockingDecisionEngine.Decision.SKIP_REEL -> {
-                    Log.d("REELSBREAK", "Decision: SKIP_REEL → future curated mode")
-                }
-            }
-        }
-    }
-
-    private fun resetSession() {
-        session.reelsMode = false
-        session.scrollCount = 0
-    }
-}
-
-//
 //class ReelsDetectionManager(
 //    private val actionController: ActionController,
 //    private val engine: BlockingDecisionEngine
 //) {
 //    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 //    private val session = ReelsSession()
-//
-//    private var lastBlockTimeMs: Long = 0L
-//    private val BLOCK_COOLDOWN_MS = 5000L
-//
-//    private var lastPackageName: String = ""
 //
 //    fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
 //        val packageName = event.packageName?.toString() ?: return
@@ -170,38 +29,23 @@ class ReelsDetectionManager(
 //            return
 //        }
 //
-//        if (packageName != lastPackageName) {
-//            Log.d("REELSBREAK", "App switched → resetting session")
-//            resetSession()
-//            lastPackageName = packageName
+//        // ✅ STEP 1: Feed raw event to detector FIRST
+//        // This updates internal state (e.g. Facebook tab tracking)
+//        // MUST happen before detect() is called
+//        val detector = AppDetectorRouter.getDetector(packageName)
+//        detector.onEvent(event) // ← THE KEY LINE — was missing before
+//
+//        // Debug tree dump (remove once detection is confirmed working)
+//        if (packageName == "com.facebook.katana" ||
+//            packageName == "com.instagram.android" ||
+//            packageName == "com.snapchat.android") {
+//            dumpTree(rootNode, packageName)
 //        }
 //
-//        val timeSinceLastBlock = System.currentTimeMillis() - lastBlockTimeMs
+//        // ✅ STEP 2: Now ask for detection result (reads updated state)
+//        val result = detector.detect(rootNode)
 //
-//        // ── Smart Cooldown ────────────────────────────────────────────────
-//        if (timeSinceLastBlock < BLOCK_COOLDOWN_MS) {
-//            // Don't blindly skip — silently check if user is on a safe screen.
-//            // If NORMAL_SCREEN is confirmed → clear cooldown immediately.
-//            // This means: as soon as user lands on Home Feed after a block,
-//            // the cooldown resets and the next Reels visit blocks instantly.
-//            val resultDuringCooldown = AppDetectorRouter.getDetector(packageName).detect(rootNode)
-//
-//            if (resultDuringCooldown == DetectionResult.NORMAL_SCREEN) {
-//                // User is confirmed on a safe screen — no need to wait anymore
-//                lastBlockTimeMs = 0L
-//                Log.d("REELSBREAK", "✅ Safe screen confirmed during cooldown — cooldown cleared")
-//            } else {
-//                Log.d("REELSBREAK", "Cooldown active + still on Reels — skipping block")
-//            }
-//
-//            // Either way, don't fire a block during this window
-//            // The actual block will fire on the NEXT event cycle
-//            return
-//        }
-//        // ─────────────────────────────────────────────────────────────────
-//
-//        val result = AppDetectorRouter.getDetector(packageName).detect(rootNode)
-//        Log.d("REELSBREAK", "Detection → $result for $packageName")
+//        Log.d("REELSBREAK", "Detection result: $result for $packageName")
 //
 //        if (result == DetectionResult.REELS_SCREEN) {
 //            session.reelsMode = true
@@ -213,15 +57,33 @@ class ReelsDetectionManager(
 //        }
 //    }
 //
+//    private fun dumpTree(node: AccessibilityNodeInfo?, packageName: String, depth: Int = 0) {
+//        if (node == null) return
+//        val viewId = node.viewIdResourceName ?: "no-id"
+//        val text   = node.text?.toString() ?: ""
+//        val desc   = node.contentDescription?.toString() ?: ""
+//        if (viewId != "no-id" || text.isNotEmpty()) {
+//            Log.d("REELSBREAK_TREE", "${"  ".repeat(depth)}[$viewId] text=$text desc=$desc")
+//        }
+//        for (i in 0 until node.childCount) {
+//            dumpTree(node.getChild(i), packageName, depth + 1)
+//        }
+//    }
+//
 //    private fun handleReelsScreen() {
+//        val currentPackage = session.currentApp
 //        scope.launch {
 //            when (engine.decide()) {
 //                BlockingDecisionEngine.Decision.BLOCK -> {
-//                    Log.d("REELSBREAK", "BLOCK → firing")
-//                    lastBlockTimeMs = System.currentTimeMillis()
-//                    actionController.triggerBlock()
+//                    Log.d("REELSBREAK", "Decision: BLOCK → $currentPackage")
+//                    actionController.triggerBlock(currentPackage)
 //                }
-//                else -> {}
+//                BlockingDecisionEngine.Decision.ALLOW -> {
+//                    Log.d("REELSBREAK", "Decision: ALLOW → user can watch")
+//                }
+//                BlockingDecisionEngine.Decision.SKIP_REEL -> {
+//                    Log.d("REELSBREAK", "Decision: SKIP_REEL → future curated mode")
+//                }
 //            }
 //        }
 //    }
@@ -231,3 +93,76 @@ class ReelsDetectionManager(
 //        session.scrollCount = 0
 //    }
 //}
+
+
+class ReelsDetectionManager(
+    private val actionController: ActionController,
+    private val engine: BlockingDecisionEngine
+) {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val session = ReelsSession()
+
+    // ✅ Prevents 20 simultaneous coroutines firing for one Reels visit
+    @Volatile private var isBlockingInProgress = false
+
+    fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
+        val packageName = event.packageName?.toString() ?: return
+
+        if (!SupportedAppsRegistry.isSupported(packageName)) {
+            resetSession()
+            return
+        }
+
+        val detector = AppDetectorRouter.getDetector(packageName)
+        detector.onEvent(event)
+
+        val result = detector.detect(rootNode)
+        Log.d("REELSBREAK", "Detection result: $result for $packageName")
+
+        if (result == DetectionResult.REELS_SCREEN) {
+            session.reelsMode = true
+            session.currentApp = packageName
+
+            // ✅ Only trigger if not already blocking
+            if (!isBlockingInProgress) {
+                handleReelsScreen()
+            }
+        } else {
+            session.reelsMode = false
+            session.scrollCount = 0
+            isBlockingInProgress = false  // ✅ Reset flag when leaving Reels
+        }
+    }
+
+    private fun handleReelsScreen() {
+        val currentPackage = session.currentApp
+        isBlockingInProgress = true  // ✅ Lock immediately — before coroutine
+
+        scope.launch {
+            try {
+                when (engine.decide()) {
+                    BlockingDecisionEngine.Decision.BLOCK -> {
+                        Log.d("REELSBREAK", "Decision: BLOCK → $currentPackage")
+                        actionController.triggerBlock(currentPackage)
+                    }
+                    BlockingDecisionEngine.Decision.ALLOW -> {
+                        Log.d("REELSBREAK", "Decision: ALLOW → not blocking")
+                        isBlockingInProgress = false  // ✅ Unlock on ALLOW
+                    }
+                    BlockingDecisionEngine.Decision.SKIP_REEL -> {
+                        isBlockingInProgress = false
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("REELSBREAK", "Error in handleReelsScreen: ${e.message}")
+                isBlockingInProgress = false  // ✅ Always unlock on error
+            }
+        }
+    }
+
+    private fun resetSession() {
+        session.reelsMode = false
+        session.scrollCount = 0
+        isBlockingInProgress = false
+    }
+}
