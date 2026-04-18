@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun StatCard(
@@ -28,11 +28,12 @@ fun StatCard(
     icon: ImageVector,
     iconTint: Color
 ) {
+    val colors = LocalAppColors.current
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(GradientColor.cardSurface)
-            .border(1.dp, GradientColor.borderSubtle, RoundedCornerShape(16.dp))
+            .background(colors.cardSurface)
+            .border(1.dp, colors.borderSubtle, RoundedCornerShape(16.dp))
             .padding(vertical = 16.dp, horizontal = 12.dp)
     ) {
         Column(
@@ -55,7 +56,7 @@ fun StatCard(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = label,
-                color = GradientColor.TextSecondary,
+                color = colors.textSecondary,
                 fontSize = 10.sp,
                 textAlign = TextAlign.Center,
                 lineHeight = 14.sp

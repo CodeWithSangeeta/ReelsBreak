@@ -1,43 +1,20 @@
 package com.practice.reelbreak.ui.dashboard
 
-//
-//data class DashboardState(
-//    val userName: String = "Sangeeta",
-//    val reelsCount: Int = 202,
-//    val percentageIncrease: Int = 23,
-//    val limitProgress: Float = 0.75f,
-//    val timeSpent: String = "2h 22m",
-//    val dailyLimit: String = "60m",
-//    val isOverLimit: Boolean = true,
-//    val selectedTab: Int = 0
-//)
-
-
-
 data class DashboardState(
-    val userName: String,
-    val isDarkMode: Boolean,
-
-    // Reel stats
-    val reelsCount: Int,
-    val percentageIncrease: Int,
-
-    // Limit & progress
-    val dailyLimitMinutes: Int,
-    val timeSpentMinutes: Int,
-
-    // UI derived state
-    val selectedTab: Int,
-    val isCounterVisible: Boolean
+    val userName: String = "Sangeeta",
+    val isDarkMode: Boolean = false,
+    val reelsCount: Int = 0,
+    val percentageIncrease: Int = 0,
+    val dailyLimitMinutes: Int = 60,
+    val timeSpentMinutes: Int = 0,
+    val selectedTab: Int = 0,
+    val isCounterVisible: Boolean = false
 ) {
-    // Derived values (NO logic in UI)
     val limitProgress: Float
-        get() =
-            if (dailyLimitMinutes == 0) 0f
-            else timeSpentMinutes / dailyLimitMinutes.toFloat()
+        get() = if (dailyLimitMinutes == 0) 0f else timeSpentMinutes / dailyLimitMinutes.toFloat()
 
     val isOverLimit: Boolean
-        get() = timeSpentMinutes > dailyLimitMinutes
+        get() = timeSpentMinutes >= dailyLimitMinutes
 
     val timeSpentFormatted: String
         get() {

@@ -1,6 +1,5 @@
 package com.practice.reelbreak.ui.focusedmode
 
-import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -128,7 +127,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
 import com.practice.reelbreak.ui.focused_mode.ActiveFocusBanner
 import com.practice.reelbreak.ui.focused_mode.AppBlockingGrid
@@ -137,6 +135,7 @@ import com.practice.reelbreak.ui.focused_mode.QuoteSection
 import com.practice.reelbreak.ui.focused_mode.SectionLabel
 import com.practice.reelbreak.ui.focused_mode.StartFocusButton
 import com.practice.reelbreak.ui.focused_mode.TimerSelectorRow
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun FocusScreen(
@@ -153,10 +152,11 @@ fun FocusScreen(
         selectedTab = selectedTab,
         onTabSelected = onTabSelected
     ) { paddingValues ->
+        val colors = LocalAppColors.current
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = GradientColor.background)
+                .background(brush = colors.background)
         ) {
             Column(
                 modifier = Modifier

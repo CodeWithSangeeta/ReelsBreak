@@ -30,8 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun LimitsSectionLabel(
@@ -39,6 +39,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
     title: String,
     subtitle: String
 ) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier.padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -47,7 +48,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = GradientColor.PurpleSoft,
+            tint = colors.purpleSoft,
             modifier = Modifier.size(18.dp)
         )
         Column {
@@ -59,7 +60,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
             )
             Text(
                 text = subtitle,
-                color = GradientColor.TextMuted,
+                color = colors.textMuted,
                 fontSize = 11.sp
             )
         }

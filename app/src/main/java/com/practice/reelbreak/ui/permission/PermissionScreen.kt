@@ -21,7 +21,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
 import com.practice.reelbreak.core.permission.UsagePermissionChecker
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
 @Composable
@@ -29,7 +29,7 @@ fun PermissionScreen(viewModel: PermissionsViewModel,
                      onContinue : () -> Unit) {
     val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsState()
-
+    val colors = LocalAppColors.current
     LaunchedEffect(Unit) {
         viewModel.refreshPermissionState(context)
     }
@@ -68,7 +68,7 @@ fun PermissionScreen(viewModel: PermissionsViewModel,
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(GradientColor.background)
+                    .background(colors.background)
                     .glassmorphism(cornerRadius = 32.dp)
                     .padding(22.dp)
             ) {

@@ -21,14 +21,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun BlockModeCard(
@@ -36,8 +33,15 @@ import com.practice.reelbreak.ui.component.GradientColor
     isSelected: Boolean,
     onSelect: () -> Unit
 ) {
+    val colors = LocalAppColors.current
+    val gradient = when (option.mode) {
+        BlockMode.BLOCK_NOW    -> colors.modeBlock
+        BlockMode.LIMIT_BASED  -> colors.modeLimit
+        BlockMode.SMART_FILTER -> colors.modeSmart
+    }
+
     val borderColor by animateColorAsState(
-        targetValue = if (isSelected) GradientColor.borderActive else GradientColor.borderSubtle,
+        targetValue = if (isSelected) colors.borderActive else colors.borderSubtle,
         animationSpec = tween(250),
         label = "border"
     )
@@ -54,7 +58,7 @@ import com.practice.reelbreak.ui.component.GradientColor
             )
             .clip(RoundedCornerShape(18.dp))
             .background(
-                if (isSelected) option.gradient else GradientColor.cardSurface
+                if (isSelected) gradient else colors.cardSurface
             )
             .border(
                 width = if (isSelected) 1.5.dp else 1.dp,
@@ -119,7 +123,7 @@ import com.practice.reelbreak.ui.component.GradientColor
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = option.subtitle,
-                    color = if (isSelected) Color(0xCCFFFFFF) else GradientColor.TextSecondary,
+                    color = if (isSelected) Color(0xCCFFFFFF) else colors.textSecondary,
                     fontSize = 12.sp,
                     lineHeight = 17.sp
                 )
@@ -135,7 +139,7 @@ import com.practice.reelbreak.ui.component.GradientColor
                     )
                     .border(
                         1.dp,
-                        color = if (isSelected) Color.Transparent else GradientColor.borderSubtle,
+                        color = if (isSelected) Color.Transparent else colors.borderSubtle,
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -144,7 +148,7 @@ import com.practice.reelbreak.ui.component.GradientColor
                     Icon(
                         imageVector = Icons.Filled.Check,
                         contentDescription = "Selected",
-                        tint = GradientColor.PurpleDeep,
+                        tint = colors.purpleDeep,
                         modifier = Modifier.size(14.dp)
                     )
                 }

@@ -48,7 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,6 +59,7 @@ fun PermissionCard(
     onEnableClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -82,7 +83,7 @@ fun PermissionCard(
                 Box(modifier = Modifier
                     .height(36.dp)
                     .width(40.dp)
-                    .background(brush = GradientColor.button, RoundedCornerShape(8.dp))) {
+                    .background(brush = colors.button, RoundedCornerShape(8.dp))) {
                     Icon(
                         imageVector = model.icon,
                         contentDescription = "${model.title} permission",

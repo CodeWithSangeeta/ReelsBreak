@@ -30,8 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun ToggleCard(
@@ -42,8 +42,9 @@ fun ToggleCard(
     isEnabled: Boolean,
     onToggle: (Boolean) -> Unit
 ) {
+    val colors = LocalAppColors.current
     val borderColor by animateColorAsState(
-        targetValue = if (isEnabled) GradientColor.borderPurple else GradientColor.borderSubtle,
+        targetValue = if (isEnabled) colors.borderPurple else colors.borderSubtle,
         animationSpec = tween(250),
         label = "border"
     )
@@ -53,7 +54,7 @@ fun ToggleCard(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(GradientColor.cardSurface)
+            .background(colors.cardSurface)
             .border(1.dp, borderColor, RoundedCornerShape(16.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -94,7 +95,7 @@ fun ToggleCard(
                 )
                 Text(
                     text = subtitle,
-                    color = GradientColor.TextMuted,
+                    color = colors.textMuted,
                     fontSize = 11.sp
                 )
             }
@@ -108,7 +109,7 @@ fun ToggleCard(
                     .background(
                         if (isEnabled)
                             Brush.horizontalGradient(
-                                listOf(GradientColor.PurplePrimary, GradientColor.PurpleDeep)
+                                listOf(colors.purplePrimary, colors.purpleDeep)
                             )
                         else
                             Brush.horizontalGradient(
@@ -117,7 +118,7 @@ fun ToggleCard(
                     )
                     .border(
                         1.dp,
-                        if (isEnabled) GradientColor.borderPurple else GradientColor.borderSubtle,
+                        if (isEnabled) colors.borderPurple else colors.borderSubtle,
                         RoundedCornerShape(13.dp)
                     )
             ) {

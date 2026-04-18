@@ -28,13 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
-import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun FocusHeader(isFocusActive: Boolean) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -52,7 +50,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
             )
             Text(
                 text = "Block distractions, stay focused",
-                color = GradientColor.TextSecondary,
+                color = colors.textSecondary,
                 fontSize = 13.sp
             )
         }
@@ -70,7 +68,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
                 )
                 .border(
                     1.dp,
-                    color = if (isFocusActive) Color(0x882ECC71) else GradientColor.borderPurple,
+                    color = if (isFocusActive) Color(0x882ECC71) else colors.borderPurple,
                     shape = CircleShape
                 ),
             contentAlignment = Alignment.Center
@@ -78,7 +76,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
             Icon(
                 imageVector = Icons.Filled.Shield,
                 contentDescription = "Guard",
-                tint = if (isFocusActive) GradientColor.SuccessGreen else GradientColor.PurpleSoft,
+                tint = if (isFocusActive) colors.successGreen else colors.purpleSoft,
                 modifier = Modifier.size(24.dp)
             )
         }

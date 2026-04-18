@@ -115,7 +115,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 data class NavItem(
     val icon: ImageVector,
@@ -135,6 +135,7 @@ fun FloatingButtonGroup(
     onItemSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -149,8 +150,8 @@ fun FloatingButtonGroup(
                 .shadow(
                     elevation = 24.dp,
                     shape = RoundedCornerShape(36.dp),
-                    ambientColor = GradientColor.glowPurple,
-                    spotColor = GradientColor.glowPurple
+                    ambientColor = colors.glowPurple,
+                    spotColor = colors.glowPurple
                 )
         )
 
@@ -172,9 +173,9 @@ fun FloatingButtonGroup(
                     width = 1.dp,
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            GradientColor.borderPurple,
-                            GradientColor.borderSubtle,
-                            GradientColor.borderPurple
+                         colors.borderPurple,
+                          colors.borderSubtle,
+                            colors.borderPurple
                         )
                     ),
                     shape = RoundedCornerShape(36.dp)
@@ -202,8 +203,9 @@ private fun NavBarItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) Color.White else GradientColor.TextMuted,
+        targetValue = if (isSelected) Color.White else colors.textMuted,
         animationSpec = tween(durationMillis = 250),
         label = "iconColor"
     )

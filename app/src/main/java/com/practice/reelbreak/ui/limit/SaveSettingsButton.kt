@@ -30,11 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun SaveSettingsButton(onClick: () -> Unit) {
+    val colors = LocalAppColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -43,11 +44,11 @@ import com.practice.reelbreak.ui.component.MainScaffold
             .shadow(
                 elevation = 16.dp,
                 shape = RoundedCornerShape(18.dp),
-                spotColor = GradientColor.glowPurple,
-                ambientColor = GradientColor.glowPurple
+                spotColor = colors.glowPurple,
+                ambientColor = colors.glowPurple
             )
             .clip(RoundedCornerShape(18.dp))
-            .background(GradientColor.button)
+            .background(colors.button)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,

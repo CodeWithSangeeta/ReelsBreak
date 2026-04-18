@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun AppToggleChip(
@@ -40,19 +40,20 @@ fun AppToggleChip(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     Box(
         modifier = modifier
             .height(72.dp)
             .shadow(
                 elevation = if (isBlocked) 8.dp else 2.dp,
                 shape = RoundedCornerShape(16.dp),
-                spotColor = if (isBlocked) GradientColor.glowPurple else Color.Transparent
+                spotColor = if (isBlocked) colors.glowPurple else Color.Transparent
             )
             .clip(RoundedCornerShape(16.dp))
-            .background(if (isBlocked) app.gradient else GradientColor.cardSurface)
+            .background(if (isBlocked) app.gradient else colors.cardSurface)
             .border(
                 width = if (isBlocked) 1.5.dp else 1.dp,
-                color = if (isBlocked) GradientColor.borderActive else GradientColor.borderSubtle,
+                color = if (isBlocked) colors.borderActive else colors.borderSubtle,
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable(
@@ -70,7 +71,7 @@ fun AppToggleChip(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = app.name,
-                color = if (isBlocked) Color.White else GradientColor.TextSecondary,
+                color = if (isBlocked) Color.White else colors.textSecondary,
                 fontSize = 10.sp,
                 fontWeight = if (isBlocked) FontWeight.SemiBold else FontWeight.Normal,
                 textAlign = TextAlign.Center
@@ -90,7 +91,7 @@ fun AppToggleChip(
                 Icon(
                     imageVector = Icons.Filled.Check,
                     contentDescription = "Blocked",
-                    tint = GradientColor.PurpleDeep,
+                    tint = colors.purpleDeep,
                     modifier = Modifier.size(10.dp)
                 )
             }

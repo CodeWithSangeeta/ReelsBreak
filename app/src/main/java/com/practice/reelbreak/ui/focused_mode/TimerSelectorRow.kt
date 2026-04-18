@@ -29,9 +29,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
-
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 
 @Composable
@@ -40,7 +39,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
     onTimeSelected: (Int) -> Unit
 ) {
     val times = listOf(15, 30, 45, 60)
-
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +49,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
         times.forEach { minutes ->
             val isSelected = selectedTime == minutes * 60 * 1000L
             val bgColor by animateColorAsState(
-                targetValue = if (isSelected) GradientColor.PurplePrimary else Color.Transparent,
+                targetValue = if (isSelected) colors.purplePrimary else Color.Transparent,
                 animationSpec = tween(200),
                 label = "timerBg"
             )
@@ -63,11 +62,11 @@ import com.practice.reelbreak.ui.component.MainScaffold
                     .background(
                         if (isSelected) Brush.verticalGradient(
                             listOf(Color(0xFF9B3DFF), Color(0xFF5A0EA8))
-                        ) else GradientColor.cardSurface
+                        ) else colors.cardSurface
                     )
                     .border(
                         width = if (isSelected) 1.5.dp else 1.dp,
-                        color = if (isSelected) GradientColor.borderActive else GradientColor.borderSubtle,
+                        color = if (isSelected) colors.borderActive else colors.borderSubtle,
                         shape = RoundedCornerShape(16.dp)
                     )
                     .clickable(
@@ -86,7 +85,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
                     )
                     Text(
                         text = "min",
-                        color = if (isSelected) Color(0xCCFFFFFF) else GradientColor.TextMuted,
+                        color = if (isSelected) Color(0xCCFFFFFF) else colors.textMuted,
                         fontSize = 10.sp
                     )
                 }

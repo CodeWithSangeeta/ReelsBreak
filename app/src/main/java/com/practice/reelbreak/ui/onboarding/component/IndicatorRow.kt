@@ -15,11 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun IndicatorRow(currentPage:Int,totalPages:Int) {
-
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp,Alignment.CenterHorizontally)
@@ -32,7 +32,7 @@ fun IndicatorRow(currentPage:Int,totalPages:Int) {
                     .height(10.dp)
                     .width(24.dp)
                     .background(
-                         GradientColor.button,
+                         colors.button,
                         shape = RoundedCornerShape(percent= 50)
                     )
             )

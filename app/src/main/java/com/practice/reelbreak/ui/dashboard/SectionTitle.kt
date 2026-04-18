@@ -25,13 +25,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun SectionTitle(title: String, subtitle: String) {
+    val colors = LocalAppColors.current
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
@@ -43,7 +43,7 @@ fun SectionTitle(title: String, subtitle: String) {
         )
         Text(
             text = subtitle,
-            color = GradientColor.TextSecondary,
+            color = colors.textSecondary,
             fontSize = 12.sp
         )
     }

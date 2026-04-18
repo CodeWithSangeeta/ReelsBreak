@@ -29,11 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun LimitsHeader() {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +52,7 @@ fun LimitsHeader() {
             )
             Text(
                 text = "Tune your limits & preferences",
-                color = GradientColor.TextSecondary,
+                color = colors.textSecondary,
                 fontSize = 13.sp
             )
         }
@@ -65,13 +66,13 @@ fun LimitsHeader() {
                         listOf(Color(0x449B3DFF), Color(0x009B3DFF))
                     )
                 )
-                .border(1.dp, GradientColor.borderPurple, CircleShape),
+                .border(1.dp, colors.borderPurple, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Filled.Settings,
                 contentDescription = "Settings",
-                tint = GradientColor.PurpleSoft,
+                tint = colors.purpleSoft,
                 modifier = Modifier.size(24.dp)
             )
         }

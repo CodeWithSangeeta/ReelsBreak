@@ -30,8 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun SliderCard(
@@ -42,13 +42,14 @@ fun SliderCard(
     trackColor: Color,
     onValueChange: (Float) -> Unit
 ) {
+    val colors = LocalAppColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(GradientColor.cardSurface)
-            .border(1.dp, GradientColor.borderSubtle, RoundedCornerShape(18.dp))
+            .background(colors.cardSurface)
+            .border(1.dp, colors.borderSubtle, RoundedCornerShape(18.dp))
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Column {
@@ -59,7 +60,7 @@ fun SliderCard(
             ) {
                 Text(
                     text = "Current",
-                    color = GradientColor.TextMuted,
+                    color = colors.textMuted,
                     fontSize = 12.sp
                 )
                 Box(
@@ -105,12 +106,12 @@ fun SliderCard(
             ) {
                 Text(
                     text = valueRange.start.toInt().toString(),
-                    color = GradientColor.TextMuted,
+                    color = colors.textMuted,
                     fontSize = 10.sp
                 )
                 Text(
                     text = valueRange.endInclusive.toInt().toString(),
-                    color = GradientColor.TextMuted,
+                    color = colors.textMuted,
                     fontSize = 10.sp
                 )
             }

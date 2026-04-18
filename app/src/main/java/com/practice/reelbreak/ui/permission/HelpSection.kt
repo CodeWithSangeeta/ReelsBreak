@@ -37,12 +37,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun HelpSection() {
     var showSteps by remember { mutableStateOf(false) }
-
+    val colors = LocalAppColors.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,7 +63,7 @@ fun HelpSection() {
             ) {  Box(modifier = Modifier
                 .height(36.dp)
                 .width(40.dp)
-                .background(brush = GradientColor.button, RoundedCornerShape(8.dp))) {
+                .background(brush = colors.button, RoundedCornerShape(8.dp))) {
                 Icon(
                     imageVector =Icons.Default.HelpOutline,
                     contentDescription = "Need Help",

@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.LimitsViewModel
 
 
@@ -23,6 +23,7 @@ fun LimitsScreen(
     onTabSelected: (Int) -> Unit,
     viewModel: LimitsViewModel = viewModel()
 ) {
+    val colors = LocalAppColors.current
     // Read current saved values from ViewModel (one-time initial values)
     val savedReelLimit by viewModel.dailyReelLimit.collectAsState()
     val savedTimeLimit by viewModel.dailyTimeLimitMinutes.collectAsState()
@@ -45,7 +46,7 @@ fun LimitsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(brush = GradientColor.background)
+                .background(brush = colors.background)
         ) {
             Column(
                 modifier = Modifier
@@ -68,7 +69,7 @@ fun LimitsScreen(
                     valueRange = 1f..50f,
                     steps = 48,
                     displayValue = "$reelLimit reels",
-                    trackColor = GradientColor.PurplePrimary,
+                    trackColor = colors.purplePrimary,
                     onValueChange = { reelLimit = it.toInt() }  // ✅ local var, no error
                 )
 
@@ -85,7 +86,7 @@ fun LimitsScreen(
                     valueRange = 5f..120f,
                     steps = 22,
                     displayValue = "${dailyTimeLimit}m",
-                    trackColor = GradientColor.BlueAccent,
+                    trackColor = colors.blueAccent,
                     onValueChange = { dailyTimeLimit = it.toInt() }  // ✅ local var
                 )
 
@@ -100,7 +101,7 @@ fun LimitsScreen(
 
                 ToggleCard(
                     icon = Icons.Filled.Notifications,
-                    iconTint = GradientColor.PurpleSoft,
+                    iconTint = colors.purpleSoft,
                     title = "Notifications",
                     subtitle = "Alert me when limit is reached",
                     isEnabled = notificationsEnabled,
@@ -109,7 +110,7 @@ fun LimitsScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 ToggleCard(
                     icon = Icons.Filled.Lock,
-                    iconTint = GradientColor.ErrorRed,
+                    iconTint = colors.errorRed,
                     title = "Strict Mode",
                     subtitle = "Block immediately, no grace period",
                     isEnabled = isStrictMode,
@@ -119,7 +120,7 @@ fun LimitsScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 ToggleCard(
                     icon = Icons.Filled.Weekend,
-                    iconTint = GradientColor.WarningOrange,
+                    iconTint = colors.warningOrange,
                     title = "Relax on Weekends",
                     subtitle = "Double the limit on Sat & Sun",
                     isEnabled = weekendModeEnabled,

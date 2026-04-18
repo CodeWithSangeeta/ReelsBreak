@@ -29,11 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun ActiveFocusBanner(onStop: () -> Unit) {
+    val colors = LocalAppColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -60,7 +61,7 @@ import com.practice.reelbreak.ui.component.MainScaffold
                     modifier = Modifier
                         .size(8.dp)
                         .clip(CircleShape)
-                        .background(GradientColor.SuccessGreen)
+                        .background(colors.successGreen)
                 )
                 Column {
                     Text(

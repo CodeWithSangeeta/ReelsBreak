@@ -28,11 +28,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.dashboard.StatCard
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun QuickStatsRow() {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -44,7 +45,7 @@ import com.practice.reelbreak.ui.dashboard.StatCard
             value = "0",
             label = "Blocks\nToday",
             icon = Icons.Filled.Shield,
-            iconTint = GradientColor.PurpleSoft
+            iconTint = colors.successGreen
         )
         StatCard(
             modifier = Modifier.weight(1f),
@@ -52,14 +53,14 @@ import com.practice.reelbreak.ui.dashboard.StatCard
             label = "Reels\nBlocked",
            // icon = Icons.Filled.VideoOff,
             icon = Icons.Filled.AcUnit,
-            iconTint = GradientColor.BlueAccent
+            iconTint = colors.blueAccent
         )
         StatCard(
             modifier = Modifier.weight(1f),
             value = "0m",
             label = "Time\nSaved",
             icon = Icons.Filled.AccessTime,
-            iconTint = GradientColor.SuccessGreen
+            iconTint = colors.successGreen
         )
     }
 }

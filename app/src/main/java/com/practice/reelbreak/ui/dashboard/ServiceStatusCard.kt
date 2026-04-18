@@ -28,15 +28,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun ServiceStatusCard(
     isActive: Boolean,
     onToggle: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     val toggleColor by animateColorAsState(
-        targetValue = if (isActive) GradientColor.SuccessGreen else GradientColor.TextMuted,
+        targetValue = if (isActive) colors.successGreen else colors.textMuted,
         animationSpec = tween(300),
         label = "toggleColor"
     )
@@ -48,13 +49,13 @@ import com.practice.reelbreak.ui.component.GradientColor
             .shadow(
                 elevation = 12.dp,
                 shape = RoundedCornerShape(20.dp),
-                spotColor = if (isActive) Color(0x442ECC71) else GradientColor.glowPurple
+                spotColor = if (isActive) Color(0x442ECC71) else colors.glowPurple
             )
             .clip(RoundedCornerShape(20.dp))
-            .background(GradientColor.cardSurface)
+            .background(colors.cardSurface)
             .border(
                 width = 1.dp,
-                color = if (isActive) Color(0x552ECC71) else GradientColor.borderSubtle,
+                color = if (isActive) Color(0x552ECC71) else colors.borderSubtle,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(20.dp)
@@ -82,7 +83,7 @@ import com.practice.reelbreak.ui.component.GradientColor
                         )
                         .border(
                             1.dp,
-                            color = if (isActive) Color(0x882ECC71) else GradientColor.borderSubtle,
+                            color = if (isActive) Color(0x882ECC71) else colors.borderSubtle,
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -104,7 +105,7 @@ import com.practice.reelbreak.ui.component.GradientColor
                     )
                     Text(
                         text = if (isActive) "Reels are being monitored" else "Tap to enable protection",
-                        color = GradientColor.TextSecondary,
+                        color = colors.textSecondary,
                         fontSize = 12.sp
                     )
                 }
@@ -117,7 +118,7 @@ import com.practice.reelbreak.ui.component.GradientColor
                     .background(
                         if (isActive) Brush.linearGradient(
                             listOf(Color(0xFF1A7A44), Color(0xFF2ECC71))
-                        ) else GradientColor.button
+                        ) else colors.button
                     )
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },

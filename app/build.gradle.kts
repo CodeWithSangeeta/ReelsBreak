@@ -41,37 +41,36 @@ android {
 
 dependencies {
 
+    //Core Android
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    //Compose BOM
     implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+
+    //Compose UI
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.navigation.runtime.ktx)
-    implementation(libs.androidx.compose.ui.text)
-    implementation(libs.androidx.room.ktx)
-    implementation(libs.androidx.compose.foundation.layout)
-    implementation(libs.androidx.compose.runtime)
-    implementation(libs.androidx.compose.animation.core.lint)
-    implementation(libs.androidx.runtime)
-    implementation(libs.androidx.ui.text)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.animation)
-    implementation(libs.runtime)
-    implementation(libs.androidx.foundation.layout)
-    implementation(libs.androidx.compose.remote.creation.core)
-    implementation(libs.androidx.compose.runtime.runtime)
-    implementation(libs.androidx.benchmark.traceprocessor)
-    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.text)
+
+    //Camera
     implementation(libs.androidx.camera.camera2.pipe)
+
+    //unit test
     testImplementation(libs.junit)
+
+    //Android Test
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
+    //Debug
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -82,8 +81,12 @@ dependencies {
 
 
     // Navigation
+    implementation(libs.androidx.navigation.runtime.ktx)
     val nav_version = "2.9.3"
     implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    //Room Database
+       implementation(libs.androidx.room.ktx)
 
     //DataStore dependency
     implementation("androidx.datastore:datastore-preferences:1.1.1")
@@ -93,9 +96,11 @@ dependencies {
 
     //Lifecycle ViewModel (Compose) dependency
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+
     //Coroutines (ViewModel scope) dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
 
+    // Material Icons
     implementation("androidx.compose.material:material-icons-extended")
 
 }

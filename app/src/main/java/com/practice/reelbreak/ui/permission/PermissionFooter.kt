@@ -23,10 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practice.reelbreak.R
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun PermissionFooter(isContinueEnabled: Boolean, onContinue: () -> Unit) {
+    val colors = LocalAppColors.current
     Column(
         modifier = Modifier
             .navigationBarsPadding()
@@ -45,7 +46,7 @@ fun PermissionFooter(isContinueEnabled: Boolean, onContinue: () -> Unit) {
                 .fillMaxWidth()
                 .height(46.dp)
                 .background(
-                    brush = if (isContinueEnabled) GradientColor.button
+                    brush = if (isContinueEnabled) colors.button
                     else Brush.horizontalGradient(listOf(Color.Gray, Color.DarkGray)),
                     RoundedCornerShape(16.dp))
                     .then(Modifier.border(

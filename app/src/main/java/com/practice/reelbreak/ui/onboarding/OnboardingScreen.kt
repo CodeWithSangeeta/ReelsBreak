@@ -26,7 +26,6 @@ import androidx.navigation.NavController
 import com.practice.reelbreak.ui.navigation.Routes
 import com.practice.reelbreak.ui.onboarding.component.ButtonGradient
 import com.practice.reelbreak.ui.onboarding.component.FloatingImage
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.onboarding.component.IndicatorRow
 import com.practice.reelbreak.ui.onboarding.component.OnboardDescription
 import com.practice.reelbreak.ui.onboarding.component.OnboardHeading
@@ -34,6 +33,7 @@ import com.practice.reelbreak.ui.onboarding.component.OnboardPage
 import com.practice.reelbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import com.practice.reelbreak.R
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun OnboardingScreen(
@@ -51,11 +51,11 @@ fun OnboardingScreen(
     }
 
     val pageState = rememberPagerState(initialPage = 0, pageCount = { pages.size })
-
+    val colors = LocalAppColors.current
 
 
     Column(modifier = Modifier.fillMaxSize()
-        .background(GradientColor.background)
+        .background(colors.background)
         .padding(16.dp)
     ) {
 

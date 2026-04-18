@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.component.GradientColor
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 
 @Composable
@@ -19,6 +19,7 @@ fun ButtonGradient(
     text: String,
     onClick: () -> Unit,
 ) {
+    val colors = LocalAppColors.current
     Button(
         onClick = onClick,
         modifier = Modifier
@@ -44,7 +45,7 @@ fun ButtonGradient(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    GradientColor.button,
+                    colors.button,
                     RoundedCornerShape(16.dp)),
             contentAlignment = Alignment.Center
         ) {

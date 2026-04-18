@@ -29,14 +29,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.practice.reelbreak.ui.component.GradientColor
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
  fun StartFocusButton(
     isFocusActive: Boolean,
     onToggle: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -45,15 +46,15 @@ import com.practice.reelbreak.ui.component.MainScaffold
             .shadow(
                 elevation = 16.dp,
                 shape = RoundedCornerShape(18.dp),
-                spotColor = if (isFocusActive) Color(0x442ECC71) else GradientColor.glowPurple,
-                ambientColor = if (isFocusActive) Color(0x442ECC71) else GradientColor.glowPurple
+                spotColor = if (isFocusActive) Color(0x442ECC71) else colors.glowPurple,
+                ambientColor = if (isFocusActive) Color(0x442ECC71) else colors.glowPurple
             )
             .clip(RoundedCornerShape(18.dp))
             .background(
                 if (isFocusActive)
                     Brush.linearGradient(listOf(Color(0xFF1A7A44), Color(0xFF2ECC71)))
                 else
-                    GradientColor.button
+                  colors.button
             )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

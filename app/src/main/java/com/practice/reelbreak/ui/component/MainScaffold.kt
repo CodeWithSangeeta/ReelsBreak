@@ -10,28 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.practice.reelbreak.ui.dashboard.FloatingButtonGroup
 
-//@Composable
-//fun MainScaffold(
-//    selectedTab: Int,
-//    onTabSelected: (Int) -> Unit,
-//    content: @Composable (PaddingValues) -> Unit
-//) {
-//    Box(modifier = Modifier.fillMaxSize()) {
-//        content(PaddingValues())
-//
-//        FloatingButtonGroup(
-//            selectedTab = selectedTab,
-//            onTabSelected = onTabSelected,
-//            modifier = Modifier
-//                .align(Alignment.BottomCenter)
-//                .padding(bottom = 24.dp)
-//        )
-//    }
-//}
-
-
-
-
 @Composable
 fun MainScaffold(
     selectedTab: Int,
