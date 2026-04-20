@@ -181,4 +181,24 @@ class UserPreferencesRepository(private val context: Context) {
             // auto-resets by comparing with today's date
         }
     }
+
+
+    // Read Flows
+    val isNotificationsEnabled: Flow<Boolean> = context.dataStore.data.map { prefs -> prefs[UserPreferences.IS_NOTIFICATIONS_ENABLED] ?: true }
+
+    val isWeekendRelaxEnabled: Flow<Boolean> = context.dataStore.data
+        .map { prefs -> prefs[UserPreferences.IS_WEEKEND_RELAX_ENABLED] ?: false }
+
+    // Write Functions
+    suspend fun setNotificationsEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.IS_NOTIFICATIONS_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setWeekendRelaxEnabled(enabled: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.IS_WEEKEND_RELAX_ENABLED] = enabled
+        }
+    }
 }

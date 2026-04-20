@@ -14,9 +14,17 @@ import com.practice.reelbreak.ui.theme.ReelBreakTheme
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
+import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
+
+    private val permissionsViewModel: PermissionsViewModel by viewModels()
+
+    override fun onResume() {
+        super.onResume()
+        permissionsViewModel.refreshPermissionState(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()

@@ -13,7 +13,7 @@ import com.practice.reelbreak.ui.dashboard.DashboardScreen
 import com.practice.reelbreak.ui.focusedmode.FocusScreen
 import com.practice.reelbreak.ui.limit.LimitsScreen
 import com.practice.reelbreak.ui.onboarding.OnboardingScreen
-import com.practice.reelbreak.ui.permission.PermissionScreen
+import com.practice.reelbreak.ui.settings.SettingsScreen
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.MainViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
@@ -50,14 +50,6 @@ fun AppNavigation(
             )
         }
 
-        composable(Routes.PERMISSION) {
-            PermissionScreen(
-                viewModel = permissionsViewModel,
-                onContinue = {}
-            )
-        }
-
-        // Tab 0 → Home/Dashboard
         composable(Routes.DASHBOARD) {
             DashboardScreen(
                 navController = navController,
@@ -101,17 +93,36 @@ fun AppNavigation(
             )
         }
 
-        // Tab 2 → Settings/Limits
-        composable(Routes.LIMITS) {
-            LimitsScreen(
+//        // Tab 2 → Settings/Limits
+//        composable(Routes.LIMITS) {
+//            LimitsScreen(
+//                navController = navController,
+//                selectedTab = selectedTab,
+//                onTabSelected = { index ->
+//                    selectedTab = index
+//                    when (index) {
+//                        0 -> navController.navigate(Routes.DASHBOARD) {
+//                            popUpTo(Routes.DASHBOARD) { inclusive = true }
+//                        }
+//                        1 -> navController.navigate(Routes.FOCUS) {
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                }
+//            )
+//        }
+
+        composable(Routes.SETTINGS) {
+            SettingsScreen(
                 navController = navController,
-                selectedTab = selectedTab,
+                selectedTab = 2,
                 onTabSelected = { index ->
                     selectedTab = index
                     when (index) {
                         0 -> navController.navigate(Routes.DASHBOARD) {
                             popUpTo(Routes.DASHBOARD) { inclusive = true }
                         }
+
                         1 -> navController.navigate(Routes.FOCUS) {
                             launchSingleTop = true
                         }

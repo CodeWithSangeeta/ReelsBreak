@@ -2,9 +2,12 @@ package com.practice.reelbreak.data.preferences
 
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 /**
  * UserPreferences — Central registry of all DataStore keys.
@@ -100,4 +103,12 @@ object UserPreferences {
      * Already used in MainViewModel — we keep it here for consistency.
      */
     val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+
+    val IS_NOTIFICATIONS_ENABLED = booleanPreferencesKey("is_notifications_enabled")
+
+    // Whether limits are relaxed on Sat/Sun. Default: false
+    val IS_WEEKEND_RELAX_ENABLED = booleanPreferencesKey("is_weekend_relax_enabled")
+
+
+
 }

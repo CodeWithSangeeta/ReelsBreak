@@ -6,6 +6,7 @@ object Routes{
     const val DASHBOARD = "dashboard"
     const val PERMISSION = "permission"
     const val FOCUS = "focus"
+    const val SETTINGS= "settings"
     const val LIMITS = "limit"
 
 }
