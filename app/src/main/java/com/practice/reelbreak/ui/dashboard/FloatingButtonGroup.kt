@@ -20,86 +20,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-
-
-//@Composable
-//fun FloatingButtonGroup(
-//    selectedTab: Int,
-//    onTabSelected: (Int) -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    val navItems = listOf(
-//        Icons.Outlined.Shield,
-//        Icons.Outlined.BarChart,
-//        Icons.Outlined.ElectricBolt,
-//        Icons.Outlined.CalendarMonth,
-//    )
-//
-//    Surface(
-//        color = Color.Black.copy(alpha = 0.8f),
-//        shape = RoundedCornerShape(28.dp),
-//        border = BorderStroke(1.dp,Color.White.copy(alpha = 0.1f)),
-//        shadowElevation = 12.dp,
-//        modifier = modifier
-//            .width(340.dp)
-//            .height(72.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .padding(horizontal = 8.dp),
-//            horizontalArrangement = Arrangement.SpaceEvenly,
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            navItems.forEachIndexed { index, icon ->
-//                FloatingNavButton(
-//                    icon = icon,
-//                    isSelected = selectedTab == index,
-//                    onClick = { onTabSelected(index) }
-//                )
-//            }
-//        }
-//    }
-//}
-//
-//@Composable
-//private fun FloatingNavButton(
-//    icon: ImageVector,
-//    isSelected: Boolean,
-//    onClick: () -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    val gradient = Brush.verticalGradient(
-//        colors = listOf(
-//            Color(0xFFB490FF),
-//            Color(0xFF3F51B5)
-//        )
-//    )
-//    val gradient2 = Brush.verticalGradient(
-//        colors = listOf(Color.Transparent, Color.Transparent))
-//
-//    Box(
-//        modifier = modifier
-//            .size(50.dp)
-//            .clip(RoundedCornerShape(16.dp))
-//            .background(
-//                if (isSelected) gradient
-//                else  gradient2
-//            )
-//            .clickable { onClick() },
-//        contentAlignment = Alignment.Center
-//    ) {
-//        Icon(
-//            imageVector = icon,
-//            contentDescription = null,
-//            tint = if (isSelected) Color.White else  Color.White.copy(alpha = 0.7f),
-//            modifier = Modifier.size(28.dp)
-//        )
-//    }
-//}
-
-
-
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -115,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.practice.reelbreak.ui.navigation.Routes
 import com.practice.reelbreak.ui.theme.LocalAppColors
 
 data class NavItem(
@@ -124,9 +45,9 @@ data class NavItem(
 )
 
 val navItems = listOf(
-    NavItem(Icons.Filled.Home,     "Home",     "dashboard"),
-    NavItem(Icons.Filled.Shield,   "Guard",    "focus"),
-    NavItem(Icons.Filled.Settings, "Settings", "settings")
+    NavItem(Icons.Filled.Home,     "Home",     Routes.DASHBOARD),
+    NavItem(Icons.Filled.Shield,   "Guard", Routes.FOCUS),
+    NavItem(Icons.Filled.Settings, "Settings", Routes.SETTINGS)
 )
 
 @Composable

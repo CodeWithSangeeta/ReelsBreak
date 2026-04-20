@@ -52,6 +52,5 @@ object AppDetectorRouter {
 
     fun resetAll() {
         facebookDetector.reset()
-        // Add instagramDetector.reset() / snapchatDetector.reset() later if needed
     }
 }

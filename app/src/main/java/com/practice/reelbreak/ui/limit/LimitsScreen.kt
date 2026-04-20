@@ -35,9 +35,7 @@ fun LimitsScreen(
     var reelLimit by remember(savedReelLimit) { mutableIntStateOf(savedReelLimit) }
     var dailyTimeLimit by remember(savedTimeLimit) { mutableIntStateOf(savedTimeLimit) }
 
-    // These toggles save immediately on tap — no need for local copy
-    var notificationsEnabled by remember { mutableStateOf(true) }
-    var weekendModeEnabled by remember { mutableStateOf(true) }
+
 
     MainScaffold(
         selectedTab = selectedTab,
@@ -55,8 +53,7 @@ fun LimitsScreen(
                     .verticalScroll(rememberScrollState())
                     .padding(bottom = 100.dp)
             ) {
-                LimitsHeader()
-                Spacer(modifier = Modifier.height(8.dp))
+
 
                 LimitsSectionLabel(
                     icon = Icons.Filled.VideoLibrary,
@@ -97,47 +94,7 @@ fun LimitsScreen(
                     title = "Preferences",
                     subtitle = "Customize your guard behavior"
                 )
-                Spacer(modifier = Modifier.height(12.dp))
 
-                ToggleCard(
-                    icon = Icons.Filled.Notifications,
-                    iconTint = colors.purpleSoft,
-                    title = "Notifications",
-                    subtitle = "Alert me when limit is reached",
-                    isEnabled = notificationsEnabled,
-                    onToggle = { notificationsEnabled = it }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                ToggleCard(
-                    icon = Icons.Filled.Lock,
-                    iconTint = colors.errorRed,
-                    title = "Strict Mode",
-                    subtitle = "Block immediately, no grace period",
-                    isEnabled = isStrictMode,
-                    // ✅ Toggles save immediately — calls ViewModel directly
-                    onToggle = { viewModel.setStrictMode(it) }
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                ToggleCard(
-                    icon = Icons.Filled.Weekend,
-                    iconTint = colors.warningOrange,
-                    title = "Relax on Weekends",
-                    subtitle = "Double the limit on Sat & Sun",
-                    isEnabled = weekendModeEnabled,
-                    onToggle = { weekendModeEnabled = it }
-                )
-
-                Spacer(modifier = Modifier.height(28.dp))
-
-                // ✅ Save button saves slider values to DataStore
-                SaveSettingsButton(
-                    onClick = {
-                        viewModel.setDailyReelLimit(reelLimit)
-                        viewModel.setDailyTimeLimit(dailyTimeLimit)
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

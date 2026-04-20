@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
  * AppColors — SINGLE SOURCE OF TRUTH for all colors in ReelBreak.
  *
  * WHY this file?
- * - Replaces GradientColor.kt, DashboardTheme.kt, Color.kt
+ * - Replaces GradientColors.kt, DashboardTheme.kt, Color.kt
  * - One place to change any color across the whole app
  * - isDark flag lets composables adapt without passing booleans everywhere
  */

@@ -9,39 +9,6 @@ import com.practice.reelbreak.core.action.ActionController
 import com.practice.reelbreak.core.detection.AppDetectorRouter
 import com.practice.reelbreak.core.detection.ReelsDetectionManager
 import com.practice.reelbreak.core.engine.BlockingDecisionEngine
-
-//class ReelsAccessibilityService : AccessibilityService() {
-//
-//    private lateinit var detectionManager: ReelsDetectionManager
-//
-//    override fun onServiceConnected() {
-//        super.onServiceConnected()
-//
-//        // Get the singleton repository from Application class
-//        val repository = (applicationContext as ReelBreakApplication).repository
-//
-//        // Build the chain: Engine → DetectionManager
-//        val engine = BlockingDecisionEngine(repository)
-//        val actionController = ActionController(this)
-//        detectionManager = ReelsDetectionManager(actionController, engine)
-//
-//        Log.d("REELSBREAK", "Service connected ✅")
-//    }
-//
-//    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-//        if (event == null) return
-//        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
-//        detectionManager.processEvent(event, rootNode)
-//    }
-//
-//    override fun onInterrupt() {
-//        Log.d("REELSBREAK", "Service interrupted")
-//    }
-//}
-
-
-
-
 class ReelsAccessibilityService : AccessibilityService() {
 
     private lateinit var detectionManager: ReelsDetectionManager
@@ -57,12 +24,8 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
-        // getRootInActiveWindow() MUST be called here in the service
-        // ReelsDetectionManager cannot call it — it's not an AccessibilityService
         val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
         detectionManager.processEvent(event, rootNode)
-        // ✅ That's it. All filtering (FB content_changed, event type checks)
-        // is handled INSIDE processEvent() in ReelsDetectionManager
     }
 
     override fun onInterrupt() {

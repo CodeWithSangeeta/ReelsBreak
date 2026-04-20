@@ -1,23 +1,5 @@
 package com.practice.reelbreak.core.action
 
-
-//import android.accessibilityservice.AccessibilityService
-//
-//class ActionController(
-//    private val service: AccessibilityService
-//) {
-//
-//    private val blockController = BlockController(service)
-//
-//    fun triggerBlock() {
-//
-//        blockController.closeCurrentApp()
-//
-//    }
-//}
-
-
-
 import android.accessibilityservice.AccessibilityService
 import android.util.Log
 import com.practice.reelbreak.core.detection.AppDetectorRouter

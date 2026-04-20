@@ -11,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.practice.reelbreak.ui.dashboard.DashboardScreen
 import com.practice.reelbreak.ui.focusedmode.FocusScreen
-import com.practice.reelbreak.ui.limit.LimitsScreen
 import com.practice.reelbreak.ui.onboarding.OnboardingScreen
 import com.practice.reelbreak.ui.settings.SettingsScreen
 import com.practice.reelbreak.viewmodel.DashboardViewModel
@@ -27,6 +26,28 @@ fun AppNavigation(
     permissionsViewModel: PermissionsViewModel = viewModel()
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
+
+
+    val onTabSelected: (Int) -> Unit = { index ->
+        selectedTab = index
+        when (index) {
+            0 -> navController.navigate(Routes.DASHBOARD) {
+                popUpTo(Routes.DASHBOARD) { inclusive = false }
+                launchSingleTop = true
+                restoreState = true
+            }
+            1 -> navController.navigate(Routes.FOCUS) {
+                popUpTo(Routes.DASHBOARD) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+            2 -> navController.navigate(Routes.SETTINGS) {
+                popUpTo(Routes.DASHBOARD) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+    }
 
     NavHost(
         navController = navController,
@@ -56,78 +77,23 @@ fun AppNavigation(
                 dashboardViewModel = dashboardViewModel,
                 permissionsViewModel = permissionsViewModel,
                 selectedTab = selectedTab,
-                onTabSelected = { index ->
-                    selectedTab = index
-                    when (index) {
-                        1 -> navController.navigate(Routes.FOCUS) {
-                            popUpTo(Routes.DASHBOARD) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                        2 -> navController.navigate(Routes.LIMITS) {
-                            popUpTo(Routes.DASHBOARD) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                }
+                onTabSelected = onTabSelected
             )
         }
 
-        // Tab 1 → Focus/Guard
         composable(Routes.FOCUS) {
             FocusScreen(
                 navController = navController,
                 selectedTab = selectedTab,
-                onTabSelected = { index ->
-                    selectedTab = index
-                    when (index) {
-                        0 -> navController.navigate(Routes.DASHBOARD) {
-                            popUpTo(Routes.DASHBOARD) { inclusive = true }
-                        }
-                        2 -> navController.navigate(Routes.LIMITS) {
-                            launchSingleTop = true
-                        }
-                    }
-                }
+                onTabSelected = onTabSelected
             )
         }
-
-//        // Tab 2 → Settings/Limits
-//        composable(Routes.LIMITS) {
-//            LimitsScreen(
-//                navController = navController,
-//                selectedTab = selectedTab,
-//                onTabSelected = { index ->
-//                    selectedTab = index
-//                    when (index) {
-//                        0 -> navController.navigate(Routes.DASHBOARD) {
-//                            popUpTo(Routes.DASHBOARD) { inclusive = true }
-//                        }
-//                        1 -> navController.navigate(Routes.FOCUS) {
-//                            launchSingleTop = true
-//                        }
-//                    }
-//                }
-//            )
-//        }
 
         composable(Routes.SETTINGS) {
             SettingsScreen(
                 navController = navController,
-                selectedTab = 2,
-                onTabSelected = { index ->
-                    selectedTab = index
-                    when (index) {
-                        0 -> navController.navigate(Routes.DASHBOARD) {
-                            popUpTo(Routes.DASHBOARD) { inclusive = true }
-                        }
-
-                        1 -> navController.navigate(Routes.FOCUS) {
-                            launchSingleTop = true
-                        }
-                    }
-                }
+                selectedTab = selectedTab,
+                onTabSelected = onTabSelected
             )
         }
     }

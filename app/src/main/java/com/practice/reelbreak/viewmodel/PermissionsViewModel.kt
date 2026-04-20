@@ -26,7 +26,6 @@ import com.practice.reelbreak.ui.permission.PermissionUiState
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-// ADD THIS — place it just above the class declaration
 data class PermissionSheetState(
     val isVisible: Boolean = false,
     val type: PermissionSheetType? = null,
@@ -76,31 +75,6 @@ class PermissionsViewModel : ViewModel(){
         }
     }
 
-
-    //Connect Permission Checkers
-//    fun refreshPermissionState(context: Context) {
-//        val accessibilityGranted =
-//            AccessibilityPermissionChecker.isAccessibilityEnabled(context)
-//
-//        val usageGranted =
-//            UsagePermissionChecker.isUsageAccessGranted(context)
-//
-//        val overlayGranted = false // later you will implement real checker
-//
-//        Log.d("PERMISSION", "Accessibility=$accessibilityGranted Usage=$usageGranted")
-//
-//        val state = PermissionState(
-//            accessibilityGranted = accessibilityGranted,
-//            usageStatsGranted = usageGranted,
-//            overlayGranted = overlayGranted
-//        )
-//
-//        _uiState.value = PermissionUiState(
-//            permissionState = state,
-//            permissionCards = buildPermissionCards(state),
-//            isContinueEnabled = state.requiredGranted
-//        )
-//    }
 
     fun refreshPermissionState(context: Context) {
         val accessibilityGranted = AccessibilityPermissionChecker.isAccessibilityEnabled(context)

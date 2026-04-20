@@ -41,19 +41,17 @@ fun DashboardScreen(
     onTabSelected: (Int) -> Unit
 ) {
     val dashboardState by dashboardViewModel.uiState.collectAsState()
-    val permissionUiState by permissionsViewModel.uiState.collectAsState()
     val colors = LocalAppColors.current
-
     val context = LocalContext.current
     val sheetState by permissionsViewModel.sheetState.collectAsState()
     val permModalState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
-// Check permissions every time Dashboard opens
+    // Check permissions every time Dashboard opens
     LaunchedEffect(Unit) {
         permissionsViewModel.checkAndShowSheetIfNeeded(context)
     }
 
-// Show bottom sheet when triggered
+    // Show bottom sheet when triggered
     if (sheetState.isVisible && sheetState.type != null) {
         PermissionBottomSheet(
             type = sheetState.type!!,
@@ -62,7 +60,6 @@ fun DashboardScreen(
             onAgree = { permissionsViewModel.onPermissionSheetAgree(context, sheetState.type!!) },
         )
     }
-
 
     MainScaffold(selectedTab = selectedTab, onTabSelected = onTabSelected) { paddingValues ->
         Column(
@@ -90,19 +87,8 @@ fun DashboardScreen(
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
 
-//                if (!permissionUiState.isContinueEnabled) {
-//                    item {
-//                        PermissionNudgeCard(
-//                            onClick = { navController.navigate(Routes.PERMISSION) }
-//                        )
-//                    }
-//                }
                   item { StatisticsCard(dashboardState) }
 
-
-                //   item {  Spacer(modifier = Modifier.height(28.dp))}
-
-                    // ── Section Title ─────────────────────────────────────────────────
                    item {
                        SectionTitle(
                            title = "Blocking Mode",
@@ -127,7 +113,7 @@ fun DashboardScreen(
 
                     item {Spacer(modifier = Modifier.height(8.dp))}
 
-                // ── Quick Stats Row ───────────────────────────────────────────────
+                // ── Quick Stats Row ───────────────────────────────────────────
                 item {
                     SectionTitle(
                         title = "Today's Summary",
