@@ -49,7 +49,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+           // .padding(horizontal = 20.dp)
             .shadow(
                 elevation = if (isSelected) 16.dp else 4.dp,
                 shape = RoundedCornerShape(18.dp),

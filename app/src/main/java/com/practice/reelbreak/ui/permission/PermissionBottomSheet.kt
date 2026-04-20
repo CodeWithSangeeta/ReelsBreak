@@ -47,10 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practice.reelbreak.ui.theme.LocalAppColors
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Data model — one sealed class drives all three permission types
-// ─────────────────────────────────────────────────────────────────────────────
-
 sealed class PermissionSheetType {
     object ACCESSIBILITY : PermissionSheetType()
     object USAGE_ACCESS : PermissionSheetType()
@@ -124,9 +120,6 @@ private fun buildContent(type: PermissionSheetType): PermissionSheetContent = wh
     )
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Public API — call this from DashboardScreen / FocusScreen etc.
-// ─────────────────────────────────────────────────────────────────────────────
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -229,9 +222,7 @@ fun PermissionBottomSheet(
     }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────────────────────────────────────────
+
 
 @Composable
 private fun PermissionIconSection(
