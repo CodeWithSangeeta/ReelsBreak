@@ -14,6 +14,7 @@ import com.practice.reelbreak.core.permission.UsagePermissionChecker
 import com.practice.reelbreak.domain.model.PermissionState
 import com.practice.reelbreak.ui.permission.BulletIconType
 import com.practice.reelbreak.ui.permission.PermissionAction
+import com.practice.reelbreak.ui.permission.PermissionSheetType
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -22,7 +23,15 @@ import com.practice.reelbreak.ui.permission.PermissionStatus
 import com.practice.reelbreak.ui.permission.PermissionType
 import com.practice.reelbreak.ui.permission.PermissionUiModel
 import com.practice.reelbreak.ui.permission.PermissionUiState
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+
+// ADD THIS — place it just above the class declaration
+data class PermissionSheetState(
+    val isVisible: Boolean = false,
+    val type: PermissionSheetType? = null,
+)
+
 
 class PermissionsViewModel : ViewModel(){
 
@@ -32,33 +41,97 @@ class PermissionsViewModel : ViewModel(){
     private val _events = MutableSharedFlow<PermissionAction>()
     val events = _events.asSharedFlow()
 
+    // --- Sheet state ---
+    private val _sheetState = MutableStateFlow(PermissionSheetState())
+    val sheetState: StateFlow<PermissionSheetState> = _sheetState.asStateFlow()
+
+    fun checkAndShowSheetIfNeeded(context: Context) {
+        val hasAccessibility = AccessibilityPermissionChecker.isAccessibilityEnabled(context)
+        val hasUsage = UsagePermissionChecker.isUsageAccessGranted(context)
+        when {
+            !hasAccessibility -> showSheet(PermissionSheetType.ACCESSIBILITY)
+            !hasUsage         -> showSheet(PermissionSheetType.USAGE_ACCESS)
+            // both granted → do nothing
+        }
+    }
+
+    fun showSheet(type: PermissionSheetType) {
+        _sheetState.value = PermissionSheetState(isVisible = true, type = type)
+    }
+
+    fun showOverlaySheet() {
+        _sheetState.value = PermissionSheetState(isVisible = true, type = PermissionSheetType.OVERLAY)
+    }
+
+    fun dismissSheet() {
+        _sheetState.value = PermissionSheetState(isVisible = false, type = null)
+    }
+
+    fun onPermissionSheetAgree(context: Context, type: PermissionSheetType) {
+        dismissSheet()
+        when (type) {
+            is PermissionSheetType.ACCESSIBILITY -> AccessibilityPermissionChecker.openAccessibilitySettings(context)
+            is PermissionSheetType.USAGE_ACCESS  -> UsagePermissionChecker.openUsageAccessSettings(context)
+            is PermissionSheetType.OVERLAY     -> { /* TODO overlay settings */ }
+        }
+    }
+
+
     //Connect Permission Checkers
+//    fun refreshPermissionState(context: Context) {
+//        val accessibilityGranted =
+//            AccessibilityPermissionChecker.isAccessibilityEnabled(context)
+//
+//        val usageGranted =
+//            UsagePermissionChecker.isUsageAccessGranted(context)
+//
+//        val overlayGranted = false // later you will implement real checker
+//
+//        Log.d("PERMISSION", "Accessibility=$accessibilityGranted Usage=$usageGranted")
+//
+//        val state = PermissionState(
+//            accessibilityGranted = accessibilityGranted,
+//            usageStatsGranted = usageGranted,
+//            overlayGranted = overlayGranted
+//        )
+//
+//        _uiState.value = PermissionUiState(
+//            permissionState = state,
+//            permissionCards = buildPermissionCards(state),
+//            isContinueEnabled = state.requiredGranted
+//        )
+//    }
+
     fun refreshPermissionState(context: Context) {
-        val accessibilityGranted =
-            AccessibilityPermissionChecker.isAccessibilityEnabled(context)
-
-        val usageGranted =
-            UsagePermissionChecker.isUsageAccessGranted(context)
-
-        val overlayGranted = false // later you will implement real checker
-
-        Log.d("PERMISSION", "Accessibility=$accessibilityGranted Usage=$usageGranted")
+        val accessibilityGranted = AccessibilityPermissionChecker.isAccessibilityEnabled(context)
+        val usageGranted = UsagePermissionChecker.isUsageAccessGranted(context)
+        val overlayGranted = false // TODO: replace with real overlay check
 
         val state = PermissionState(
             accessibilityGranted = accessibilityGranted,
             usageStatsGranted = usageGranted,
-            overlayGranted = overlayGranted
+            overlayGranted = overlayGranted,
         )
-
         _uiState.value = PermissionUiState(
             permissionState = state,
             permissionCards = buildPermissionCards(state),
-            isContinueEnabled = state.requiredGranted
+            isContinueEnabled = state.requiredGranted,
         )
+
+        // Auto-advance sheet: if Accessibility was just granted, show Usage next
+        val currentSheet = _sheetState.value
+        if (currentSheet.isVisible && currentSheet.type is PermissionSheetType.ACCESSIBILITY && accessibilityGranted) {
+            if (!usageGranted) {
+                _sheetState.value = PermissionSheetState(isVisible = true, type = PermissionSheetType.USAGE_ACCESS)
+            } else {
+                dismissSheet()
+            }
+        }
     }
 
 
-private fun buildPermissionCards(state: PermissionState): List<PermissionUiModel> {
+
+    private fun buildPermissionCards(state: PermissionState): List<PermissionUiModel> {
     return listOf(
         //Accessibility
         PermissionUiModel(

@@ -98,10 +98,6 @@ fun PermissionScreen(viewModel: PermissionsViewModel,
                         HelpSection()
                     }
                 }
-                PermissionFooter(
-                    isContinueEnabled = uiState.isContinueEnabled,
-                    onContinue = onContinue
-                )
             }
         }
 
