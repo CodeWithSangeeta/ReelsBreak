@@ -15,7 +15,9 @@ import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 

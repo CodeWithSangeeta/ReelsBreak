@@ -134,19 +134,20 @@ class ReelsDetectionManager(
         }
     }
 
-    private fun handleReelsScreen() {
+    private fun handleReelsScreen(detectedCreator: String? = null) {
         val currentPackage = session.currentApp
         isBlockingInProgress = true  // ✅ Lock immediately — before coroutine
 
         scope.launch {
             try {
-                when (engine.decide()) {
+                when (engine.decide(detectedCreator)) {
                     BlockingDecisionEngine.Decision.BLOCK -> {
                         Log.d("REELSBREAK", "Decision: BLOCK → $currentPackage")
                         actionController.triggerBlock(currentPackage)
                     }
                     BlockingDecisionEngine.Decision.ALLOW -> {
                         Log.d("REELSBREAK", "Decision: ALLOW → not blocking")
+                        engine.onReelAllowed()
                         isBlockingInProgress = false  // ✅ Unlock on ALLOW
                     }
                     BlockingDecisionEngine.Decision.SKIP_REEL -> {

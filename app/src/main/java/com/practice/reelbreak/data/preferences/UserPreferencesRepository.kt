@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import com.practice.reelbreak.domain.model.ActiveBlockMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
@@ -91,6 +92,18 @@ class UserPreferencesRepository(private val context: Context) {
         }
 
     // ── Write Functions (ViewModel calls these) ───────────────────────────
+
+    val activeMode: Flow<ActiveBlockMode> =
+        context.dataStore.data.map { prefs ->
+            val stored = prefs[UserPreferences.ACTIVE_MODE] ?: ActiveBlockMode.STRICT.value
+            ActiveBlockMode.fromValue(stored)
+        }
+
+    suspend fun setActiveMode(mode: ActiveBlockMode) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.ACTIVE_MODE] = mode.value
+        }
+    }
 
     suspend fun setStrictMode(enabled: Boolean) {
         context.dataStore.edit { prefs ->

@@ -2,6 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    //ksp plugin
+    alias(libs.plugins.ksp)
+
+//hilt plugin
+    alias(libs.plugins.hilt)
+
 }
 
 android {
@@ -48,6 +54,7 @@ dependencies {
 
     //Compose BOM
     implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.runtime)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     //Compose UI
@@ -103,4 +110,8 @@ dependencies {
     // Material Icons
     implementation("androidx.compose.material:material-icons-extended")
 
+    // hilt
+    implementation(libs.androidx.hilt.android)
+    ksp(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.compose)
 }

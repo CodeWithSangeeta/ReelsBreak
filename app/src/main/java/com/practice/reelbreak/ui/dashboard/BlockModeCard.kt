@@ -1,19 +1,14 @@
 package com.practice.reelbreak.ui.dashboard
 
-
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -27,16 +22,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practice.reelbreak.ui.theme.LocalAppColors
 
+
 @Composable
- fun BlockModeCard(
+fun BlockModeCard(
     option: BlockModeOption,
     isSelected: Boolean,
-    onSelect: () -> Unit
+    isExpanded: Boolean,
+    isOn: Boolean,
+    onClick: () -> Unit,
+    detailContent: @Composable (() -> Unit)?
 ) {
     val colors = LocalAppColors.current
     val gradient = when (option.mode) {
-        BlockMode.BLOCK_NOW    -> colors.modeBlock
-        BlockMode.LIMIT_BASED  -> colors.modeLimit
+        BlockMode.BLOCK_NOW -> colors.modeBlock
+        BlockMode.LIMIT_BASED -> colors.modeLimit
         BlockMode.SMART_FILTER -> colors.modeSmart
     }
 
@@ -49,7 +48,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
     Box(
         modifier = Modifier
             .fillMaxWidth()
-           // .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp)
             .shadow(
                 elevation = if (isSelected) 16.dp else 4.dp,
                 shape = RoundedCornerShape(18.dp),
@@ -57,9 +56,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
                 ambientColor = if (isSelected) option.glowColor else Color.Transparent
             )
             .clip(RoundedCornerShape(18.dp))
-            .background(
-                if (isSelected) gradient else colors.cardSurface
-            )
+            .background(if (isSelected) gradient else colors.cardSurface)
             .border(
                 width = if (isSelected) 1.5.dp else 1.dp,
                 color = borderColor,
@@ -68,90 +65,98 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = onSelect
+                onClick = onClick
             )
             .padding(18.dp)
+            .animateContentSize() // smooth expand/collapse
     ) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Icon box
-            Box(
-                modifier = Modifier
-                    .size(46.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0x33FFFFFF)),
-                contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(
-                    imageVector = option.icon,
-                    contentDescription = option.title,
-                    tint = Color.White,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            // Text content
-            Column(modifier = Modifier.weight(1f)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                // Icon container
+                Box(
+                    modifier = Modifier
+                        .size(46.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0x33FFFFFF)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = option.title,
-                        color = Color.White,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold
+                    Icon(
+                        imageVector = option.icon,
+                        contentDescription = option.title,
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp)
                     )
-                    // Tag badge
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0x33FFFFFF))
-                            .padding(horizontal = 7.dp, vertical = 2.dp)
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = option.tag,
+                            text = option.title,
                             color = Color.White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Medium
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold
                         )
+
+                        // Tag badge (Strict / Balanced / Smart)
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0x33FFFFFF))
+                                .padding(horizontal = 7.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = option.tag,
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = option.subtitle,
+                        color = if (isSelected) Color(0xCCFFFFFF) else colors.textSecondary,
+                        fontSize = 12.sp,
+                        lineHeight = 17.sp
+                    )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = option.subtitle,
-                    color = if (isSelected) Color(0xCCFFFFFF) else colors.textSecondary,
-                    fontSize = 12.sp,
-                    lineHeight = 17.sp
-                )
+
+                // On / Off pill – this mirrors your screenshot
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (isOn) Color(0x332ECC71) else Color(0x33FFFFFF)
+                        )
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = if (isOn) "On" else "Off",
+                        color = if (isOn) colors.successGreen else Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
 
-            // Selection indicator
-            Box(
-                modifier = Modifier
-                    .size(22.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (isSelected) Color.White else Color(0x22FFFFFF)
-                    )
-                    .border(
-                        1.dp,
-                        color = if (isSelected) Color.Transparent else colors.borderSubtle,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (isSelected) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = "Selected",
-                        tint = colors.purpleDeep,
-                        modifier = Modifier.size(14.dp)
-                    )
-                }
+            // Expanded details
+            if (isExpanded && detailContent != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                detailContent()
             }
         }
     }

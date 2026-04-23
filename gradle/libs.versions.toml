@@ -14,6 +14,12 @@ roomKtx = "2.8.4"
 foundation = "1.10.6"
 animation = "1.10.6"
 cameraCamera2Pipe = "1.6.0"
+runtime = "1.10.6"
+#hilt version
+ksp = "2.0.21-1.0.27"
+hilt = "2.56.2"
+hiltCompose = "1.2.0"
+
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,9 +42,20 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }
 androidx-camera-camera2-pipe = { group = "androidx.camera", name = "camera-camera2-pipe", version.ref = "cameraCamera2Pipe" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
+# hilt
+androidx-hilt-android = { group = "com.google.dagger",name="hilt-android",version.ref = "hilt" }
+androidx-hilt-compiler = { group = "com.google.dagger",name="hilt-android-compiler",version.ref = "hilt" }
+androidx-hilt-compose = { group = "androidx.hilt",name="hilt-navigation-compose",version.ref = "hiltCompose" }
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+## ksp plugin
+ksp = {id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+##hilt plugin
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 

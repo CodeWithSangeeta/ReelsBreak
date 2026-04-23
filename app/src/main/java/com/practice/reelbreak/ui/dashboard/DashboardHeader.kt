@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DashboardHeader(
-    userName: String,
     onVisibilityToggle: () -> Unit,
     onThemeToggle: () -> Unit
 ) {
@@ -41,7 +40,7 @@ fun DashboardHeader(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "Stay mindful, $userName.",
+                text = "Stay mindful",
                 color = MaterialTheme.colorScheme.primary
             )
         }

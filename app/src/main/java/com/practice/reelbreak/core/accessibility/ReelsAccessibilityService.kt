@@ -22,6 +22,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         Log.d("REELSBREAK", "Service connected ✅")
     }
 
+
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
         val rootNode: AccessibilityNodeInfo? = rootInActiveWindow

@@ -1,5 +1,7 @@
 package com.practice.reelbreak.ui.dashboard
 
+import com.practice.reelbreak.domain.model.ActiveBlockMode
+
 data class DashboardState(
     val userName: String = "Sangeeta",
     val isDarkMode: Boolean = false,
@@ -8,18 +10,11 @@ data class DashboardState(
     val dailyLimitMinutes: Int = 60,
     val timeSpentMinutes: Int = 0,
     val selectedTab: Int = 0,
-    val isCounterVisible: Boolean = false
-) {
-    val limitProgress: Float
-        get() = if (dailyLimitMinutes == 0) 0f else timeSpentMinutes / dailyLimitMinutes.toFloat()
+    val isCounterVisible: Boolean = false,
+    val isStrictMode: Boolean = true,
+    val expandedMode: BlockMode? = null,
 
-    val isOverLimit: Boolean
-        get() = timeSpentMinutes >= dailyLimitMinutes
-
-    val timeSpentFormatted: String
-        get() {
-            val hours = timeSpentMinutes / 60
-            val minutes = timeSpentMinutes % 60
-            return if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
-        }
-}
+    val activeMode: ActiveBlockMode = ActiveBlockMode.STRICT,
+    val dailyReelLimit: Int = 0,
+    val dailyTimeLimitMinutes: Int = 0
+)

@@ -4,25 +4,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-/**
- * AppColors — SINGLE SOURCE OF TRUTH for all colors in ReelBreak.
- *
- * WHY this file?
- * - Replaces GradientColors.kt, DashboardTheme.kt, Color.kt
- * - One place to change any color across the whole app
- * - isDark flag lets composables adapt without passing booleans everywhere
- */
 data class AppColors(
     val isDark: Boolean,
-    // ── Text ────────────────────────────────────────────────
+    // ── Text
     val textPrimary: Color,
     val textSecondary: Color,
     val textMuted: Color,
-    // ── Surfaces ────────────────────────────────────────────
+    // ── Surfaces
     val background: Brush,
     val cardSurface: Brush,
     val glassSurface: Brush,
-    // ── Brand ───────────────────────────────────────────────
+    // ── Brand
     val purplePrimary: Color,
     val purpleDeep: Color,
     val purpleSoft: Color,
@@ -30,17 +22,17 @@ data class AppColors(
     val successGreen: Color,
     val warningOrange: Color,
     val errorRed: Color,
-    // ── Buttons ─────────────────────────────────────────────
+    // ── Buttons
     val button: Brush,
     val buttonDanger: Brush,
     val buttonSuccess: Brush,
-    // ── Nav ─────────────────────────────────────────────────
+    // ── Nav
     val navSelected: Brush,
-    // ── Mode cards ──────────────────────────────────────────
+    // ── Mode cards
     val modeBlock: Brush,
     val modeLimit: Brush,
     val modeSmart: Brush,
-    // ── Borders & glows ─────────────────────────────────────
+    // ── Borders & glows
     val borderSubtle: Color,
     val borderPurple: Color,
     val borderActive: Color,
@@ -89,9 +81,9 @@ fun darkAppColors() = AppColors(
 
 fun lightAppColors() = AppColors(
     isDark          = false,
-    textPrimary     = Color(0xFF0E0520),   // near-black with purple tint
+    textPrimary     = Color(0xFF0E0520),
     textSecondary   = Color(0xFF3A2852),
-    textMuted       = Color(0xFF5A5070),   // WCAG AA on white ✅
+    textMuted       = Color(0xFF5A5070),
     background      = Brush.linearGradient(
         colors = listOf(Color(0xFFF8F7FF), Color(0xFFF0EBFF), Color(0xFFEDE5FF), Color(0xFFF0EBFF), Color(0xFFF8F7FF)),
         start  = Offset(0f, 0f), end = Offset(1080f, 2400f)
@@ -108,7 +100,7 @@ fun lightAppColors() = AppColors(
     successGreen    = Color(0xFF1A8048),
     warningOrange   = Color(0xFFD07000),
     errorRed        = Color(0xFFCC1A1A),
-    button          = Brush.linearGradient(colors = listOf(Color(0xFF9B3DFF), Color(0xFF5A0EA8), Color(0xFF3A4FD0))), // same as dark ✅
+    button          = Brush.linearGradient(colors = listOf(Color(0xFF9B3DFF), Color(0xFF5A0EA8), Color(0xFF3A4FD0))),
     buttonDanger    = Brush.linearGradient(colors = listOf(Color(0xFFCC1A1A), Color(0xFF800000))),
     buttonSuccess   = Brush.linearGradient(colors = listOf(Color(0xFF1A8048), Color(0xFF0E5030))),
     navSelected     = Brush.verticalGradient(colors = listOf(Color(0xFF9B3DFF), Color(0xFF5A0EA8))), // same ✅

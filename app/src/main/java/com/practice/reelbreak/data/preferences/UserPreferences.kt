@@ -41,6 +41,7 @@ object UserPreferences {
     // ── Limit Settings ────────────────────────────────────────────────────
     // These keys store the limits the user configures in LimitsScreen.
 
+    val ACTIVE_MODE = intPreferencesKey("active_mode")
     /**
      * Max reels the user can watch per day.
      * 0 means "no reel count limit set".

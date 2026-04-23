@@ -2,6 +2,7 @@ package com.practice.reelbreak.core.engine
 
 
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
+import com.practice.reelbreak.domain.model.ActiveBlockMode
 import kotlinx.coroutines.flow.first
 
 /**
@@ -34,6 +35,13 @@ class BlockingDecisionEngine(
         SKIP_REEL
     }
 
+    suspend fun onReelAllowed() {
+        // Count reel
+        repository.incrementReelsWatched()
+        // Time tracking: for v1 just add a fixed small chunk, later use real elapsed time
+        repository.addTimeSpent(minutes = 1) // or a better estimate later
+    }
+
     /**
      * Main decision function.
      *
@@ -45,22 +53,34 @@ class BlockingDecisionEngine(
      */
     suspend fun decide(detectedCreator: String? = null): Decision {
 
+        val activeMode = repository.activeMode.first()
         // Step 1: Check Strict Mode
         // .first() reads the CURRENT value from the Flow (one-shot read)
         val isStrictMode = repository.isStrictMode.first()
-        if (isStrictMode) {
-            return Decision.BLOCK  // Strict mode → always block, no questions asked
+        if (activeMode == ActiveBlockMode.STRICT && isStrictMode) {
+            return Decision.BLOCK
         }
 
-        // Step 2: Check if today's limit is already exceeded
-        // (Limit Mode — we'll fully implement this in next iteration)
-        val isLimitExceeded = repository.isLimitExceededToday.first()
-        if (isLimitExceeded) {
-            return Decision.BLOCK  // Limit hit today → behaves like strict mode
+        // Step 2: Limit mode – only if active
+        if (activeMode == ActiveBlockMode.LIMIT) {
+            val isLimitExceeded = repository.isLimitExceededToday.first()
+            if (isLimitExceeded) return Decision.BLOCK
+
+            val dailyReelLimit = repository.dailyReelLimit.first()
+            val dailyTimeLimit = repository.dailyTimeLimitMinutes.first()
+            val reelsWatched = repository.reelsWatchedToday.first()
+            val timeSpent = repository.timeSpentTodayMinutes.first()
+
+            val reelLimitHit = dailyReelLimit > 0 && reelsWatched >= dailyReelLimit
+            val timeLimitHit = dailyTimeLimit > 0 && timeSpent >= dailyTimeLimit
+
+            if (reelLimitHit || timeLimitHit) {
+                repository.markLimitExceededToday()
+                return Decision.BLOCK
+            }
         }
 
-        // Step 3: All checks passed → Allow
-        // (Curated Mode check will go here in next iteration)
+        // Step 3: Smart/Curated mode – later
         return Decision.ALLOW
     }
 }

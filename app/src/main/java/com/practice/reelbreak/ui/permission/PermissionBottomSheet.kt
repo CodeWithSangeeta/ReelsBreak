@@ -160,7 +160,7 @@ fun PermissionBottomSheet(
         ) {
             Spacer(Modifier.height(8.dp))
 
-            // ── Icon + Glow ──────────────────────────────────────────────────
+            // ── Icon + Glow
             PermissionIconSection(
                 icon = content.icon,
                 iconTint = content.iconTint,
@@ -169,7 +169,7 @@ fun PermissionBottomSheet(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Badge (Required / Optional) ──────────────────────────────────
+            // ── Badge (Required / Optional)
             PermissionBadge(
                 label = content.badgeLabel,
                 isMandatory = content.isMandatory,
@@ -177,7 +177,7 @@ fun PermissionBottomSheet(
 
             Spacer(Modifier.height(14.dp))
 
-            // ── Title ────────────────────────────────────────────────────────
+            // ── Title
             Text(
                 text = content.title,
                 fontSize = 22.sp,
@@ -189,7 +189,7 @@ fun PermissionBottomSheet(
 
             Spacer(Modifier.height(10.dp))
 
-            // ── Description ──────────────────────────────────────────────────
+            // Description
             Text(
                 text = content.description,
                 fontSize = 14.sp,
@@ -201,17 +201,17 @@ fun PermissionBottomSheet(
 
             Spacer(Modifier.height(24.dp))
 
-            // ── Steps section ────────────────────────────────────────────────
+            // Steps section
             StepsSection(steps = content.steps, accentColor = content.iconTint)
 
             Spacer(Modifier.height(20.dp))
 
-            // ── Privacy note ─────────────────────────────────────────────────
+            // Privacy note
             PrivacyNote(note = content.privacyNote)
 
             Spacer(Modifier.height(28.dp))
 
-            // ── Action buttons ───────────────────────────────────────────────
+            // Action buttons
             ActionButtons(
                 agreeText = content.agreeButtonText,
                 accentColor = content.iconTint,
