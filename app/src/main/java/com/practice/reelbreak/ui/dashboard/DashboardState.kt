@@ -16,5 +16,8 @@ data class DashboardState(
 
     val activeMode: ActiveBlockMode = ActiveBlockMode.STRICT,
     val dailyReelLimit: Int = 0,
-    val dailyTimeLimitMinutes: Int = 0
+    val dailyTimeLimitMinutes: Int = 0,
+
+    val isOverlayEnabled: Boolean = false
+
 )

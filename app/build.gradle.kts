@@ -55,6 +55,7 @@ dependencies {
     //Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.runtime)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     //Compose UI

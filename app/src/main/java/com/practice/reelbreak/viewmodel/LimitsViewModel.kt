@@ -1,14 +1,12 @@
 package com.practice.reelbreak.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practice.reelbreak.ReelBreakApplication
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * LimitsViewModel — bridges LimitsScreen UI ↔ UserPreferencesRepository
@@ -23,41 +21,21 @@ import kotlinx.coroutines.launch
  * SharingStarted.WhileSubscribed(5000) → keeps the flow alive for 5s
  * after the last subscriber (e.g. screen rotation) — avoids restarting.
  */
-class LimitsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: UserPreferencesRepository =
-        (application as ReelBreakApplication).repository
 
-    // UI observes these StateFlows
-    val isStrictMode: StateFlow<Boolean> = repository.isStrictMode
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = true  // shown while DataStore loads
-        )
+@HiltViewModel
+class LimitsViewModel @Inject constructor(
+    private val repo: UserPreferencesRepository
+) : ViewModel() {
 
-    val dailyReelLimit: StateFlow<Int> = repository.dailyReelLimit
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+    val dailyReelLimit: Flow<Int> = repo.dailyReelLimit
+    val dailyTimeLimitMinutes: Flow<Int> = repo.dailyTimeLimitMinutes
 
-    val dailyTimeLimitMinutes: StateFlow<Int> = repository.dailyTimeLimitMinutes
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
-
-    // UI calls these functions on user interaction
-    fun setStrictMode(enabled: Boolean) {
+    fun saveLimits(reelLimit: Int, timeLimitMinutes: Int) {
         viewModelScope.launch {
-            repository.setStrictMode(enabled)
-        }
-    }
-
-    fun setDailyReelLimit(limit: Int) {
-        viewModelScope.launch {
-            repository.setDailyReelLimit(limit)
-        }
-    }
-
-    fun setDailyTimeLimit(minutes: Int) {
-        viewModelScope.launch {
-            repository.setDailyTimeLimit(minutes)
+            repo.setDailyReelLimit(reelLimit)
+            repo.setDailyTimeLimit(timeLimitMinutes)
         }
     }
 }
+

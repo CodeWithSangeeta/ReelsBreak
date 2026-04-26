@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,21 +18,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.practice.reelbreak.core.overlay.OverlayService
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.limit.LimitSettingsContent
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
 import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
+
 
 private data class PermissionChip(
     val type: PermissionSheetType,
@@ -68,6 +67,16 @@ fun DashboardScreen(
 
     val permissionUiState by permissionsViewModel.uiState.collectAsState()
     val permissionState = permissionUiState.permissionState
+
+
+    LaunchedEffect(dashboardState.isOverlayEnabled, permissionState.overlayGranted) {
+        if (dashboardState.isOverlayEnabled && permissionState.overlayGranted) {
+            OverlayService.start(context)
+        } else {
+            OverlayService.stop(context)
+        }
+    }
+
 
     // Base list of all possible permission cards
     val basePermissionPagerItems = listOf(
@@ -189,6 +198,23 @@ fun DashboardScreen(
                     )
                 }
 
+                    item {
+                        OverlayToggleRow(
+                            isEnabled = dashboardState.isOverlayEnabled,
+                            hasPermission = permissionState.overlayGranted,
+                            onToggle = {
+                                if (!permissionState.overlayGranted) {
+                                    permissionsViewModel.showSheet(PermissionSheetType.OVERLAY)
+                                } else {
+                                    dashboardViewModel.toggleOverlayEnabled()
+                                }
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+
                 // Block Mode Cards
                 blockModeOptions.forEach { option ->
                     item {
@@ -218,7 +244,7 @@ fun DashboardScreen(
                             detailContent = {
                                 when (option.mode) {
                                     BlockMode.BLOCK_NOW   -> StrictDetails()
-                                    BlockMode.LIMIT_BASED -> LimitDetails()
+                                    BlockMode.LIMIT_BASED -> LimitSettingsContent()
                                     BlockMode.SMART_FILTER -> SmartFilterDetails()
                                 }
                             }

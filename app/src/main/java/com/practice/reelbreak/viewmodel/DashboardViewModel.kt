@@ -45,6 +45,12 @@ class DashboardViewModel @Inject constructor(
                 _uiState.update { it.copy(dailyTimeLimitMinutes = minutes) }
             }
         }
+
+        viewModelScope.launch {
+            userPreferencesRepository.isOverlayEnabled.collectLatest { enabled ->
+                _uiState.update { it.copy(isOverlayEnabled = enabled) }
+            }
+        }
     }
 
     fun toggleTheme() {
@@ -57,6 +63,13 @@ class DashboardViewModel @Inject constructor(
 
     fun updateSelectedTab(tab: Int) {
         _uiState.update { it.copy(selectedTab = tab) }
+    }
+
+    fun toggleOverlayEnabled() {
+        viewModelScope.launch {
+            val current = uiState.value.isOverlayEnabled
+            userPreferencesRepository.setOverlayEnabled(!current)
+        }
     }
 
     fun onBlockModeCardClicked(mode: BlockMode) {
@@ -94,6 +107,9 @@ class DashboardViewModel @Inject constructor(
                     userPreferencesRepository.setStrictMode(!current)
                 }
             }
-        }
+
+
+
+    }
     }
 
