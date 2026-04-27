@@ -103,7 +103,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     //Lifecycle ViewModel (Compose) dependency
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
 
     //Coroutines (ViewModel scope) dependency
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")

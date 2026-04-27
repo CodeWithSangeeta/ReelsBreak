@@ -10,15 +10,20 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.view.Gravity
 import android.view.WindowManager
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import com.practice.reelbreak.R
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import androidx.lifecycle.ViewTreeLifecycleOwner
 
 @AndroidEntryPoint
 class OverlayService : Service() {
@@ -27,26 +32,53 @@ class OverlayService : Service() {
     lateinit var userPrefs: UserPreferencesRepository
 
     private lateinit var windowManager: WindowManager
-    private lateinit var composeView: ComposeView
+    private var composeView: ComposeView? = null
+   // private lateinit var composeView: ComposeView
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("OVERLAY_SERVICE", "onCreate")
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-        createComposeOverlay()
-        startAsForeground()
+        try {
+            createComposeOverlay()
+        } catch (e: Exception) {
+            Log.e("OVERLAY_SERVICE", "Error initializing overlay: ${e.message}", e)
+            stopSelf() // fail gracefully instead of crashing app
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (::composeView.isInitialized) {
-            windowManager.removeView(composeView)
+        composeView?.let {
+            try {
+                windowManager.removeView(it)
+            } catch (e: Exception) {
+                Log.e("OVERLAY_SERVICE", "removeView failed: ${e.message}", e)
+            }
         }
+        composeView = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     private fun createComposeOverlay() {
-        composeView = ComposeView(this)
+        val view = ComposeView(this)
+
+        val lifecycleOwner = object : LifecycleOwner {
+            private val lifecycleRegistry = LifecycleRegistry(this)
+            override val lifecycle: Lifecycle
+                get() = lifecycleRegistry
+
+            init {
+                // Mark as started so Compose can run
+                lifecycleRegistry.currentState = Lifecycle.State.STARTED
+            }
+        }
+
+        // 2) Attach LifecycleOwner to the view tree
+        ViewTreeLifecycleOwner.set(view, lifecycleOwner)
+
+        composeView = view
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -65,51 +97,23 @@ class OverlayService : Service() {
         params.x = 24
         params.y = 200
 
-        composeView.setContent {
+        view.setContent {
             val reels by userPrefs.reelsWatchedToday.collectAsState(initial = 0)
             val mins by userPrefs.timeSpentTodayMinutes.collectAsState(initial = 0)
-
+            android.util.Log.d("OVERLAY_DEBUG", "bubble reels=$reels time=$mins")
             OverlayBubble(
                 reelsCount = reels,
                 minutes = mins
             )
         }
 
-        windowManager.addView(composeView, params)
+        windowManager.addView(view, params)
+        Log.d("OVERLAY_SERVICE", "addView done")
     }
-
-    private fun startAsForeground() {
-        val channelId = "reelbreak_overlay_channel"
-        val channelName = "ReelBreak Overlay"
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                channelName,
-                NotificationManager.IMPORTANCE_MIN
-            )
-            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            nm.createNotificationChannel(channel)
-        }
-
-        val notification: Notification =
-            Notification.Builder(this, channelId)
-                .setContentTitle("ReelBreak overlay")
-                .setContentText("Showing reels and time counters")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .build()
-
-        startForeground(1, notification)
-    }
-
     companion object {
         fun start(context: Context) {
             val intent = Intent(context, OverlayService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
+            context.startService(intent)
         }
 
         fun stop(context: Context) {

@@ -4,7 +4,7 @@ import com.practice.reelbreak.domain.model.ActiveBlockMode
 
 data class DashboardState(
     val userName: String = "Sangeeta",
-    val isDarkMode: Boolean = false,
+    val isDarkMode: Boolean = true,
     val reelsCount: Int = 0,
     val percentageIncrease: Int = 0,
     val dailyLimitMinutes: Int = 60,

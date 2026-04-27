@@ -69,8 +69,23 @@ fun DashboardScreen(
     val permissionState = permissionUiState.permissionState
 
 
-    LaunchedEffect(dashboardState.isOverlayEnabled, permissionState.overlayGranted) {
-        if (dashboardState.isOverlayEnabled && permissionState.overlayGranted) {
+    LaunchedEffect(
+        dashboardState.isOverlayEnabled,
+        permissionState.overlayGranted,
+        dashboardState.activeMode
+    ) {
+        val shouldShowOverlay =
+            dashboardState.isOverlayEnabled &&
+                    permissionState.overlayGranted &&
+                    dashboardState.activeMode == ActiveBlockMode.LIMIT
+
+        android.util.Log.d(
+            "OVERLAY_DEBUG",
+            "shouldShowOverlay=$shouldShowOverlay enabled=${dashboardState.isOverlayEnabled} " +
+                    "granted=${permissionState.overlayGranted} mode=${dashboardState.activeMode}"
+        )
+
+        if (shouldShowOverlay) {
             OverlayService.start(context)
         } else {
             OverlayService.stop(context)
@@ -133,7 +148,18 @@ fun DashboardScreen(
                 .padding(horizontal = 24.dp)
         ) {
             DashboardHeader(
-                onVisibilityToggle = { dashboardViewModel.toggleCounterVisibility() },
+                isOverlayGranted = permissionState.overlayGranted,
+                isOverlayEnabled = dashboardState.isOverlayEnabled,
+                isDarkMode = dashboardState.isDarkMode,
+                onVisibilityClick = {
+                    if (!permissionState.overlayGranted) {
+                        // User wants overlay but no permission yet: open sheet.
+                        permissionsViewModel.showSheet(PermissionSheetType.OVERLAY)
+                    } else {
+                        // Permission already granted: simple toggle.
+                        dashboardViewModel.toggleOverlayEnabled()
+                    }
+                },
                 onThemeToggle = { dashboardViewModel.toggleTheme() }
             )
 
@@ -198,29 +224,14 @@ fun DashboardScreen(
                     )
                 }
 
-                    item {
-                        OverlayToggleRow(
-                            isEnabled = dashboardState.isOverlayEnabled,
-                            hasPermission = permissionState.overlayGranted,
-                            onToggle = {
-                                if (!permissionState.overlayGranted) {
-                                    permissionsViewModel.showSheet(PermissionSheetType.OVERLAY)
-                                } else {
-                                    dashboardViewModel.toggleOverlayEnabled()
-                                }
-                            }
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-
 
                 // Block Mode Cards
                 blockModeOptions.forEach { option ->
                     item {
 
                         val isOn = when (option.mode) {
-                            BlockMode.BLOCK_NOW    -> dashboardState.activeMode == ActiveBlockMode.STRICT
+                            BlockMode.BLOCK_NOW    -> dashboardState.activeMode == ActiveBlockMode.STRICT &&
+                                    permissionState.accessibilityGranted
                             BlockMode.LIMIT_BASED  -> dashboardState.activeMode == ActiveBlockMode.LIMIT
                             BlockMode.SMART_FILTER -> dashboardState.activeMode == ActiveBlockMode.SMART
                         }

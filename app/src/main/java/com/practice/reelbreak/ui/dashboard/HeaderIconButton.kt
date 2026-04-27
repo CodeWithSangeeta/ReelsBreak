@@ -18,7 +18,8 @@ import androidx.compose.ui.unit.dp
 fun HeaderIconButton(
     icon: ImageVector,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tint: androidx.compose.ui.graphics.Color = MaterialTheme.colorScheme.onSurfaceVariant
 ) {
     Surface(
         onClick = onClick,
@@ -30,7 +31,7 @@ fun HeaderIconButton(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = tint,
                 modifier = Modifier.size(20.dp)
             )
         }

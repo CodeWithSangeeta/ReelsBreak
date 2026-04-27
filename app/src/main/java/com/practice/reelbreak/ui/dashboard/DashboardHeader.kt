@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,9 +22,15 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DashboardHeader(
-    onVisibilityToggle: () -> Unit,
+    isOverlayGranted: Boolean,
+    isOverlayEnabled: Boolean,
+    isDarkMode: Boolean,
+    onVisibilityClick: () -> Unit,
     onThemeToggle: () -> Unit
 ) {
+    val iconColor = if (isOverlayGranted && isOverlayEnabled) Color(0xFF4CAF50)  else Color(0xFF9E9E9E)
+    val themeIcon =
+        if (isDarkMode) Icons.Outlined.DarkMode else Icons.Outlined.LightMode
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -47,10 +54,11 @@ fun DashboardHeader(
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             HeaderIconButton(
                 icon = Icons.Outlined.Visibility,
-                onClick = onVisibilityToggle
+                onClick = onVisibilityClick,
+                tint = iconColor
             )
             HeaderIconButton(
-                icon = Icons.Outlined.DarkMode,
+                icon = themeIcon,
                 onClick = onThemeToggle
             )
         }

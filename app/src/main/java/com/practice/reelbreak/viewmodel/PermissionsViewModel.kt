@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
+import com.practice.reelbreak.core.permission.OverlayPermissionChecker
 import com.practice.reelbreak.core.permission.UsagePermissionChecker
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.PermissionState
@@ -55,11 +56,23 @@ class PermissionsViewModel @Inject constructor(
 
     private var lastAccessibilityGranted: Boolean? = null
 
+    var overlayToggleRequested: Boolean = false
+        private set
+
+    fun markOverlayToggleRequested() {
+        overlayToggleRequested = true
+    }
+
+    fun clearOverlayToggleRequested() {
+        overlayToggleRequested = false
+    }
+
+
     fun refreshPermissionState(context: Context) {
         val newState = PermissionState(
             accessibilityGranted = AccessibilityPermissionChecker.isAccessibilityEnabled(context),
             usageStatsGranted = UsagePermissionChecker.isUsageAccessGranted(context),
-            //  overlayGranted =
+            overlayGranted = OverlayPermissionChecker.isOverlayEnabled(context)
         )
 
         val prev = lastAccessibilityGranted
@@ -72,6 +85,13 @@ class PermissionsViewModel @Inject constructor(
         if (prev == false && newState.accessibilityGranted) {
             viewModelScope.launch {
                 userPreferencesRepository.setStrictMode(true)
+            }
+        }
+
+        if (overlayToggleRequested && newState.overlayGranted) {
+            overlayToggleRequested = false
+            viewModelScope.launch {
+                userPreferencesRepository.setOverlayEnabled(true)
             }
         }
     }
@@ -110,7 +130,9 @@ class PermissionsViewModel @Inject constructor(
                     context
                 )
 
-                is PermissionSheetType.OVERLAY -> { /* TODO overlay settings */
+                is PermissionSheetType.OVERLAY -> {
+                    markOverlayToggleRequested()
+                    OverlayPermissionChecker.openOverlaySettings(context)
                 }
             }
         }
