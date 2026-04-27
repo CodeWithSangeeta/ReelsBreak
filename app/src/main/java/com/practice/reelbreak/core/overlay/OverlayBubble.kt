@@ -20,7 +20,7 @@ fun OverlayBubble(
 ) {
     Column(
         modifier = Modifier
-            .background(Color(0xAA111111), RoundedCornerShape(16.dp))
+            .background(Color.Red, RoundedCornerShape(16.dp))
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Text(

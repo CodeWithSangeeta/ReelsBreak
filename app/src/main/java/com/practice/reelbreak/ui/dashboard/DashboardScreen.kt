@@ -85,11 +85,11 @@ fun DashboardScreen(
                     "granted=${permissionState.overlayGranted} mode=${dashboardState.activeMode}"
         )
 
-        if (shouldShowOverlay) {
-            OverlayService.start(context)
-        } else {
-            OverlayService.stop(context)
-        }
+//        if (shouldShowOverlay) {
+//            OverlayService.start(context)
+//        } else {
+//            OverlayService.stop(context)
+//        }
     }
 
 

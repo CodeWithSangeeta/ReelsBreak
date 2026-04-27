@@ -3,12 +3,15 @@ package com.practice.reelbreak.data.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 
 /**
@@ -222,6 +225,19 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[UserPreferences.IS_OVERLAY_ENABLED] = enabled
         }
+    }
+
+
+    fun getActiveModeBlocking(): Int = runBlocking {
+        context.dataStore.data.map { prefs ->
+            prefs[UserPreferences.ACTIVE_MODE] ?: ActiveBlockMode.STRICT.value
+        }.first()
+    }
+
+    fun isOverlayEnabledBlocking(): Boolean = runBlocking {
+        context.dataStore.data.map { prefs ->
+            prefs[UserPreferences.IS_OVERLAY_ENABLED] ?: false
+        }.first()
     }
 
 }
