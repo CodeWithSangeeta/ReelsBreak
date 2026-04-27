@@ -37,7 +37,7 @@ fun SaveLimitsButton(onClick: () -> Unit) {
     ) {
         Text(
             text = "Save limits",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 15.sp,
             fontWeight = FontWeight.SemiBold
         )

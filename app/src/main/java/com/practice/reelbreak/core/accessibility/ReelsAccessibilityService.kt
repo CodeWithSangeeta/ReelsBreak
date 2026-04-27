@@ -9,6 +9,26 @@ import com.practice.reelbreak.core.action.ActionController
 import com.practice.reelbreak.core.detection.AppDetectorRouter
 import com.practice.reelbreak.core.detection.ReelsDetectionManager
 import com.practice.reelbreak.core.engine.BlockingDecisionEngine
+import android.graphics.PixelFormat
+import android.graphics.Typeface
+import android.graphics.drawable.GradientDrawable
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import android.view.Gravity
+import android.view.View
+import android.view.WindowManager
+import android.widget.LinearLayout
+import android.widget.TextView
+import com.practice.reelbreak.core.registry.SupportedAppsRegistry
+import com.practice.reelbreak.data.preferences.UserPreferencesRepository
+import com.practice.reelbreak.domain.model.ActiveBlockMode
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+
 //class ReelsAccessibilityService : AccessibilityService() {
 //
 //    private lateinit var detectionManager: ReelsDetectionManager
@@ -38,38 +58,7 @@ import com.practice.reelbreak.core.engine.BlockingDecisionEngine
 
 
 
-import android.graphics.PixelFormat
-import android.graphics.Typeface
-import android.graphics.drawable.GradientDrawable
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.view.Gravity
-import android.view.View
-import android.view.WindowManager
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import com.practice.reelbreak.core.overlay.OverlayBubble
-import com.practice.reelbreak.core.registry.SupportedAppsRegistry
-import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LifecycleRegistry
-import com.practice.reelbreak.domain.model.ActiveBlockMode
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+
 
 class ReelsAccessibilityService : AccessibilityService() {
 
@@ -95,27 +84,6 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         Log.d("REELSBREAK", "Service connected ✅")
     }
-
-//    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-//        if (event == null) return
-//
-//        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
-//        val packageName = event.packageName?.toString()
-//
-//        val shouldShow = shouldShowOverlayForApp(packageName)
-//        Log.d(
-//            "OVERLAY_DEBUG",
-//            "event from=$packageName shouldShowOverlay=$shouldShow"
-//        )
-//
-//        if (shouldShow) {
-//            showOverlayIfNeeded()
-//        } else {
-//            hideOverlay()
-//        }
-//
-//        detectionManager.processEvent(event, rootNode)
-//    }
 
     private val hideHandler = Handler(Looper.getMainLooper())
     private val hideRunnable = Runnable { hideOverlay() }

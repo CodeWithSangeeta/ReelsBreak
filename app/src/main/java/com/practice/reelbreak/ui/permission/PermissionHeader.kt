@@ -29,24 +29,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practice.reelbreak.R
+import com.practice.reelbreak.ui.theme.LocalAppColors
+
 @Preview(showBackground = false, showSystemUi = true)
 @Composable
 fun PermissionHeader() {
     Column(modifier = Modifier.padding(top=12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val colors = LocalAppColors.current
         Text(
             text = stringResource(R.string.enable_permissions),
             fontSize = 36.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = colors.textPrimary,
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = stringResource(R.string.need_system_permissions),
             fontSize = 14.sp,
             fontWeight = FontWeight.Normal,
-            color = Color.White.copy(alpha = 0.8f),
+            color = colors.textPrimary.copy(alpha = 0.8f),
             textAlign = TextAlign.Center,
         )
 
@@ -57,7 +60,7 @@ fun PermissionHeader() {
             .align(Alignment.CenterHorizontally),
             shape = RoundedCornerShape(8.dp),
             colors = CardDefaults.cardColors(containerColor = Color.Gray),
-            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
+            border = BorderStroke(1.dp, colors.textPrimary.copy(alpha = 0.2f)),
             ) {
             Row(
                 modifier = Modifier
@@ -75,7 +78,7 @@ fun PermissionHeader() {
                 Text(
                     text = stringResource(R.string.privacy_message),
                     fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = colors.textPrimary.copy(alpha = 0.7f)
                 )
             }
         }

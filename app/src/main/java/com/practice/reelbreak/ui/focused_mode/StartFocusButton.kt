@@ -75,7 +75,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
             )
             Text(
                 text = if (isFocusActive) "Stop Focus Session" else "Start Focus Session",
-                color = Color.White,
+                color = colors.textPrimary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )

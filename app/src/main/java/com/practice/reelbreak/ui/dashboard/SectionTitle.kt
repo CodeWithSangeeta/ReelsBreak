@@ -18,7 +18,7 @@ fun SectionTitle(title: String, subtitle: String) {
     ) {
         Text(
             text = title,
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )

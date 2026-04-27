@@ -22,12 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun BulletCard(
     bulletPoints: List<Pair<String, BulletIconType>>,
     modifier: Modifier = Modifier
 ) {
+    val colors = LocalAppColors.current
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -52,7 +54,7 @@ fun BulletCard(
                         tint = when (iconType) {
                             BulletIconType.Check -> Color(0xFF2ECC71)
                             BulletIconType.Cross -> Color(0xFFE74C3C)
-                            BulletIconType.Question -> Color.White.copy(alpha = 0.7f)
+                            BulletIconType.Question -> colors.textPrimary.copy(alpha = 0.7f)
                         },
                         modifier = Modifier.size(20.dp)
                     )
@@ -60,7 +62,7 @@ fun BulletCard(
                     Text(
                         text = bullet,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.95f),
+                        color = colors.textPrimary.copy(alpha = 0.95f),
                         modifier = Modifier.weight(1f)
                     )
                 }

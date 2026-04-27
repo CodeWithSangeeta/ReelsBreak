@@ -12,12 +12,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun OverlayBubble(
     reelsCount: Int,
     minutes: Int
 ) {
+    val colors = LocalAppColors.current
     Column(
         modifier = Modifier
             .background(Color.Red, RoundedCornerShape(16.dp))
@@ -25,7 +27,7 @@ fun OverlayBubble(
     ) {
         Text(
             text = "Reels: $reelsCount",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
         )

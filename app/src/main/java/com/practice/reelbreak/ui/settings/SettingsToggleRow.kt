@@ -71,14 +71,14 @@ fun SettingsToggleRow(
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = title, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = title, color = colors.textPrimary, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
                 Text(text = subtitle, color = colors.textSecondary, fontSize = 11.sp)
             }
             Switch(
                 checked = isEnabled,
                 onCheckedChange = onToggle,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
+                    checkedThumbColor = colors.textPrimary,
                     checkedTrackColor = colors.purplePrimary,
                     uncheckedThumbColor = colors.textMuted,
                     uncheckedTrackColor = Color(0xFF2A2A3A),

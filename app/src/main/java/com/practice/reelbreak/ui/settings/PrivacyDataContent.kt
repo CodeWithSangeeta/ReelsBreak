@@ -19,7 +19,7 @@ fun PrivacyDataContent() {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Text(
             text = "What ReelsBreak accesses",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -32,7 +32,7 @@ fun PrivacyDataContent() {
         Spacer(Modifier.height(6.dp))
         Text(
             text = "What we never access",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold
         )

@@ -58,7 +58,7 @@ fun FaqItem(question: String, answer: String) {
         ) {
             Text(
                 text = question,
-                color = Color.White,
+                color = colors.textPrimary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f)

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun DashboardHeader(
@@ -28,6 +29,7 @@ fun DashboardHeader(
     onVisibilityClick: () -> Unit,
     onThemeToggle: () -> Unit
 ) {
+    val colors = LocalAppColors.current
     val iconColor = if (isOverlayGranted && isOverlayEnabled) Color(0xFF4CAF50)  else Color(0xFF9E9E9E)
     val themeIcon =
         if (isDarkMode) Icons.Outlined.DarkMode else Icons.Outlined.LightMode
@@ -43,7 +45,7 @@ fun DashboardHeader(
                 text = "ReelsBreak",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = colors.textPrimary
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(

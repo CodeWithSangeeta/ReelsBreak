@@ -1,7 +1,6 @@
 package com.practice.reelbreak.viewmodel
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Fullscreen

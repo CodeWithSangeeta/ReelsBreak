@@ -14,7 +14,7 @@ fun StrictDetails() {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             text = "What Strict mode does",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -36,7 +36,7 @@ fun LimitDetails() {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             text = "What Limit mode does",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold
         )
@@ -57,7 +57,7 @@ fun SmartFilterDetails() {
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(
             text = "What Smart Filter does",
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold
         )

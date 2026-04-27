@@ -44,7 +44,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
         Column {
             Text(
                 text = "Guard Mode",
-                color = Color.White,
+                color = colors.textPrimary,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Bold
             )

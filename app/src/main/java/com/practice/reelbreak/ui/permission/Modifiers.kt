@@ -9,11 +9,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.practice.reelbreak.ui.theme.AppColors
 
 fun Modifier.glassmorphism(
+    appColors: AppColors,
     cornerRadius: Dp = 16.dp,
     borderWidth: Dp = 1.dp
 ) = this.then(
+
     Modifier
         .graphicsLayer {
             clip = true
@@ -22,8 +25,8 @@ fun Modifier.glassmorphism(
         .background(
             Brush.verticalGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.15f),
-                    Color.White.copy(alpha = 0.05f)
+                    appColors.textPrimary.copy(alpha = 0.15f),
+                    appColors.textPrimary.copy(alpha = 0.05f)
                 )
             )
         )
@@ -31,7 +34,7 @@ fun Modifier.glassmorphism(
             width = borderWidth,
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.3f),
+                    appColors.textPrimary.copy(alpha = 0.3f),
                     Color.Transparent
                 )
             ),

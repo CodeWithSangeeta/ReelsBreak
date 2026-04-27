@@ -48,7 +48,7 @@ fun BlockModeCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+           // .padding(horizontal = 20.dp)
             .shadow(
                 elevation = if (isSelected) 16.dp else 4.dp,
                 shape = RoundedCornerShape(18.dp),
@@ -104,7 +104,7 @@ fun BlockModeCard(
                     ) {
                         Text(
                             text = option.title,
-                            color = Color.White,
+                            color = colors.textPrimary,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -118,7 +118,7 @@ fun BlockModeCard(
                         ) {
                             Text(
                                 text = option.tag,
-                                color = Color.White,
+                                color = colors.textPrimary,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Medium
                             )
@@ -146,7 +146,7 @@ fun BlockModeCard(
                 ) {
                     Text(
                         text = if (isOn) "On" else "Off",
-                        color = if (isOn) colors.successGreen else Color.White,
+                        color = if (isOn) colors.successGreen else colors.textPrimary,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium
                     )

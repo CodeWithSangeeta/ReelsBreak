@@ -126,7 +126,7 @@ private fun NavBarItem(
 ) {
     val colors = LocalAppColors.current
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) Color.White else colors.textMuted,
+        targetValue = if (isSelected) colors.textPrimary else colors.textMuted,
         animationSpec = tween(durationMillis = 250),
         label = "iconColor"
     )
@@ -177,7 +177,7 @@ private fun NavBarItem(
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = item.label,
-                    color = Color.White,
+                    color = colors.textPrimary,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold
                 )

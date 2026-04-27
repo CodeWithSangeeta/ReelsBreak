@@ -66,60 +66,62 @@ private data class PermissionSheetContent(
     val agreeButtonText: String,
 )
 
-private fun buildContent(type: PermissionSheetType): PermissionSheetContent = when (type) {
-    is PermissionSheetType.ACCESSIBILITY -> PermissionSheetContent(
-        icon = Icons.Outlined.AccessibilityNew,
-        iconTint = Color(0xFF9B3DFF),
-        iconGlowColor = Color(0x339B3DFF),
-        badgeLabel = "Required",
-        isMandatory = true,
-        title = "Accessibility Permission\nRequired",
-        description = "To detect and block short videos in real time, ReelsBreak needs Accessibility Service permission. This is the core permission that makes the app work.",
-        steps = listOf(
-            "Tap \"Agree & Open Settings\" below",
-            "Find \"ReelsBreak\" under Installed Services",
-            "Tap it and enable the toggle",
-            "Press back — you're all set!"
-        ),
-        privacyNote = "ReelsBreak only reads which app is open and visible on screen. It does NOT read messages, passwords, or any personal content.",
-        agreeButtonText = "Agree & Open Settings",
-    )
-    is PermissionSheetType.USAGE_ACCESS -> PermissionSheetContent(
-        icon = Icons.Outlined.BarChart,
-        iconTint = Color(0xFF3B82F6),
-        iconGlowColor = Color(0x333B82F6),
-        badgeLabel = "Required",
-        isMandatory = true,
-        title = "Usage Access Permission\nRequired",
-        description = "To show how much time you spend on short video apps and enforce your daily limits, ReelsBreak needs Usage Access permission.",
-        steps = listOf(
-            "Tap \"Agree & Open Settings\" below",
-            "Find \"ReelsBreak\" in the list",
-            "Tap and enable \"Allow usage access\"",
-            "Press back — limits are now active!"
-        ),
-        privacyNote = "ReelsBreak only reads per-app usage time summaries. It does NOT access your browsing history, app content, or personal data.",
-        agreeButtonText = "Agree & Open Settings",
-    )
-    is PermissionSheetType.OVERLAY -> PermissionSheetContent(
-        icon = Icons.Outlined.Layers,
-        iconTint = Color(0xFF2ECC71),
-        iconGlowColor = Color(0x332ECC71),
-        badgeLabel = "Optional",
-        isMandatory = false,
-        title = "Display Overlay\nPermission",
-        description = "To show a floating reel counter above other apps, ReelsBreak needs Display Over Other Apps permission. This is completely optional.",
-        steps = listOf(
-            "Tap \"Allow Overlay\" below",
-            "Find \"ReelsBreak\" in the list",
-            "Enable \"Allow display over other apps\"",
-            "Press back — the counter will appear!"
-        ),
-        privacyNote = "The overlay only shows a small reel counter. ReelsBreak cannot read or interact with any content in other apps.",
-        agreeButtonText = "Allow Overlay",
-    )
-}
+private fun buildContent(type: PermissionSheetType): PermissionSheetContent =
+    when (type) {
+        is PermissionSheetType.ACCESSIBILITY -> PermissionSheetContent(
+            icon = Icons.Outlined.AccessibilityNew,
+            iconTint = Color(0xFF9B3DFF),
+            iconGlowColor = Color(0x339B3DFF),
+            badgeLabel = "Required",
+            isMandatory = true,
+            title = "Accessibility permission",
+            description = "ReelsBreak needs Accessibility Service to detect and block short videos in real time.",
+            steps = listOf(
+                "Tap \"Agree & Open Settings\" below",
+                "Find \"ReelsBreak\" under Installed Services",
+                "Enable the toggle",
+                "Press back to return"
+            ),
+            privacyNote = "Only checks which app is on screen. It never reads messages, passwords, or content.",
+            agreeButtonText = "Agree & Open Settings",
+        )
 
+        is PermissionSheetType.USAGE_ACCESS -> PermissionSheetContent(
+            icon = Icons.Outlined.BarChart,
+            iconTint = Color(0xFF3B82F6),
+            iconGlowColor = Color(0x333B82F6),
+            badgeLabel = "Required",
+            isMandatory = true,
+            title = "Usage access permission",
+            description = "ReelsBreak needs Usage Access to track time on short-video apps and apply your limits.",
+            steps = listOf(
+                "Tap \"Agree & Open Settings\" below",
+                "Find \"ReelsBreak\" in the list",
+                "Enable \"Permit usage access\"",
+                "Press back to return"
+            ),
+            privacyNote = "Only reads app usage time. It never sees history, content, or personal data.",
+            agreeButtonText = "Agree & Open Settings",
+        )
+
+        is PermissionSheetType.OVERLAY -> PermissionSheetContent(
+            icon = Icons.Outlined.Layers,
+            iconTint = Color(0xFF2ECC71),
+            iconGlowColor = Color(0x332ECC71),
+            badgeLabel = "Optional",
+            isMandatory = false,
+            title = "Overlay permission",
+            description = "ReelsBreak uses an overlay bubble to show your live reel counter above other apps.",
+            steps = listOf(
+                "Tap \"Allow Overlay\" below",
+                "Find \"ReelsBreak\" in the list",
+                "Enable \"Allow display over other apps\"",
+                "Press back to return"
+            ),
+            privacyNote = "Overlay only shows the counter. It cannot read or interact with anything on screen.",
+            agreeButtonText = "Allow Overlay",
+        )
+    }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -129,22 +131,20 @@ fun PermissionBottomSheet(
     onDismiss: () -> Unit,
     onAgree: () -> Unit,
 ) {
-    val colors = LocalAppColors.current
     val content = buildContent(type)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF1C1B2E),   // slightly lighter than bg so sheet pops
+        containerColor = Color(0xFF1C1B2E),
         dragHandle = {
-            // Subtle drag handle — signals sheet is dismissible
             Box(
                 modifier = Modifier
-                    .padding(top = 12.dp, bottom = 4.dp)
-                    .width(40.dp)
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(2.dp))
-                    .background(Color.White.copy(alpha = 0.2f))
+                    .padding(top = 10.dp, bottom = 2.dp)
+                    .width(36.dp)
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(Color.White.copy(alpha = 0.25f))
             )
         },
         tonalElevation = 0.dp,
@@ -154,13 +154,12 @@ fun PermissionBottomSheet(
                 .fillMaxWidth()
                 .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 28.dp),
+                .padding(horizontal = 22.dp)
+                .padding(bottom = 20.dp, top = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
 
-            // ── Icon + Glow
             PermissionIconSection(
                 icon = content.icon,
                 iconTint = content.iconTint,
@@ -169,49 +168,37 @@ fun PermissionBottomSheet(
 
             Spacer(Modifier.height(16.dp))
 
-            // ── Badge (Required / Optional)
-            PermissionBadge(
-                label = content.badgeLabel,
-                isMandatory = content.isMandatory,
+            // Title + small badge on the same line
+            TitleWithBadge(
+                title = content.title,
+                badgeLabel = content.badgeLabel,
+                isMandatory = content.isMandatory
             )
 
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
 
-            // ── Title
-            Text(
-                text = content.title,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center,
-                lineHeight = 30.sp,
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            // Description
             Text(
                 text = content.description,
-                fontSize = 14.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color.White.copy(alpha = 0.65f),
+                color = Color.White.copy(alpha = 0.72f),
                 textAlign = TextAlign.Center,
-                lineHeight = 21.sp,
+                lineHeight = 19.sp,
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(18.dp))
 
-            // Steps section
-            StepsSection(steps = content.steps, accentColor = content.iconTint)
+            StepsSection(
+                steps = content.steps,
+                accentColor = content.iconTint
+            )
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Privacy note
             PrivacyNote(note = content.privacyNote)
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.height(22.dp))
 
-            // Action buttons
             ActionButtons(
                 agreeText = content.agreeButtonText,
                 accentColor = content.iconTint,
@@ -222,8 +209,6 @@ fun PermissionBottomSheet(
     }
 }
 
-
-
 @Composable
 private fun PermissionIconSection(
     icon: ImageVector,
@@ -232,9 +217,8 @@ private fun PermissionIconSection(
 ) {
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.size(96.dp),
+        modifier = Modifier.size(60.dp),
     ) {
-        // Outer glow ring
         Box(
             modifier = Modifier
                 .matchParentSize()
@@ -245,118 +229,162 @@ private fun PermissionIconSection(
                     )
                 )
         )
-        // Inner filled circle
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
-                .size(72.dp)
+                .size(55.dp)
                 .clip(CircleShape)
                 .background(iconTint.copy(alpha = 0.12f))
-                .border(1.5.dp, iconTint.copy(alpha = 0.35f), CircleShape),
+                .border(1.3.dp, iconTint.copy(alpha = 0.35f), CircleShape),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = iconTint,
-                modifier = Modifier.size(34.dp),
+                modifier = Modifier.size(30.dp),
             )
         }
     }
 }
 
+// NEW: compact title + badge row
 @Composable
-private fun PermissionBadge(label: String, isMandatory: Boolean) {
+private fun TitleWithBadge(
+    title: String,
+    badgeLabel: String,
+    isMandatory: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            fontSize = 19.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            lineHeight = 26.sp,
+            modifier = Modifier.weight(1f, fill = false)
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        PermissionBadge(
+            label = badgeLabel,
+            isMandatory = isMandatory,
+            compact = true
+        )
+    }
+}
+
+// changed: now supports compact mode
+@Composable
+private fun PermissionBadge(
+    label: String,
+    isMandatory: Boolean,
+    compact: Boolean = false,
+) {
     val bgColor = if (isMandatory) Color(0x33E05555) else Color(0x332ECC71)
     val textColor = if (isMandatory) Color(0xFFFF8080) else Color(0xFF2ECC71)
     val borderColor = if (isMandatory) Color(0x66E05555) else Color(0x662ECC71)
 
+    val horizontalPadding = if (compact) 8.dp else 12.dp
+    val verticalPadding = if (compact) 2.dp else 4.dp
+    val fontSize = if (compact) 9.sp else 10.sp
+
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(999.dp))
             .background(bgColor)
-            .border(1.dp, borderColor, RoundedCornerShape(20.dp))
-            .padding(horizontal = 12.dp, vertical = 4.dp),
+            .border(1.dp, borderColor, RoundedCornerShape(999.dp))
+            .padding(horizontal = horizontalPadding, vertical = verticalPadding),
     ) {
         Text(
             text = label.uppercase(),
-            fontSize = 10.sp,
+            fontSize = fontSize,
             fontWeight = FontWeight.Bold,
             color = textColor,
-            letterSpacing = 1.2.sp,
+            letterSpacing = 1.1.sp,
         )
     }
 }
 
 @Composable
-private fun StepsSection(steps: List<String>, accentColor: Color) {
+private fun StepsSection(
+    steps: List<String>,
+    accentColor: Color
+) {
+    val colors = LocalAppColors.current
     Column(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        // Section header
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier.padding(bottom = 2.dp),
         ) {
             Icon(
                 imageVector = Icons.Outlined.Lock,
                 contentDescription = null,
-                tint = Color.White.copy(alpha = 0.4f),
-                modifier = Modifier.size(14.dp),
+                tint = Color.White.copy(alpha = 0.45f),
+                modifier = Modifier.size(13.dp),
             )
             Text(
-                text = "HOW TO ENABLE",
+                text = "How to enable",
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White.copy(alpha = 0.4f),
-                letterSpacing = 1.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White.copy(alpha = 0.55f),
+                letterSpacing = 0.6.sp,
             )
         }
 
         steps.forEachIndexed { index, step ->
-            StepRow(number = index + 1, text = step, accentColor = accentColor)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.Black)
+                    .border(
+                        0.8.dp,
+                        Color.White.copy(alpha = 0.05f),
+                        RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(accentColor.copy(alpha = 0.16f))
+                        .border(
+                            0.8.dp,
+                            accentColor.copy(alpha = 0.45f),
+                            CircleShape
+                        ),
+                ) {
+                    Text(
+                        text = (index + 1).toString(),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = accentColor,
+                    )
+                }
+                Text(
+                    text = step,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White.copy(alpha = 0.9f),
+                    lineHeight = 18.sp,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
-    }
-}
-
-@Composable
-private fun StepRow(number: Int, text: String, accentColor: Color) {
-    val colors = LocalAppColors.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(colors.cardSurface)
-            .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(14.dp))
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        // Step number bubble
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape)
-                .background(accentColor.copy(alpha = 0.15f))
-                .border(1.dp, accentColor.copy(alpha = 0.4f), CircleShape),
-        ) {
-            Text(
-                text = number.toString(),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = accentColor,
-            )
-        }
-        Text(
-            text = text,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White.copy(alpha = 0.88f),
-            lineHeight = 20.sp,
-            modifier = Modifier.weight(1f),
-        )
     }
 }
 
@@ -367,27 +395,25 @@ private fun PrivacyNote(note: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(Color(0xFF0D2B1A))   // very dark green tint — signals "safe"
-            .border(1.dp, greenColor.copy(alpha = 0.2f), RoundedCornerShape(14.dp))
-            .padding(horizontal = 16.dp, vertical = 14.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFF0D2B1A))
+            .border(0.8.dp, greenColor.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .padding(horizontal = 14.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.Top,
     ) {
         Icon(
             imageVector = Icons.Outlined.VerifiedUser,
             contentDescription = null,
             tint = greenColor,
-            modifier = Modifier
-                .size(18.dp)
-                .padding(top = 1.dp),
+            modifier = Modifier.size(16.dp),
         )
         Text(
             text = note,
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.Normal,
-            color = greenColor.copy(alpha = 0.85f),
-            lineHeight = 19.sp,
+            color = greenColor.copy(alpha = 0.88f),
+            lineHeight = 17.sp,
             modifier = Modifier.weight(1f),
         )
     }
@@ -402,34 +428,32 @@ private fun ActionButtons(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        // "Not Now" — text button, left side
         TextButton(
             onClick = onDismiss,
             modifier = Modifier.weight(1f),
         ) {
             Text(
-                text = "Not Now",
-                fontSize = 15.sp,
+                text = "Not now",
+                fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White.copy(alpha = 0.45f),
+                color = Color.White.copy(alpha = 0.5f),
             )
         }
 
-        // "Agree & Open Settings" — gradient filled pill, right side
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .weight(2f)
-                .height(52.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .height(48.dp)
+                .clip(RoundedCornerShape(14.dp))
                 .background(
                     Brush.horizontalGradient(
                         colors = listOf(
                             accentColor,
-                            accentColor.copy(alpha = 0.75f),
+                            accentColor.copy(alpha = 0.8f),
                         )
                     )
                 )
@@ -441,18 +465,18 @@ private fun ActionButtons(
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Shield,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(15.dp),
                 )
                 Text(
                     text = agreeText,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                 )
             }

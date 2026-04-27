@@ -39,7 +39,7 @@ fun SectionLabel(icon: ImageVector, title: String) {
         )
         Text(
             text = title,
-            color = Color.White,
+            color = colors.textPrimary,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
         )

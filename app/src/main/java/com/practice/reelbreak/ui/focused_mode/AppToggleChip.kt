@@ -71,7 +71,7 @@ fun AppToggleChip(
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = app.name,
-                color = if (isBlocked) Color.White else colors.textSecondary,
+                color = if (isBlocked) colors.textPrimary else colors.textSecondary,
                 fontSize = 10.sp,
                 fontWeight = if (isBlocked) FontWeight.SemiBold else FontWeight.Normal,
                 textAlign = TextAlign.Center
@@ -85,7 +85,7 @@ fun AppToggleChip(
                     .padding(5.dp)
                     .size(16.dp)
                     .clip(CircleShape)
-                    .background(Color.White),
+                    .background(colors.textPrimary),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

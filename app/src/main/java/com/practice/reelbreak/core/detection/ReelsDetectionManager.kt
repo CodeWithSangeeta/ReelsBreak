@@ -96,13 +96,57 @@ class ReelsDetectionManager(
 //    }
 
 
+//    private fun handleReelsScreen(rootNode: AccessibilityNodeInfo?, packageName: String?) {
+//        val currentPackage = session.currentApp
+//        isBlockingInProgress = true
+//
+//        // --- NEW: compute a simple fingerprint for the current reel screen ---
+//        val reelFingerprint = computeReelFingerprint(rootNode, packageName)
+//        val isSameReelAsLast = reelFingerprint != 0 && reelFingerprint == session.lastReelHash
+//
+//        scope.launch {
+//            try {
+//                when (engine.decide()) {
+//                    BlockingDecisionEngine.Decision.BLOCK -> {
+//                        Log.d("REELSBREAK", "Decision BLOCK $currentPackage")
+//                        actionController.triggerBlock(currentPackage)
+//                    }
+//                    BlockingDecisionEngine.Decision.ALLOW -> {
+//                        Log.d(
+//                            "REELSBREAK",
+//                            "Decision ALLOW (sameReel=$isSameReelAsLast) for $currentPackage"
+//                        )
+//
+//                        // Only count when reel actually changed
+//                        if (!isSameReelAsLast) {
+//                            engine.onReelAllowed()
+//                            session.lastReelHash = reelFingerprint
+//                        }
+//
+//                        isBlockingInProgress = false
+//                    }
+//                    BlockingDecisionEngine.Decision.SKIP_REEL -> {
+//                        isBlockingInProgress = false
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                Log.e("REELSBREAK", "Error in handleReelsScreen ${e.message}")
+//                isBlockingInProgress = false
+//            }
+//        }
+//    }
+
+
     private fun handleReelsScreen(rootNode: AccessibilityNodeInfo?, packageName: String?) {
         val currentPackage = session.currentApp
         isBlockingInProgress = true
 
-        // --- NEW: compute a simple fingerprint for the current reel screen ---
         val reelFingerprint = computeReelFingerprint(rootNode, packageName)
-        val isSameReelAsLast = reelFingerprint != 0 && reelFingerprint == session.lastReelHash
+        val hasValidFingerprint = reelFingerprint != 0
+        val isSameReelAsLast = hasValidFingerprint && reelFingerprint == session.lastReelHash
+
+        // Same reel as last time — do nothing, stay blocked
+        if (isSameReelAsLast) return
 
         scope.launch {
             try {
@@ -110,27 +154,29 @@ class ReelsDetectionManager(
                     BlockingDecisionEngine.Decision.BLOCK -> {
                         Log.d("REELSBREAK", "Decision BLOCK $currentPackage")
                         actionController.triggerBlock(currentPackage)
-                    }
-                    BlockingDecisionEngine.Decision.ALLOW -> {
-                        Log.d(
-                            "REELSBREAK",
-                            "Decision ALLOW (sameReel=$isSameReelAsLast) for $currentPackage"
-                        )
-
-                        // Only count when reel actually changed
-                        if (!isSameReelAsLast) {
-                            engine.onReelAllowed()
-                            session.lastReelHash = reelFingerprint
-                        }
-
                         isBlockingInProgress = false
                     }
+
+                    BlockingDecisionEngine.Decision.ALLOW -> {
+                        if (hasValidFingerprint) {
+                            Log.d("REELSBREAK", "New reel counted hash=$reelFingerprint for $currentPackage")
+                            engine.onReelAllowed()
+                            session.lastReelHash = reelFingerprint
+                            // ✅ Stay blocked — don't set isBlockingInProgress = false
+                            // It only resets in resetSession() when user leaves reels
+                        } else {
+                            Log.d("REELSBREAK", "ALLOW but no valid fingerprint — skip count")
+                            isBlockingInProgress = false
+                        }
+                    }
+
                     BlockingDecisionEngine.Decision.SKIP_REEL -> {
+                        Log.d("REELSBREAK", "SKIP_REEL $currentPackage")
                         isBlockingInProgress = false
                     }
                 }
             } catch (e: Exception) {
-                Log.e("REELSBREAK", "Error in handleReelsScreen ${e.message}")
+                Log.e("REELSBREAK", "Error in handleReelsScreen ${e.message}", e)
                 isBlockingInProgress = false
             }
         }
@@ -149,6 +195,7 @@ class ReelsDetectionManager(
 
     private fun resetSession() {
         session.reelsMode = false
+        session.currentApp = null
         session.scrollCount = 0
         session.lastReelHash = 0   //add this
         isBlockingInProgress = false

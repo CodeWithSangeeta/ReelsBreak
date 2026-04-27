@@ -54,7 +54,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
         Column {
             Text(
                 text = title,
-                color = Color.White,
+                color = colors.textPrimary,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold
             )

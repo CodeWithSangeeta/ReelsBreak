@@ -58,7 +58,7 @@ fun AboutRow(
             Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(18.dp))
         }
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title,    color = Color.White,          fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text(text = title,    color = colors.textPrimary,          fontSize = 14.sp, fontWeight = FontWeight.Medium)
             Text(text = subtitle, color = colors.textSecondary, fontSize = 11.sp)
         }
         Icon(

@@ -11,15 +11,17 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.practice.reelbreak.ui.theme.LocalAppColors
 
 @Composable
 fun OnboardHeading(text :String) {
+    val colors = LocalAppColors.current
     Text(
         text = text,
         style = MaterialTheme.typography.headlineLarge,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center,
-        color = Color.White,
+        color = colors.textPrimary,
         modifier = Modifier
             .fillMaxWidth()
             .semantics { heading() },

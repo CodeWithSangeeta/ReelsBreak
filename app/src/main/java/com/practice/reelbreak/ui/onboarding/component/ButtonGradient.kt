@@ -28,7 +28,7 @@ fun ButtonGradient(
             .height(50.dp)
             .border(
                 width = 1.dp,
-                color = Color.White.copy(alpha = 0.5f),
+                color = colors.textPrimary.copy(alpha = 0.5f),
                 shape = RoundedCornerShape(16.dp)
             )
             .shadow(
@@ -52,7 +52,7 @@ fun ButtonGradient(
             Row {
                 Text(
                     text = text,
-                    color = Color.White,
+                    color = colors.textPrimary,
                     style = MaterialTheme.typography.titleMedium
                 )
             }

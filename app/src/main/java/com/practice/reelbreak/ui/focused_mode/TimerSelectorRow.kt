@@ -79,7 +79,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "$minutes",
-                        color = Color.White,
+                        color = colors.textPrimary,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )

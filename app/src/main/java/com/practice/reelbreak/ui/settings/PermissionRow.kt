@@ -77,7 +77,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                color = Color.White,
+                color = colors.textPrimary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -137,7 +137,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
             ) {
                 Text(
                     text = "Enable",
-                    color = Color.White,
+                    color = colors.textPrimary,
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold
                 )

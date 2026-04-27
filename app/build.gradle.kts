@@ -5,7 +5,7 @@ plugins {
     //ksp plugin
     alias(libs.plugins.ksp)
 
-//hilt plugin
+    //hilt plugin
     alias(libs.plugins.hilt)
 
 }

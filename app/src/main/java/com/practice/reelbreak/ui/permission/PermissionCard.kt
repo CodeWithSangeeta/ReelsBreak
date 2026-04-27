@@ -66,7 +66,7 @@ fun PermissionCard(
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(24.dp)),
         colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
+        border = BorderStroke(1.dp, colors.textPrimary.copy(alpha = 0.2f)),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
@@ -96,7 +96,7 @@ fun PermissionCard(
                 Text(
                     text = model.title,
                     fontSize = 20.sp,
-                    color = Color.White,
+                    color = colors.textPrimary,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.weight(1f)
                 )
@@ -107,7 +107,7 @@ fun PermissionCard(
                             .height(22.dp)
                             .width(70.dp)
                         ) {
-                        Text("Optional", color = Color.White, fontSize = 12.sp)
+                        Text("Optional", color = colors.textPrimary, fontSize = 12.sp)
                         Spacer(modifier = Modifier.width(2.dp))
                         Icon(
                             imageVector = Icons.Default.Check,
@@ -123,7 +123,7 @@ fun PermissionCard(
                 modifier = Modifier.padding(start = 50.dp,top =8.dp),
                 text = model.description,
                 fontSize = 15.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                color = colors.textPrimary.copy(alpha = 0.7f)
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -136,22 +136,22 @@ fun PermissionCard(
                     .height(48.dp)
                     .border(
                         width = 1.dp,
-                        color = Color.White.copy(alpha = 0.3f),
+                        color = colors.textPrimary.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(16.dp)
                     ),
                 shape = RoundedCornerShape(16.dp),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Gray,
-                    contentColor = Color.White,
+                    contentColor = colors.textPrimary,
                     disabledContainerColor = Color(0xFF089530),
-                    disabledContentColor = Color.White
+                    disabledContentColor = colors.textPrimary
                 )
 
             ) {
                 Text(
                     text = if (model.status is PermissionStatus.Granted) "Enabled" else "Enable",
-                    color = Color.White,
+                    color = colors.textPrimary,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -163,7 +163,7 @@ fun PermissionCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = if (isExpanded) "Hide details" else "Learn more",
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = colors.textPrimary.copy(alpha = 0.8f),
                         fontSize = 14.sp
                     )
                     Spacer(modifier=Modifier.width(2.dp))

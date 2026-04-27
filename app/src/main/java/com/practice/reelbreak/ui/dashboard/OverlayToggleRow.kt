@@ -28,7 +28,7 @@ fun OverlayToggleRow(
         Column {
             androidx.compose.material3.Text(
                 text = "Overlay bubble",
-                color = androidx.compose.ui.graphics.Color.White,
+                color = colors.textPrimary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold
             )

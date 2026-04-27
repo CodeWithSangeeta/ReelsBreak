@@ -68,7 +68,7 @@ fun PermissionDetailSheet(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Text(text = title, color = Color.White, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
+            Text(text = title, color = colors.textPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
@@ -140,7 +140,7 @@ fun PermissionDetailSheet(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Text(text = "Go to Settings →", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                Text(text = "Go to Settings →", color = colors.textPrimary, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
             }
         }
 

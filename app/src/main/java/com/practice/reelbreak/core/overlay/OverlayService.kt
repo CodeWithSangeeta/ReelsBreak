@@ -86,17 +86,4 @@ class OverlayService : Service() {
         Log.d("OVERLAY_SERVICE", "addView done")
     }
 
-//    companion object {
-//        fun start(context: Context) {
-//            Log.d("OVERLAY_SERVICE", "start() called")
-//            val intent = Intent(context, OverlayService::class.java)
-//            context.startService(intent)
-//        }
-//
-//        fun stop(context: Context) {
-//            Log.d("OVERLAY_SERVICE", "stop() called")
-//            val intent = Intent(context, OverlayService::class.java)
-//            context.stopService(intent)
-//        }
-//    }
 }

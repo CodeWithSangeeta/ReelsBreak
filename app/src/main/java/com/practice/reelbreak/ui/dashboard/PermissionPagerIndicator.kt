@@ -35,7 +35,7 @@ fun PermissionPagerIndicator(
                     .size(if (isSelected) 8.dp else 6.dp)
                     .clip(CircleShape)
                     .background(
-                        if (isSelected) Color.White else colors.textSecondary.copy(alpha = 0.4f)
+                        if (isSelected) colors.textPrimary else colors.textSecondary.copy(alpha = 0.4f)
                     )
             )
         }

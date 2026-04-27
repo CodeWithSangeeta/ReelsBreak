@@ -66,7 +66,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
                 Column {
                     Text(
                         text = "Focus is Active",
-                        color = Color.White,
+                        color = colors.textPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -90,7 +90,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
             ) {
                 Text(
                     text = "Stop",
-                    color = Color.White,
+                    color = colors.textPrimary,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.SemiBold
                 )

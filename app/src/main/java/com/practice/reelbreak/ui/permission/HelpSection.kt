@@ -49,7 +49,7 @@ fun HelpSection() {
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(24.dp)),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF805A5F).copy(alpha = 0.6f)),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.2f)),
+        border = BorderStroke(1.dp, colors.textPrimary.copy(alpha = 0.2f)),
         shape = RoundedCornerShape(24.dp)) {
         Column(
             modifier = Modifier
@@ -67,7 +67,7 @@ fun HelpSection() {
                 Icon(
                     imageVector =Icons.Default.HelpOutline,
                     contentDescription = "Need Help",
-                    tint = Color.White,
+                    tint = colors.textPrimary,
                     modifier = Modifier
                         .size(32.dp)
                         .align(Alignment.Center)
@@ -76,7 +76,7 @@ fun HelpSection() {
                 Text(
                     text = "Need Help?",
                     fontSize = 20.sp,
-                    color = Color.White,
+                    color = colors.textPrimary,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.weight(1f)
                 )
@@ -86,21 +86,21 @@ fun HelpSection() {
                 modifier = Modifier.padding(start = 50.dp,top =8.dp),
                 text = "If the app closes after enabling permission...",
                 fontSize = 15.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                color = colors.textPrimary.copy(alpha = 0.7f)
             )
             Spacer(modifier = Modifier.height(1.dp))
             Text(
                 modifier = Modifier.padding(start = 50.dp,top =8.dp),
                 text = "Some devices restart apps after enabling Accessibility.",
                 fontSize = 15.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                color = colors.textPrimary.copy(alpha = 0.7f)
             )
             Spacer(modifier = Modifier.height(1.dp))
             Text(
                 modifier = Modifier.padding(start = 50.dp,top =8.dp),
                 text = "Simply reopen ReelsGuard – your settings will be saved.",
                 fontSize = 15.sp,
-                color = Color.White.copy(alpha = 0.7f)
+                color = colors.textPrimary.copy(alpha = 0.7f)
             )
 
             TextButton(onClick = { showSteps = !showSteps },
@@ -130,7 +130,7 @@ fun HelpSection() {
                     ).forEach { step ->
                         Text(step, fontSize = 13.sp,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = Color.White.copy(alpha = 0.95f),)
+                            color = colors.textPrimary.copy(alpha = 0.95f),)
                     }
                 }
             }
