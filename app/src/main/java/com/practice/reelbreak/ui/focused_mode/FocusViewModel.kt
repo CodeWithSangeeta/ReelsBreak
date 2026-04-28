@@ -43,7 +43,23 @@ class FocusViewModel @Inject constructor(
         viewModelScope.launch {
             prefs.focusEndTimestamp.collectLatest { endTs ->
                 FocusStateHolder.focusEndTimestamp = endTs
-                if (endTs > 0L) startTimerInternal(endTs) else stopTimerInternal()
+                val now = System.currentTimeMillis()
+                when {
+                    // ✅ Valid active session — start countdown
+                    endTs > 0L && endTs > now -> {
+                        startTimerInternal(endTs)
+                    }
+                    // ✅ Session expired while app was closed — auto-clean
+                    endTs > 0L && endTs <= now -> {
+                        FocusStateHolder.isFocusActive = false
+                        FocusStateHolder.blockedPackages = emptySet()
+                        FocusStateHolder.focusEndTimestamp = 0L
+                        prefs.stopFocusSession()   // clear stale DataStore value
+                        stopTimerInternal()
+                    }
+                    // ✅ No session — do nothing
+                    else -> stopTimerInternal()
+                }
             }
         }
     }
@@ -118,7 +134,12 @@ class FocusViewModel @Inject constructor(
         timerJob?.cancel()
         timerJob = null
         _uiState.update { it.copy(remainingMillis = 0L, isFocusActive = false) }
+        // Clear persisted end timestamp so it doesn't re-trigger on next launch
+        viewModelScope.launch {
+            prefs.stopFocusSession()
+        }
     }
+
 
     fun dismissError() {
         _uiState.update { it.copy(errorMessage = null) }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +27,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -46,12 +50,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.practice.reelbreak.R
 import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.focused_mode.AccessibilityWarningBanner
 import com.practice.reelbreak.ui.focused_mode.FocusHeader
 import com.practice.reelbreak.ui.focused_mode.StartFocusButton
 import com.practice.reelbreak.ui.focused_mode.TimerSelectorRow
+import com.practice.reelbreak.ui.permission.PermissionBottomSheet
+import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.practice.reelbreak.viewmodel.PermissionsViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import android.provider.Settings
+import android.content.ComponentName
+import androidx.compose.runtime.DisposableEffect
+import com.practice.reelbreak.core.accessibility.ReelsAccessibilityService
 
 data class FocusAppChip(
     val name: String,
@@ -68,15 +84,57 @@ private val focusApps = listOf(
     FocusAppChip("Twitter", "com.twitter.android", R.drawable.ic_twitter)
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FocusScreen(
     viewModel: FocusViewModel = hiltViewModel(),
+    permissionsViewModel: PermissionsViewModel = hiltViewModel(),
     selectedTab: Int = 1,
     onTabSelected: (Int) -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val colors = LocalAppColors.current
     val context = LocalContext.current
+
+    val permissionUiState by permissionsViewModel.uiState.collectAsState()
+    val isAccessibilityGranted = permissionUiState.permissionState.accessibilityGranted
+    val sheetState by permissionsViewModel.sheetState.collectAsState()
+    val permModalState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val nowGranted = isAccessibilityServiceEnabled(context)
+                if (nowGranted) {
+                    // ✅ User just came back from Settings having enabled it — dismiss
+                    permissionsViewModel.updateAccessibilityGranted(true)
+                    permissionsViewModel.dismissSheet()
+                } else {
+                    // Still not granted — show sheet
+                    permissionsViewModel.checkAndShowSheetIfNeeded(context)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    // ── Check accessibility when screen opens ────────────────────────
+    LaunchedEffect(Unit) {
+        permissionsViewModel.checkAndShowSheetIfNeeded(context)
+    }
+
+    if (sheetState.isVisible && sheetState.type != null) {
+        PermissionBottomSheet(
+            type = sheetState.type!!,
+            sheetState = permModalState,
+            onDismiss = { permissionsViewModel.dismissSheet() },
+            onAgree = {
+                permissionsViewModel.onPermissionSheetAgree(context, sheetState.type!!)
+            }
+        )
+    }
 
 // Show validation error as Toast
     LaunchedEffect(state.errorMessage) {
@@ -112,13 +170,22 @@ fun FocusScreen(
 
                 // ── Header ──────────────────────────────────────────────
                 FocusHeader(isFocusActive = state.isFocusActive)
-                Spacer(modifier = Modifier.height(28.dp))
-                // ── Currently Blocked Apps (only when session is active) ────────────
-                if (state.isFocusActive && state.selectedApps.isNotEmpty()) {
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+//                // ── Accessibility warning banner (if not granted) ────
+                if (!isAccessibilityGranted) {
+                    AccessibilityWarningBanner(
+                        onClick = {
+                            permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
+                        }
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    CurrentlyBlockedSection(blockedPackages = state.selectedApps)
                 }
+
+
                 Spacer(modifier = Modifier.height(28.dp))
+
 
                 // ── Countdown Circle (always visible; shows time when active) ──
                 CountdownTimerCircle(
@@ -130,7 +197,7 @@ fun FocusScreen(
 
                 Spacer(modifier = Modifier.height(28.dp))
 
-                // ── Session Duration (disabled while active) ─────────────
+
                 SectionHeader(
                     icon = {
                         Icon(
@@ -144,10 +211,9 @@ fun FocusScreen(
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 TimerSelectorRow(
-                    selectedTime = state.selectedMinutes.toLong(),
-                    onTimeSelected = { minutes: Int ->
-                        if (!state.isFocusActive) viewModel.setSelectedMinutes(minutes)
-                    }
+                    selectedMinutes = state.selectedMinutes,
+                    enabled = !state.isFocusActive,
+                    onSelect = { viewModel.setSelectedMinutes(it) }
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -171,6 +237,15 @@ fun FocusScreen(
                     onToggle = { pkg -> viewModel.toggleAppSelection(pkg) }
                 )
 
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // ── Currently Blocked Apps (only when session is active) ────────────
+                if (state.isFocusActive && state.selectedApps.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CurrentlyBlockedSection(blockedPackages = state.selectedApps)
+                }
+
+
                 Spacer(modifier = Modifier.height(28.dp))
 
                 // ── Quote ────────────────────────────────────────────────
@@ -182,12 +257,32 @@ fun FocusScreen(
                 StartFocusButton(
                     isFocusActive = state.isFocusActive,
                     onToggle = {
-                        if (state.isFocusActive) viewModel.stopFocusSession()
-                        else viewModel.startFocusSession()
+                        // Re-read live — don't rely on stale recomposition state
+                        val granted = isAccessibilityServiceEnabled(context)
+                        when {
+                            !granted -> permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
+                            state.isFocusActive -> viewModel.stopFocusSession()
+                            else -> viewModel.startFocusSession()
+                        }
                     }
                 )
             }
         }
+    }
+}
+
+
+ fun isAccessibilityServiceEnabled(context: android.content.Context): Boolean {
+    val expectedComponent = ComponentName(
+        context,
+        ReelsAccessibilityService::class.java
+    )
+    val enabledServices = Settings.Secure.getString(
+        context.contentResolver,
+        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+    ) ?: return false
+    return enabledServices.split(":").any { entry ->
+        ComponentName.unflattenFromString(entry) == expectedComponent
     }
 }
 
@@ -527,31 +622,47 @@ fun QuoteCard() {
 
 
 
+// Data to resolve package → iconRes (same as focusApps list)
+private fun packageToIconRes(pkg: String): Int? = when (pkg) {
+    "com.instagram.android"       -> R.drawable.ic_instagram
+    "com.google.android.youtube"  -> R.drawable.ic_youtube
+    "com.facebook.katana"         -> R.drawable.ic_facebook
+    "com.zhiliaoapp.musically"    -> R.drawable.ic_tiktok
+    "com.snapchat.android"        -> R.drawable.ic_snapchat
+    "com.twitter.android"         -> R.drawable.ic_twitter
+    "com.whatsapp"                -> R.drawable.ic_whatsapp
+    else                          -> null
+}
+
+private fun packageToName(pkg: String): String = when (pkg) {
+    "com.instagram.android"       -> "Instagram"
+    "com.google.android.youtube"  -> "YouTube"
+    "com.facebook.katana"         -> "Facebook"
+    "com.zhiliaoapp.musically"    -> "TikTok"
+    "com.snapchat.android"        -> "Snapchat"
+    "com.twitter.android"         -> "Twitter"
+    "com.whatsapp"                -> "WhatsApp"
+    else -> pkg.substringAfterLast(".").replaceFirstChar { it.uppercase() }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CurrentlyBlockedSection(blockedPackages: Set<String>) {
-
-    // map package → readable name (same as AppBlockedScreen)
-    fun pkgToName(pkg: String) = when (pkg) {
-        "com.instagram.android"       -> "Instagram"
-        "com.google.android.youtube"  -> "YouTube"
-        "com.facebook.katana"         -> "Facebook"
-        "com.zhiliaoapp.musically"    -> "TikTok"
-        "com.snapchat.android"        -> "Snapchat"
-        "com.twitter.android"         -> "Twitter"
-        "com.whatsapp"                -> "WhatsApp"
-        else -> pkg.substringAfterLast(".").replaceFirstChar { it.uppercase() }
-    }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFF1C1233))
-            .border(1.dp, Color(0xFF7C3AED).copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+            .border(
+                1.dp,
+                Color(0xFF7C3AED).copy(alpha = 0.5f),
+                RoundedCornerShape(16.dp)
+            )
             .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Title row
+        // Title
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -565,38 +676,70 @@ private fun CurrentlyBlockedSection(blockedPackages: Set<String>) {
             )
         }
 
-        // App pills row (wrapping)
-        androidx.compose.foundation.layout.FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+        // App logo grid (wrapping row)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             blockedPackages.forEach { pkg ->
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(999.dp))
-                        .background(Color(0xFF4C1D95).copy(alpha = 0.5f))
-                        .border(
-                            1.dp,
-                            Color(0xFF9333EA).copy(alpha = 0.6f),
-                            RoundedCornerShape(999.dp)
-                        )
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                val iconRes = packageToIconRes(pkg)
+                val name = packageToName(pkg)
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = "🚫",
-                            fontSize = 11.sp
-                        )
-                        Text(
-                            text = pkgToName(pkg),
-                            color = Color(0xFFE9D5FF),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium
-                        )
+                    Box {
+                        // App logo circle
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color(0xFF2D1B4E))
+                                .border(
+                                    1.5.dp,
+                                    Color(0xFF9333EA).copy(alpha = 0.7f),
+                                    RoundedCornerShape(14.dp)
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (iconRes != null) {
+                                Image(
+                                    painter = painterResource(id = iconRes),
+                                    contentDescription = name,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            } else {
+                                // Fallback: first letter
+                                Text(
+                                    text = name.first().toString(),
+                                    color = Color.White,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        // 🚫 badge on top-right
+                        Box(
+                            modifier = Modifier
+                                .size(18.dp)
+                                .align(Alignment.TopEnd)
+                                .clip(CircleShape)
+                                .background(Color(0xFF1C1233))
+                                .border(1.dp, Color(0xFF7C3AED), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "🚫", fontSize = 9.sp)
+                        }
                     }
+
+                    Text(
+                        text = name,
+                        color = Color(0xFFE9D5FF),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Medium
+                    )
                 }
             }
         }

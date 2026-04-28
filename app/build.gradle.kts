@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.ui.text)
     implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.foundation.layout)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     //Compose UI

@@ -13,6 +13,7 @@ import com.practice.reelbreak.core.permission.OverlayPermissionChecker
 import com.practice.reelbreak.core.permission.UsagePermissionChecker
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.PermissionState
+import com.practice.reelbreak.ui.focusedmode.isAccessibilityServiceEnabled
 import com.practice.reelbreak.ui.permission.BulletIconType
 import com.practice.reelbreak.ui.permission.PermissionAction
 import com.practice.reelbreak.ui.permission.PermissionSheetType
@@ -95,15 +96,29 @@ class PermissionsViewModel @Inject constructor(
         }
     }
 
-        fun checkAndShowSheetIfNeeded(context: Context) {
-            val hasAccessibility = AccessibilityPermissionChecker.isAccessibilityEnabled(context)
-            val hasUsage = UsagePermissionChecker.isUsageAccessGranted(context)
-            when {
-                !hasAccessibility -> showSheet(PermissionSheetType.ACCESSIBILITY)
-                !hasUsage -> showSheet(PermissionSheetType.USAGE_ACCESS)
-                // both granted → do nothing
-            }
+//        fun checkAndShowSheetIfNeeded(context: Context) {
+//            val hasAccessibility = AccessibilityPermissionChecker.isAccessibilityEnabled(context)
+//            val hasUsage = UsagePermissionChecker.isUsageAccessGranted(context)
+//            when {
+//                !hasAccessibility -> showSheet(PermissionSheetType.ACCESSIBILITY)
+//                !hasUsage -> showSheet(PermissionSheetType.USAGE_ACCESS)
+//                // both granted → do nothing
+//            }
+//        }
+
+    fun checkAndShowSheetIfNeeded(context: Context) {
+        val isGranted = isAccessibilityServiceEnabled(context)
+
+        // Always update the state
+        _uiState.update {
+            it.copy(permissionState = it.permissionState.copy(accessibilityGranted = isGranted))
         }
+
+        // ✅ Only open sheet if NOT granted — never open if already granted
+        if (!isGranted && !_sheetState.value.isVisible) {
+            showSheet(PermissionSheetType.ACCESSIBILITY)
+        }
+    }
 
         fun showSheet(type: PermissionSheetType) {
             _sheetState.value = PermissionSheetState(isVisible = true, type = type)
@@ -231,5 +246,13 @@ class PermissionsViewModel @Inject constructor(
                 }
             }
         }
+
+
+
+    fun updateAccessibilityGranted(granted: Boolean) {
+        _uiState.update {
+            it.copy(permissionState = it.permissionState.copy(accessibilityGranted = granted))
+        }
+    }
 
     }
