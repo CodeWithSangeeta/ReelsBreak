@@ -20,6 +20,8 @@ ksp = "2.0.21-1.0.27"
 hilt = "2.56.2"
 hiltCompose = "1.2.0"
 runtimeVersion = "1.11.0"
+uiTextVersion = "1.11.0"
+uiGraphics = "1.11.0"
 
 
 [libraries]
@@ -49,6 +51,8 @@ androidx-hilt-android = { group = "com.google.dagger",name="hilt-android",versio
 androidx-hilt-compiler = { group = "com.google.dagger",name="hilt-android-compiler",version.ref = "hilt" }
 androidx-hilt-compose = { group = "androidx.hilt",name="hilt-navigation-compose",version.ref = "hiltCompose" }
 androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
+androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiTextVersion" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 
 
 [plugins]

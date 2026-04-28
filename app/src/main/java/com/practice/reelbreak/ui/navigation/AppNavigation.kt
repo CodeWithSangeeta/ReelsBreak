@@ -83,7 +83,6 @@ fun AppNavigation(
 
         composable(Routes.FOCUS) {
             FocusScreen(
-                navController = navController,
                 selectedTab = selectedTab,
                 onTabSelected = onTabSelected
             )

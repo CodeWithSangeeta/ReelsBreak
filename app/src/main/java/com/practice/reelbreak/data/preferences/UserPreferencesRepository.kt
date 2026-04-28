@@ -238,4 +238,26 @@ class UserPreferencesRepository(private val context: Context) {
             prefs[DAILY_TIME_LIMIT_MINUTES] = minutes
         }
     }
+
+
+    val isFocusActive: Flow<Boolean> = context.dataStore.data
+        .map { prefs -> prefs[UserPreferences.IS_FOCUS_ACTIVE] ?: false }
+
+    val focusEndTimestamp: Flow<Long> = context.dataStore.data
+        .map { prefs -> prefs[UserPreferences.FOCUS_END_TIMESTAMP] ?: 0L }
+
+    // Set focus active + end time
+    suspend fun startFocusSession(endTimestampMillis: Long) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.IS_FOCUS_ACTIVE] = true
+            prefs[UserPreferences.FOCUS_END_TIMESTAMP] = endTimestampMillis
+        }
+    }
+
+    suspend fun stopFocusSession() {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.IS_FOCUS_ACTIVE] = false
+            prefs[UserPreferences.FOCUS_END_TIMESTAMP] = 0L
+        }
+    }
 }

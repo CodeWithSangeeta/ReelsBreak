@@ -240,32 +240,7 @@ fun DashboardScreen(
                             BlockMode.SMART_FILTER -> dashboardState.activeMode == ActiveBlockMode.SMART
                         }
 
-//                        BlockModeCard(
-//                            option = option,
-//                            isSelected = dashboardState.expandedMode == option.mode,
-//                            isExpanded = dashboardState.expandedMode == option.mode,
-//                            isOn = isOn,
-//                            onClick = {
-//                                val hasAccessibility =
-//                                    permissionState.accessibilityGranted
 //
-//                                if (!hasAccessibility) {
-//                                    // Accessibility is mandatory before selecting any mode
-//                                    permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
-//                                } else {
-//                                    dashboardViewModel.onBlockModeCardClicked(option.mode)
-//                                }
-//                            },
-//                            detailContent = {
-//                                when (option.mode) {
-//                                    BlockMode.BLOCK_NOW   -> StrictDetails()
-//                                    BlockMode.LIMIT_BASED -> LimitSettingsContent()
-//                                    BlockMode.SMART_FILTER -> SmartFilterDetails()
-//                                }
-//                            }
-//                        )
-
-
                         BlockModeCard(
                             option = option,
                             isSelected = dashboardState.activeMode == when (option.mode) {

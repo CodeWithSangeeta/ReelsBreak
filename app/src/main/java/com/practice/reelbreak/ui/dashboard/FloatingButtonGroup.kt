@@ -46,7 +46,7 @@ data class NavItem(
 
 val navItems = listOf(
     NavItem(Icons.Filled.Home,     "Home",     Routes.DASHBOARD),
-    NavItem(Icons.Filled.Shield,   "Guard", Routes.FOCUS),
+    NavItem(Icons.Filled.Shield,   "Focus", Routes.FOCUS),
     NavItem(Icons.Filled.Settings, "Settings", Routes.SETTINGS)
 )
 

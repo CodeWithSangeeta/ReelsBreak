@@ -4,6 +4,7 @@ package com.practice.reelbreak.data.preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import kotlinx.coroutines.flow.Flow
@@ -112,6 +113,10 @@ object UserPreferences {
     // Whether limits are relaxed on Sat/Sun. Default: false
     val IS_WEEKEND_RELAX_ENABLED = booleanPreferencesKey("is_weekend_relax_enabled")
 
+    // Is a focus session currently active
+    val IS_FOCUS_ACTIVE = booleanPreferencesKey("is_focus_active")
 
+    // When the current focus session ends (epoch millis)
+    val FOCUS_END_TIMESTAMP = longPreferencesKey("focus_end_timestamp")
 
 }
