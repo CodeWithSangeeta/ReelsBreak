@@ -109,5 +109,15 @@ class DashboardViewModel @Inject constructor(
             }
 
     }
+
+    fun onExpandToggle(mode: BlockMode) {
+        val currentExpanded = _uiState.value.expandedMode
+        _uiState.update {
+            it.copy(
+                // If same mode tapped — collapse. If different — expand that one.
+                expandedMode = if (currentExpanded == mode) null else mode
+            )
+        }
+    }
     }
 
