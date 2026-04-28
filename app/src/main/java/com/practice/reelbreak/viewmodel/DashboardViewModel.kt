@@ -119,5 +119,39 @@ class DashboardViewModel @Inject constructor(
             )
         }
     }
+
+
+    fun incrementDailyTimeLimit(step: Int = 5) {
+        viewModelScope.launch {
+            val current = uiState.value.dailyTimeLimitMinutes
+            val newValue = (current + step).coerceAtMost(600)   // max 10 hours
+            userPreferencesRepository.setDailyTimeLimitMinutes(newValue)
+        }
+    }
+
+    fun decrementDailyTimeLimit(step: Int = 5) {
+        viewModelScope.launch {
+            val current = uiState.value.dailyTimeLimitMinutes
+            val newValue = (current - step).coerceAtLeast(5)    // min 5 minutes
+            userPreferencesRepository.setDailyTimeLimitMinutes(newValue)
+        }
+    }
+
+    fun incrementDailyReelLimit(step: Int = 5) {
+        viewModelScope.launch {
+            val current = uiState.value.dailyReelLimit
+            val newValue = (current + step).coerceAtMost(1000)
+            userPreferencesRepository.setDailyReelLimit(newValue)
+        }
+    }
+
+    fun decrementDailyReelLimit(step: Int = 5) {
+        viewModelScope.launch {
+            val current = uiState.value.dailyReelLimit
+            val newValue = (current - step).coerceAtLeast(5)
+            userPreferencesRepository.setDailyReelLimit(newValue)
+        }
+    }
+
     }
 

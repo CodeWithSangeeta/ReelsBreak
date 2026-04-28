@@ -31,7 +31,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.ui.component.MainScaffold
-import com.practice.reelbreak.ui.limit.LimitSettingsContent
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
 import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors
@@ -293,8 +292,25 @@ fun DashboardScreen(
 
                             detailContent = {
                                 when (option.mode) {
-                                    BlockMode.BLOCK_NOW    -> StrictDetails()
-                                    BlockMode.LIMIT_BASED  -> LimitSettingsContent()
+                                    BlockMode.BLOCK_NOW   -> StrictDetails()
+
+                                    BlockMode.LIMIT_BASED -> LimitSettingsContent(
+                                        dailyTimeLimitMinutes = dashboardState.dailyTimeLimitMinutes,
+                                        dailyReelLimit = dashboardState.dailyReelLimit,
+                                        onTimeDecrement = {
+                                            dashboardViewModel.decrementDailyTimeLimit()
+                                        },
+                                        onTimeIncrement = {
+                                            dashboardViewModel.incrementDailyTimeLimit()
+                                        },
+                                        onReelDecrement = {
+                                            dashboardViewModel.decrementDailyReelLimit()
+                                        },
+                                        onReelIncrement = {
+                                            dashboardViewModel.incrementDailyReelLimit()
+                                        }
+                                    )
+
                                     BlockMode.SMART_FILTER -> SmartFilterDetails()
                                 }
                             }
@@ -303,6 +319,11 @@ fun DashboardScreen(
                         Spacer(Modifier.height(12.dp))
                     }
                 }
+//                        )
+//
+//                        Spacer(Modifier.height(12.dp))
+//                    }
+//                }
 
                 item {
                     Spacer(modifier = Modifier.height(8.dp))

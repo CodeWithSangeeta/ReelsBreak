@@ -3,10 +3,10 @@ package com.practice.reelbreak.data.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.dataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
+import com.practice.reelbreak.data.preferences.UserPreferences.DAILY_TIME_LIMIT_MINUTES
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -94,7 +94,6 @@ class UserPreferencesRepository(private val context: Context) {
             exceededDate == today
         }
 
-    // ── Write Functions (ViewModel calls these) ───────────────────────────
 
     val activeMode: Flow<ActiveBlockMode> =
         context.dataStore.data.map { prefs ->
@@ -185,16 +184,10 @@ class UserPreferencesRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Resets today's usage counters.
-     * Call this at midnight OR when a new day is detected.
-     */
     suspend fun resetDailyCounters() {
         context.dataStore.edit { prefs ->
             prefs[UserPreferences.REELS_WATCHED_TODAY] = 0
             prefs[UserPreferences.TIME_SPENT_TODAY_MINUTES] = 0
-            // Don't clear LIMIT_EXCEEDED_DATE — isLimitExceededToday
-            // auto-resets by comparing with today's date
         }
     }
 
@@ -240,4 +233,9 @@ class UserPreferencesRepository(private val context: Context) {
         }.first()
     }
 
+    suspend fun setDailyTimeLimitMinutes(minutes: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[DAILY_TIME_LIMIT_MINUTES] = minutes
+        }
+    }
 }
