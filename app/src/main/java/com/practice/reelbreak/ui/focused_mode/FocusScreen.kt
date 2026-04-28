@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -74,7 +76,15 @@ fun FocusScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val colors = LocalAppColors.current
+    val context = LocalContext.current
 
+// Show validation error as Toast
+    LaunchedEffect(state.errorMessage) {
+        state.errorMessage?.let { msg ->
+            android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            viewModel.dismissError()
+        }
+    }
     // Total millis = selectedMinutes * 60_000 (used for progress arc)
     val totalMillis = state.selectedMinutes.toLong() * 60_000L
     // Progress from 1.0 (full) down to 0.0 (done)
@@ -102,7 +112,12 @@ fun FocusScreen(
 
                 // ── Header ──────────────────────────────────────────────
                 FocusHeader(isFocusActive = state.isFocusActive)
-
+                Spacer(modifier = Modifier.height(28.dp))
+                // ── Currently Blocked Apps (only when session is active) ────────────
+                if (state.isFocusActive && state.selectedApps.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CurrentlyBlockedSection(blockedPackages = state.selectedApps)
+                }
                 Spacer(modifier = Modifier.height(28.dp))
 
                 // ── Countdown Circle (always visible; shows time when active) ──
@@ -506,6 +521,84 @@ fun QuoteCard() {
                 fontSize = 13.sp,
                 lineHeight = 18.sp
             )
+        }
+    }
+}
+
+
+
+@Composable
+private fun CurrentlyBlockedSection(blockedPackages: Set<String>) {
+
+    // map package → readable name (same as AppBlockedScreen)
+    fun pkgToName(pkg: String) = when (pkg) {
+        "com.instagram.android"       -> "Instagram"
+        "com.google.android.youtube"  -> "YouTube"
+        "com.facebook.katana"         -> "Facebook"
+        "com.zhiliaoapp.musically"    -> "TikTok"
+        "com.snapchat.android"        -> "Snapchat"
+        "com.twitter.android"         -> "Twitter"
+        "com.whatsapp"                -> "WhatsApp"
+        else -> pkg.substringAfterLast(".").replaceFirstChar { it.uppercase() }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xFF1C1233))
+            .border(1.dp, Color(0xFF7C3AED).copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        // Title row
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(text = "🔒", fontSize = 16.sp)
+            Text(
+                text = "Currently Blocked",
+                color = Color(0xFFB794F4),
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+
+        // App pills row (wrapping)
+        androidx.compose.foundation.layout.FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            blockedPackages.forEach { pkg ->
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color(0xFF4C1D95).copy(alpha = 0.5f))
+                        .border(
+                            1.dp,
+                            Color(0xFF9333EA).copy(alpha = 0.6f),
+                            RoundedCornerShape(999.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = "🚫",
+                            fontSize = 11.sp
+                        )
+                        Text(
+                            text = pkgToName(pkg),
+                            color = Color(0xFFE9D5FF),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
         }
     }
 }

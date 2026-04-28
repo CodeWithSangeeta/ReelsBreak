@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import androidx.lifecycle.viewModelScope
+import com.practice.reelbreak.data.FocusStateHolder
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -17,8 +18,9 @@ import kotlinx.coroutines.launch
 data class FocusModeUiState(
     val isFocusActive: Boolean = false,
     val remainingMillis: Long = 0L,
-    val selectedMinutes: Int = 30,
-    val selectedApps: Set<String> = emptySet() // package names
+    val selectedMinutes: Int = 0,
+    val selectedApps: Set<String> = emptySet(),
+    val errorMessage: String? = null   // package names
 )
 
 @HiltViewModel
@@ -35,10 +37,12 @@ class FocusViewModel @Inject constructor(
         viewModelScope.launch {
             prefs.isFocusActive.collectLatest { active ->
                 _uiState.update { it.copy(isFocusActive = active) }
+                FocusStateHolder.isFocusActive = active
             }
         }
         viewModelScope.launch {
             prefs.focusEndTimestamp.collectLatest { endTs ->
+                FocusStateHolder.focusEndTimestamp = endTs
                 if (endTs > 0L) startTimerInternal(endTs) else stopTimerInternal()
             }
         }
@@ -58,8 +62,25 @@ class FocusViewModel @Inject constructor(
     }
 
     fun startFocusSession() {
-        val durationMinutes = _uiState.value.selectedMinutes
+        val state = _uiState.value
+
+        // ── Validation ──────────────────────────────────────────────────
+        if (state.selectedApps.isEmpty()) {
+            _uiState.update { it.copy(errorMessage = "Please select at least one app to block.") }
+            return
+        }
+        if (state.selectedMinutes <= 0) {
+            _uiState.update { it.copy(errorMessage = "Please select a session duration.") }
+            return
+        }
+
+        val durationMinutes = state.selectedMinutes
         val endTs = System.currentTimeMillis() + durationMinutes.toLong() * 60_000L
+
+        // ── Sync to singleton so AccessibilityService can read it ───────
+        FocusStateHolder.isFocusActive = true
+        FocusStateHolder.blockedPackages = state.selectedApps
+        FocusStateHolder.focusEndTimestamp = endTs
 
         viewModelScope.launch {
             prefs.startFocusSession(endTs)
@@ -68,9 +89,12 @@ class FocusViewModel @Inject constructor(
     }
 
     fun stopFocusSession() {
-        viewModelScope.launch {
-            prefs.stopFocusSession()
-        }
+        // Clear singleton
+        FocusStateHolder.isFocusActive = false
+        FocusStateHolder.blockedPackages = emptySet()
+        FocusStateHolder.focusEndTimestamp = 0L
+
+        viewModelScope.launch { prefs.stopFocusSession() }
         stopTimerInternal()
     }
 
@@ -94,5 +118,9 @@ class FocusViewModel @Inject constructor(
         timerJob?.cancel()
         timerJob = null
         _uiState.update { it.copy(remainingMillis = 0L, isFocusActive = false) }
+    }
+
+    fun dismissError() {
+        _uiState.update { it.copy(errorMessage = null) }
     }
 }
