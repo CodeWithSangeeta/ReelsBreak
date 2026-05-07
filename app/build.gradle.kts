@@ -8,6 +8,7 @@ plugins {
     //hilt plugin
     alias(libs.plugins.hilt)
 
+    alias(libs.plugins.jetbrains.kotlin.serialization)
 }
 
 android {
@@ -31,20 +32,23 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         compose = true
     }
 }
-
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+    }
+}
 dependencies {
 
     //Core Android
@@ -118,4 +122,9 @@ dependencies {
     implementation(libs.androidx.hilt.android)
     ksp(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.compose)
+
+    //Navigation 3
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+    implementation(libs.kotlinx.serialization)
 }

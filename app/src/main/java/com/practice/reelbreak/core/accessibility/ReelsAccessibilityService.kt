@@ -19,8 +19,10 @@ import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.practice.reelbreak.R
 import com.practice.reelbreak.core.registry.SupportedAppsRegistry
 import com.practice.reelbreak.data.FocusStateHolder
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
@@ -30,33 +32,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
-//class ReelsAccessibilityService : AccessibilityService() {
-//
-//    private lateinit var detectionManager: ReelsDetectionManager
-//
-//    override fun onServiceConnected() {
-//        super.onServiceConnected()
-//        val repository = (applicationContext as ReelBreakApplication).repository
-//        val engine = BlockingDecisionEngine(repository)
-//        val actionController = ActionController(this)
-//        detectionManager = ReelsDetectionManager(actionController, engine)
-//        Log.d("REELSBREAK", "Service connected ✅")
-//    }
-//
-//
-//    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-//        if (event == null) return
-//        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
-//        detectionManager.processEvent(event, rootNode)
-//    }
-//
-//    override fun onInterrupt() {
-//        Log.d("REELSBREAK", "Service interrupted")
-//        AppDetectorRouter.resetAll()
-//    }
-//}
+
 
 
 
@@ -66,11 +45,23 @@ import kotlinx.coroutines.launch
 //class ReelsAccessibilityService : AccessibilityService() {
 //
 //    private lateinit var detectionManager: ReelsDetectionManager
-//
-//    // Overlay-related fields
 //    private var windowManager: WindowManager? = null
 //    private var overlayView: View? = null
 //    private var userPrefs: UserPreferencesRepository? = null
+//    private var overlayScope: CoroutineScope? = null
+//
+//    private var overlayReelCountText: TextView? = null
+//    private var overlayTimerText: TextView? = null
+//
+//    // Timer runs only while on reels screen
+//    private val timerHandler = Handler(Looper.getMainLooper())
+//    private var overlayTimerRunnable: Runnable? = null
+//    private var timerElapsedSeconds = 0
+//
+//    // Debounce to avoid overlay flicker on brief normal events
+//    private val hideHandler = Handler(Looper.getMainLooper())
+//    private val HIDE_DELAY_MS = 600L
+//    private val hideRunnable = Runnable { stopTimerAndHideOverlay() }
 //
 //    override fun onServiceConnected() {
 //        super.onServiceConnected()
@@ -84,143 +75,165 @@ import kotlinx.coroutines.launch
 //        detectionManager = ReelsDetectionManager(actionController, engine)
 //
 //        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-//
-//        Log.d("REELSBREAK", "Service connected ✅")
+//        Log.d("REELSBREAK", "Service connected")
 //    }
-//
-//    private val hideHandler = Handler(Looper.getMainLooper())
-//    private val hideRunnable = Runnable { hideOverlay() }
-//    private val HIDE_DELAY_MS = 1500L  // 1.5 seconds debounce
 //
 //    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 //        if (event == null) return
 //
+//        // Focus mode block
+//        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+//            val pkg = event.packageName?.toString() ?: return
+//            if (FocusStateHolder.isFocusActive &&
+//                FocusStateHolder.blockedPackages.contains(pkg) &&
+//                pkg != applicationContext.packageName
+//            ) {
+//                if (FocusStateHolder.getRemainingMillis() > 0L) {
+//                    launchBlockedScreen(pkg)
+//                } else {
+//                    FocusStateHolder.isFocusActive = false
+//                }
+//                return
+//            }
+//        }
+//
 //        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
 //        val packageName = event.packageName?.toString()
 //
-//        // Run detection FIRST so session.reelsMode is updated
 //        detectionManager.processEvent(event, rootNode)
 //
-//        val isOverlayConditionMet = shouldShowOverlayForApp(packageName)
 //        val isOnReels = detectionManager.isOnReelsScreen
+//        val overlayEnabled = shouldShowOverlay(packageName)
 //
-//        if (isOverlayConditionMet && isOnReels) {
-//            // Cancel any pending hide, show overlay
+//        if (overlayEnabled && isOnReels) {
+//            // Cancel any pending hide, ensure overlay is visible + timer running
 //            hideHandler.removeCallbacks(hideRunnable)
 //            showOverlayIfNeeded()
 //        } else {
-//            // Debounce the hide — don't flicker on brief non-reels events
+//            // Debounced hide — don't flicker on brief normal events
 //            hideHandler.removeCallbacks(hideRunnable)
 //            hideHandler.postDelayed(hideRunnable, HIDE_DELAY_MS)
 //        }
 //    }
 //
+//    override fun onInterrupt() {
+//        AppDetectorRouter.resetAll()
+//        stopTimerAndHideOverlay()
+//    }
+//
 //    override fun onDestroy() {
 //        super.onDestroy()
 //        hideHandler.removeCallbacks(hideRunnable)
-//        hideOverlay()
+//        stopTimerAndHideOverlay()
 //    }
 //
-//    override fun onInterrupt() {
-//        Log.d("REELSBREAK", "Service interrupted")
-//        AppDetectorRouter.resetAll()
-//        hideOverlay()
-//    }
-//
-//    // ───────────────────── Overlay helpers ─────────────────────
-//
-//    private fun shouldShowOverlayForApp(packageName: String?): Boolean {
+//    // ── Overlay visibility condition ───────────────────────────────────────────
+//    private fun shouldShowOverlay(packageName: String?): Boolean {
 //        if (packageName == null) return false
-//
-//        if (!SupportedAppsRegistry.isSupported(packageName)) {
-//            Log.d("OVERLAY_DEBUG", "app not supported: $packageName")
-//            return false
-//        }
-//
-//        val prefs = userPrefs ?: run {
-//            Log.d("OVERLAY_DEBUG", "userPrefs is null")
-//            return false
-//        }
-//
-//        val activeMode = prefs.getActiveModeBlocking()
+//        if (!SupportedAppsRegistry.isSupported(packageName)) return false
+//        val prefs = userPrefs ?: return false
 //        val isOverlayEnabled = prefs.isOverlayEnabledBlocking()
-//
-//        Log.d(
-//            "OVERLAY_DEBUG",
-//            "shouldShowOverlayForApp pkg=$packageName activeMode=$activeMode overlayEnabled=$isOverlayEnabled"
-//        )
-//
+//        val activeMode = prefs.getActiveModeBlocking()
 //        return isOverlayEnabled && activeMode == ActiveBlockMode.LIMIT.value
 //    }
 //
-//
-//    private var overlayReelsText: TextView? = null
-//    private var overlayTimeText: TextView? = null
-//    private var overlayScope: CoroutineScope? = null
-//
+//    // ── Build and show overlay ─────────────────────────────────────────────────
 //    private fun showOverlayIfNeeded() {
-//        val wm = windowManager ?: run {
-//            Log.d("OVERLAY_DEBUG", "windowManager null")
-//            return
-//        }
-//        val prefs = userPrefs ?: run {
-//            Log.d("OVERLAY_DEBUG", "userPrefs null")
-//            return
-//        }
-//        if (overlayView != null) {
-//            Log.d("OVERLAY_DEBUG", "overlay already shown")
-//            return
-//        }
+//        val wm = windowManager ?: return
+//        val prefs = userPrefs ?: return
+//        if (overlayView != null) return // already shown
 //
-//        Log.d("OVERLAY_DEBUG", "creating plain view overlay")
+//        val density = resources.displayMetrics.density
+//        fun Int.dp(): Int = (this * density).toInt()
 //
-//        // Root container
-//        val layout = LinearLayout(this).apply {
-//            orientation = LinearLayout.VERTICAL
+//        // Pill card — horizontal
+//        val card = LinearLayout(this).apply {
+//            orientation = LinearLayout.HORIZONTAL
+//            gravity = Gravity.CENTER_VERTICAL
 //            background = GradientDrawable().apply {
-//                setColor(0xCC111111.toInt())
-//                cornerRadius = 32f
+//                setColor(0xF01A1A2E.toInt())   // deep navy
+//                cornerRadius = 999f             // pill
+//                setStroke(1.dp(), 0x40FFFFFF)
 //            }
-//            setPadding(32, 20, 32, 20)
-//            elevation = 10f
+//            elevation = 20f
+//            setPadding(14.dp(), 8.dp(), 14.dp(), 8.dp())
 //        }
 //
-//        // "Reels: X" text
-//        val reelsText = TextView(this).apply {
-//            text = "Reels: 0"
+//        // [RB] badge
+//        val badge = TextView(this).apply {
+//            text = "RB"
 //            setTextColor(0xFFFFFFFF.toInt())
-//            textSize = 13f
+//            textSize = 8f
 //            setTypeface(typeface, Typeface.BOLD)
+//            background = GradientDrawable().apply {
+//                setColor(0xFF6C63FF.toInt())
+//                cornerRadius = 6.dp().toFloat()
+//            }
+//            setPadding(5.dp(), 2.dp(), 5.dp(), 2.dp())
 //        }
 //
-//        // "Time: Xm" text
-//        val timeText = TextView(this).apply {
-//            text = "Time: 0m"
-//            setTextColor(0xFFBBBBBB.toInt())
+//        // App name
+//        val appNameText = TextView(this).apply {
+//            text = "ReelBreak"
+//            setTextColor(0xFFFFFFFF.toInt())
+//            textSize = 10.5f
+//            setTypeface(typeface, Typeface.BOLD)
+//            setPadding(7.dp(), 0, 0, 0)
+//        }
+//
+//        // Divider helper
+//        fun makeDivider() = View(this).apply {
+//            layoutParams = LinearLayout.LayoutParams(1.dp(), 14.dp()).apply {
+//                leftMargin = 10.dp(); rightMargin = 10.dp()
+//            }
+//            background = GradientDrawable().apply { setColor(0x33FFFFFF) }
+//        }
+//
+//        // Reel count
+//        val reelEmoji = TextView(this).apply { text = "🎬"; textSize = 11f }
+//        val reelCount = TextView(this).apply {
+//            text = "0"
+//            setTextColor(0xFFFFFFFF.toInt())
 //            textSize = 12f
+//            setTypeface(typeface, Typeface.BOLD)
+//            setPadding(5.dp(), 0, 0, 0)
+//        }
+//        overlayReelCountText = reelCount
+//
+//        // Timer
+//        val timerEmoji = TextView(this).apply { text = "⏱"; textSize = 11f }
+//        val timerText = TextView(this).apply {
+//            text = "0:00"
+//            setTextColor(0xFFAAAAAA.toInt())
+//            textSize = 12f
+//            setPadding(5.dp(), 0, 0, 0)
+//        }
+//        overlayTimerText = timerText
+//
+//        card.apply {
+//            addView(badge)
+//            addView(appNameText)
+//            addView(makeDivider())
+//            addView(reelEmoji)
+//            addView(reelCount)
+//            addView(makeDivider())
+//            addView(timerEmoji)
+//            addView(timerText)
 //        }
 //
-//        layout.addView(reelsText)
-//        layout.addView(timeText)
+//        overlayView = card
 //
-//        overlayReelsText = reelsText
-//        overlayTimeText = timeText
-//        overlayView = layout
-//
-//        // Collect Flow updates on Main dispatcher — no Compose needed
+//        // Collect reels count + limit live
 //        overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 //        overlayScope?.launch {
-//            prefs.reelsWatchedToday.collect { count ->
-//                Log.d("OVERLAY_DEBUG", "reels updated: $count")
-//                reelsText.text = "Reels: $count"
-//            }
+//            combine(prefs.reelsWatchedToday, prefs.dailyReelLimit) { c, l -> c to l }
+//                .collect { (count, limit) ->
+//                    overlayReelCountText?.text = if (limit > 0) "$count / $limit" else "$count"
+//                }
 //        }
-//        overlayScope?.launch {
-//            prefs.timeSpentTodayMinutes.collect { mins ->
-//                Log.d("OVERLAY_DEBUG", "time updated: $mins")
-//                timeText.text = "Time: ${mins}m"
-//            }
-//        }
+//
+//        // Start live timer from 0
+//        startTimer()
 //
 //        val params = WindowManager.LayoutParams(
 //            WindowManager.LayoutParams.WRAP_CONTENT,
@@ -233,16 +246,41 @@ import kotlinx.coroutines.launch
 //                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
 //            PixelFormat.TRANSLUCENT
 //        ).apply {
-//            gravity = Gravity.TOP or Gravity.END
-//            x = 24
-//            y = 200
+//            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+//            x = 0
+//            y = 44.dp()
 //        }
 //
-//        wm.addView(layout, params)
-//        Log.d("OVERLAY_SERVICE", "plain overlay added successfully")
+//        wm.addView(card, params)
+//        Log.d("OVERLAYDEBUG", "Overlay shown at top-center")
 //    }
 //
+//    // ── Timer: only ticks while overlay is on screen ───────────────────────────
+//    private fun startTimer() {
+//        stopTimer()
+//        timerElapsedSeconds = 0
+//        val runnable = object : Runnable {
+//            override fun run() {
+//                timerElapsedSeconds++
+//                val m = timerElapsedSeconds / 60
+//                val s = timerElapsedSeconds % 60
+//                overlayTimerText?.text = String.format("%d:%02d", m, s)
+//                timerHandler.postDelayed(this, 1000L)
+//            }
+//        }
+//        overlayTimerRunnable = runnable
+//        timerHandler.postDelayed(runnable, 1000L)
+//    }
 //
+//    private fun stopTimer() {
+//        overlayTimerRunnable?.let { timerHandler.removeCallbacks(it) }
+//        overlayTimerRunnable = null
+//    }
+//
+//    private fun stopTimerAndHideOverlay() {
+//        stopTimer()
+//        hideOverlay()
+//    }
 //
 //    private fun hideOverlay() {
 //        val wm = windowManager ?: return
@@ -250,32 +288,58 @@ import kotlinx.coroutines.launch
 //        try {
 //            wm.removeView(view)
 //        } catch (e: Exception) {
-//            Log.e("OVERLAY_SERVICE", "removeView failed: ${e.message}", e)
+//            Log.e("OVERLAYSERVICE", "removeView failed: ${e.message}", e)
 //        } finally {
 //            overlayScope?.cancel()
 //            overlayScope = null
 //            overlayView = null
-//            overlayReelsText = null
-//            overlayTimeText = null
+//            overlayReelCountText = null
+//            overlayTimerText = null
 //        }
+//    }
+//
+//    private fun launchBlockedScreen(blockedPackage: String) {
+//        val intent = Intent(applicationContext, AppBlockedActivity::class.java).apply {
+//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+//                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+//                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+//            putExtra("blocked_package", blockedPackage)
+//            putExtra("remaining_formatted", FocusStateHolder.getRemainingFormatted())
+//            putExtra("focus_end_ts", FocusStateHolder.focusEndTimestamp)
+//        }
+//        applicationContext.startActivity(intent)
 //    }
 //}
 
 
 
 
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class ReelsAccessibilityService : AccessibilityService() {
 
     private lateinit var detectionManager: ReelsDetectionManager
-
     private var windowManager: WindowManager? = null
-    private var overlayView: View? = null
     private var userPrefs: UserPreferencesRepository? = null
+
+    private var overlayView: View? = null
+    private var overlayScope: CoroutineScope? = null
+    private var overlayReelCountText: TextView? = null
+    private var overlayTimerText: TextView? = null
+
+    private val timerHandler = Handler(Looper.getMainLooper())
+    private var overlayTimerRunnable: Runnable? = null
+    private var timerElapsedSeconds = 0
+
+    private val hideHandler = Handler(Looper.getMainLooper())
+    private val HIDE_DELAY_MS = 600L
+    private val hideRunnable = Runnable { stopTimerAndHideOverlay() }
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-
         val app = applicationContext as ReelBreakApplication
         val repository = app.repository
         userPrefs = repository
@@ -285,21 +349,14 @@ class ReelsAccessibilityService : AccessibilityService() {
         detectionManager = ReelsDetectionManager(actionController, engine)
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-
-        Log.d("REELSBREAK", "Service connected ✅")
+        Log.d("REELSBREAK", "Service connected")
     }
-
-    private val hideHandler = Handler(Looper.getMainLooper())
-    private val hideRunnable = Runnable { hideOverlay() }
-    private val HIDE_DELAY_MS = 1500L
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
 
-        // ── Focus Mode blocking (TYPE_WINDOW_STATE_CHANGED only) ────────────
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
-
             if (
                 FocusStateHolder.isFocusActive &&
                 FocusStateHolder.blockedPackages.contains(pkg) &&
@@ -308,24 +365,21 @@ class ReelsAccessibilityService : AccessibilityService() {
                 if (FocusStateHolder.getRemainingMillis() > 0L) {
                     launchBlockedScreen(pkg)
                 } else {
-                    // Session expired — auto stop
                     FocusStateHolder.isFocusActive = false
                 }
-                return  // exit here; don't run existing detection logic
+                return
             }
         }
-        // ── End Focus Mode block ─────────────────────────────────────────────
 
-        // ── Your existing logic below — completely unchanged ─────────────────
         val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
         val packageName = event.packageName?.toString()
 
         detectionManager.processEvent(event, rootNode)
 
-        val isOverlayConditionMet = shouldShowOverlayForApp(packageName)
         val isOnReels = detectionManager.isOnReelsScreen
+        val overlayEnabled = shouldShowOverlay(packageName)
 
-        if (isOverlayConditionMet && isOnReels) {
+        if (overlayEnabled && isOnReels) {
             hideHandler.removeCallbacks(hideRunnable)
             showOverlayIfNeeded()
         } else {
@@ -334,97 +388,118 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
+    override fun onInterrupt() {
+        AppDetectorRouter.resetAll()
+        stopTimerAndHideOverlay()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         hideHandler.removeCallbacks(hideRunnable)
-        hideOverlay()
+        stopTimerAndHideOverlay()
     }
 
-    override fun onInterrupt() {
-        Log.d("REELSBREAK", "Service interrupted")
-        AppDetectorRouter.resetAll()
-        hideOverlay()
-    }
-
-    // ── Overlay helpers (unchanged) ──────────────────────────────────────────
-
-    private fun shouldShowOverlayForApp(packageName: String?): Boolean {
+    private fun shouldShowOverlay(packageName: String?): Boolean {
         if (packageName == null) return false
-        if (!SupportedAppsRegistry.isSupported(packageName)) {
-            Log.d("OVERLAY_DEBUG", "app not supported: $packageName")
-            return false
-        }
-        val prefs = userPrefs ?: run {
-            Log.d("OVERLAY_DEBUG", "userPrefs is null")
-            return false
-        }
-        val activeMode = prefs.getActiveModeBlocking()
-        val isOverlayEnabled = prefs.isOverlayEnabledBlocking()
-        Log.d("OVERLAY_DEBUG",
-            "shouldShowOverlayForApp pkg=$packageName activeMode=$activeMode overlayEnabled=$isOverlayEnabled")
-        return isOverlayEnabled && activeMode == ActiveBlockMode.LIMIT.value
+        if (!SupportedAppsRegistry.isSupported(packageName)) return false
+        val prefs = userPrefs ?: return false
+        if (!prefs.isOverlayEnabledBlocking()) return false
+        if (prefs.getActiveModeBlocking() != ActiveBlockMode.LIMIT.value) return false
+        val isLimitHit = runBlocking { prefs.isLimitExceededToday.first() }
+        if (isLimitHit) return false
+        return true
     }
-
-    private var overlayReelsText: TextView? = null
-    private var overlayTimeText: TextView? = null
-    private var overlayScope: CoroutineScope? = null
 
     private fun showOverlayIfNeeded() {
-        val wm = windowManager ?: run {
-            Log.d("OVERLAY_DEBUG", "windowManager null"); return
-        }
-        val prefs = userPrefs ?: run {
-            Log.d("OVERLAY_DEBUG", "userPrefs null"); return
-        }
-        if (overlayView != null) {
-            Log.d("OVERLAY_DEBUG", "overlay already shown"); return
-        }
+        val wm = windowManager ?: return
+        val prefs = userPrefs ?: return
+        if (overlayView != null) return
 
-        Log.d("OVERLAY_DEBUG", "creating plain view overlay")
+        val density = resources.displayMetrics.density
+        fun Int.dp(): Int = (this * density).toInt()
 
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
+        val card = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
             background = GradientDrawable().apply {
-                setColor(0xCC111111.toInt())
-                cornerRadius = 32f
+                colors = intArrayOf(0xFF8A2BE2.toInt(), 0xFF5B21B6.toInt())
+                gradientType = GradientDrawable.LINEAR_GRADIENT
+                orientation = GradientDrawable.Orientation.LEFT_RIGHT
+                cornerRadius = 999f
+                setStroke(1.dp(), 0x40FFFFFF)
             }
-            setPadding(32, 20, 32, 20)
-            elevation = 10f
+            elevation = 24f
+            setPadding(12.dp(), 8.dp(), 12.dp(), 8.dp())
         }
 
-        val reelsText = TextView(this).apply {
-            text = "Reels: 0"
+        val badge = TextView(this).apply {
+            text = "RB"
             setTextColor(0xFFFFFFFF.toInt())
-            textSize = 13f
+            textSize = 8f
             setTypeface(typeface, Typeface.BOLD)
+            background = GradientDrawable().apply {
+                setColor(0xFF1F1147.toInt())
+                cornerRadius = 6.dp().toFloat()
+            }
+            setPadding(5.dp(), 2.dp(), 5.dp(), 2.dp())
         }
 
-        val timeText = TextView(this).apply {
-            text = "Time: 0m"
-            setTextColor(0xFFBBBBBB.toInt())
+        val appNameText = TextView(this).apply {
+            text = "ReelBreak"
+            setTextColor(0xFFFFFFFF.toInt())
+            textSize = 10.5f
+            setTypeface(typeface, Typeface.BOLD)
+            setPadding(7.dp(), 0, 0, 0)
+        }
+
+        fun divider() = View(this).apply {
+            layoutParams = LinearLayout.LayoutParams(1.dp(), 14.dp()).apply {
+                leftMargin = 9.dp()
+                rightMargin = 9.dp()
+            }
+            background = GradientDrawable().apply { setColor(0x33FFFFFF) }
+        }
+
+        val reelIcon = TextView(this).apply { text = "🎬"; textSize = 11f }
+        val reelCount = TextView(this).apply {
+            text = "0"
+            setTextColor(0xFFFFFFFF.toInt())
             textSize = 12f
+            setTypeface(typeface, Typeface.BOLD)
+            setPadding(4.dp(), 0, 0, 0)
         }
+        overlayReelCountText = reelCount
 
-        layout.addView(reelsText)
-        layout.addView(timeText)
+        val timerIcon = TextView(this).apply { text = "⏱"; textSize = 11f }
+        val timerText = TextView(this).apply {
+            text = "0:00"
+            setTextColor(0xFFEDE9FE.toInt())
+            textSize = 12f
+            setPadding(4.dp(), 0, 0, 0)
+        }
+        overlayTimerText = timerText
 
-        overlayReelsText = reelsText
-        overlayTimeText = timeText
-        overlayView = layout
+        card.addView(badge)
+        card.addView(appNameText)
+        card.addView(divider())
+        card.addView(reelIcon)
+        card.addView(reelCount)
+        card.addView(divider())
+        card.addView(timerIcon)
+        card.addView(timerText)
+
+        overlayView = card
 
         overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         overlayScope?.launch {
-            prefs.reelsWatchedToday.collect { count ->
-                Log.d("OVERLAY_DEBUG", "reels updated: $count")
-                reelsText.text = "Reels: $count"
-            }
+            combine(prefs.reelsWatchedToday, prefs.dailyReelLimit) { c, l -> c to l }
+                .collect { (count, limit) ->
+                    overlayReelCountText?.text = if (limit > 0) "$count / $limit" else "$count"
+                }
         }
-        overlayScope?.launch {
-            prefs.timeSpentTodayMinutes.collect { mins ->
-                Log.d("OVERLAY_DEBUG", "time updated: $mins")
-                timeText.text = "Time: ${mins}m"
-            }
-        }
+
+        timerElapsedSeconds = 0
+        startTimer()
 
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -437,13 +512,37 @@ class ReelsAccessibilityService : AccessibilityService() {
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT
         ).apply {
-            gravity = Gravity.TOP or Gravity.END
-            x = 24
-            y = 200
+            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+            x = 0
+            y = 44.dp()
         }
 
-        wm.addView(layout, params)
-        Log.d("OVERLAY_SERVICE", "plain overlay added successfully")
+        wm.addView(card, params)
+    }
+
+    private fun startTimer() {
+        stopTimer()
+        val runnable = object : Runnable {
+            override fun run() {
+                timerElapsedSeconds++
+                val m = timerElapsedSeconds / 60
+                val s = timerElapsedSeconds % 60
+                overlayTimerText?.text = String.format("%d:%02d", m, s)
+                timerHandler.postDelayed(this, 1000L)
+            }
+        }
+        overlayTimerRunnable = runnable
+        timerHandler.postDelayed(runnable, 1000L)
+    }
+
+    private fun stopTimer() {
+        overlayTimerRunnable?.let { timerHandler.removeCallbacks(it) }
+        overlayTimerRunnable = null
+    }
+
+    private fun stopTimerAndHideOverlay() {
+        stopTimer()
+        hideOverlay()
     }
 
     private fun hideOverlay() {
@@ -452,17 +551,16 @@ class ReelsAccessibilityService : AccessibilityService() {
         try {
             wm.removeView(view)
         } catch (e: Exception) {
-            Log.e("OVERLAY_SERVICE", "removeView failed: ${e.message}", e)
+            Log.e("OVERLAYSERVICE", "removeView failed: ${e.message}", e)
         } finally {
             overlayScope?.cancel()
             overlayScope = null
             overlayView = null
-            overlayReelsText = null
-            overlayTimeText = null
+            overlayReelCountText = null
+            overlayTimerText = null
         }
     }
 
-    // ── Focus Mode: launch blocked screen ───────────────────────────────────
     private fun launchBlockedScreen(blockedPackage: String) {
         val intent = Intent(applicationContext, AppBlockedActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or

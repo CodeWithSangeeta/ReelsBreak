@@ -55,7 +55,6 @@ data class PermissionPagerItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
-    navController: NavController,
     dashboardViewModel: DashboardViewModel = viewModel(),
     permissionsViewModel: PermissionsViewModel = viewModel(),
     selectedTab: Int = 0,

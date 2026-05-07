@@ -23,6 +23,11 @@ runtimeVersion = "1.11.0"
 uiTextVersion = "1.11.0"
 uiGraphics = "1.11.0"
 foundationLayout = "1.11.0"
+#navigation 3 version
+navigation3Runtime = "1.0.1"
+navigation3Ui = "1.0.1"
+kotlinSerialization = "2.3.10"
+kotlinxSerialization = "1.7.3"
 
 
 [libraries]
@@ -55,6 +60,11 @@ androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", versi
 androidx-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiTextVersion" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version.ref = "uiGraphics" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
+#navigation 3
+androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3Runtime" }
+androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3Ui" }
+kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
 
 
 [plugins]
@@ -63,6 +73,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ## ksp plugin
 ksp = {id = "com.google.devtools.ksp", version.ref = "ksp" }
+jetbrains-kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinSerialization"}
 
 ##hilt plugin
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }

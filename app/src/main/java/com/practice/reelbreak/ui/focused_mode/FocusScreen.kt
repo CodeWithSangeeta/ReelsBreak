@@ -171,7 +171,7 @@ fun FocusScreen(
                 // ── Header ──────────────────────────────────────────────
                 FocusHeader(isFocusActive = state.isFocusActive)
 
-                Spacer(modifier = Modifier.height(16.dp))
+             //   Spacer(modifier = Modifier.height(16.dp))
 
 //                // ── Accessibility warning banner (if not granted) ────
                 if (!isAccessibilityGranted) {
@@ -184,7 +184,7 @@ fun FocusScreen(
                 }
 
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
 
                 // ── Countdown Circle (always visible; shows time when active) ──
@@ -192,7 +192,7 @@ fun FocusScreen(
                     remainingMillis = state.remainingMillis,
                     isActive = state.isFocusActive,
                     progress = progress,
-                    onEditClick = { /* allows changing duration when not active */ }
+                  //  onEditClick = { /* allows changing duration when not active */ }
                 )
 
                 Spacer(modifier = Modifier.height(28.dp))
@@ -292,7 +292,7 @@ private fun CountdownTimerCircle(
     remainingMillis: Long,
     isActive: Boolean,
     progress: Float,
-    onEditClick: () -> Unit
+   // onEditClick: () -> Unit
 ) {
     // Animate the sweep angle smoothly
     val animatedProgress by animateFloatAsState(
@@ -446,26 +446,27 @@ private fun CountdownTimerCircle(
                     )
                     Spacer(modifier = Modifier.height(6.dp))
                     // Edit hint
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onEditClick() }
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Icon(
-                            Icons.Filled.Edit,
-                            contentDescription = "Edit",
-                            tint = Color(0xFF9333EA),
-                            modifier = Modifier.size(13.dp)
-                        )
-                        Text(
-                            text = "Edit",
-                            color = Color(0xFF9333EA),
-                            fontSize = 12.sp
-                        )
-                    }
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+//                        modifier = Modifier
+//                            .clip(RoundedCornerShape(8.dp))
+//                            .clickable { onEditClick() }
+//                            .padding(horizontal = 8.dp, vertical = 4.dp)
+//                    ) {
+//                        Icon(
+//                            Icons.Filled.Edit,
+//                            contentDescription = "Edit",
+//                            tint = Color(0xFF9333EA),
+//                            modifier = Modifier.size(13.dp)
+//                        )
+//                        Text(
+//                            text = "Edit",
+//                            color = Color(0xFF9333EA),
+//                            fontSize = 12.sp
+//                        )
+//                    }
+
                 }
             }
         }
