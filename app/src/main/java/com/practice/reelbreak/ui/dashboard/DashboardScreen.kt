@@ -293,11 +293,6 @@ fun DashboardScreen(
                         Spacer(Modifier.height(12.dp))
                     }
                 }
-//                        )
-//
-//                        Spacer(Modifier.height(12.dp))
-//                    }
-//                }
 
                 item {
                     Spacer(modifier = Modifier.height(8.dp))

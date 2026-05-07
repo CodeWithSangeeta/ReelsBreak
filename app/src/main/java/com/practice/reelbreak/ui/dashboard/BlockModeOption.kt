@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -35,7 +34,6 @@ val blockModeOptions = listOf(
         title = "Set a Limit",
         subtitle = "Allow a fixed number of reels, then auto-block for the session",
         tag = "Balanced",
-//        gradient = GradientColor.modeLimit,
         glowColor = Color(0x443A5BF0)
     ),
     BlockModeOption(
@@ -44,7 +42,6 @@ val blockModeOptions = listOf(
         title = "Smart Filter",
         subtitle = "Only allow reels from accounts you follow or have liked before",
         tag = "Smart",
-//        gradient = GradientColor.modeSmart,
         glowColor = Color(0x440D7377)
     )
 )
