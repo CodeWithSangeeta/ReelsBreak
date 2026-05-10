@@ -4,22 +4,19 @@ object SupportedAppsRegistry {
 
     const val YOUTUBE = "com.google.android.youtube"
     const val INSTAGRAM = "com.instagram.android"
-    const val SNAPCHAT = "com.snapchat.android"
-    const val TIKTOK = "com.zhiliaoapp.musically"
     const val FACEBOOK = "com.facebook.katana"
     const val FACEBOOK_LITE = "com.facebook.lite"
+    const val SNAPCHAT = "com.snapchat.android"
 
     private val supportedApps = setOf(
         YOUTUBE,
         INSTAGRAM,
-        SNAPCHAT,
-        TIKTOK,
         FACEBOOK,
-        FACEBOOK_LITE
+        FACEBOOK_LITE,
+        SNAPCHAT
     )
 
     fun isSupported(packageName: String?): Boolean {
-        if (packageName == null) return false
-        return supportedApps.contains(packageName)
+        return packageName != null && packageName in supportedApps
     }
 }
