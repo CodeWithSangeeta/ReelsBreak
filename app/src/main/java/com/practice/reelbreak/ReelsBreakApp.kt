@@ -16,37 +16,6 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.MainViewModel
 
-//@Composable
-//fun ReelsBreakApp(
-//    mainViewModel: MainViewModel,
-//    dashboardViewModel: DashboardViewModel
-//) {
-//    val isOnboardingCompleted by mainViewModel.isOnboardingCompleted.collectAsState()
-//    val navController = rememberNavController()
-//    val colors = LocalAppColors.current
-//
-//    when (isOnboardingCompleted) {
-//        null -> Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .background(brush = colors.background)
-//        )
-//        false -> AppNavigation(
-//            navController = navController,
-//            startDestination = Routes.ONBOARDING,
-//            mainViewModel = mainViewModel,
-//            dashboardViewModel = dashboardViewModel
-//        )
-//        true -> AppNavigation(
-//            navController = navController,
-//            startDestination = Routes.DASHBOARD,
-//            mainViewModel = mainViewModel,
-//            dashboardViewModel = dashboardViewModel
-//        )
-//    }
-//}
-
-
 @Composable
 fun ReelsBreakApp(
     mainViewModel: MainViewModel,
