@@ -355,6 +355,18 @@ class ReelsAccessibilityService : AccessibilityService() {
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
 
+        val packageName = event.packageName?.toString()
+
+        // NEW CRITICAL GUARD: If the user is NOT in a supported app,
+        // kill the overlay INSTANTLY. No delay.
+        if (packageName != null && !SupportedAppsRegistry.isSupported(packageName)) {
+            hideHandler.removeCallbacks(hideRunnable)
+            stopTimerAndHideOverlay() // Remove the overlay immediately
+            AppDetectorRouter.resetAll()
+            return
+
+        }
+
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
             if (
@@ -372,7 +384,6 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
 
         val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
-        val packageName = event.packageName?.toString()
 
         detectionManager.processEvent(event, rootNode)
 

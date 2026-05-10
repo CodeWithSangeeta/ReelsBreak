@@ -42,6 +42,11 @@ class ReelsDetectionManager(
         }
 
         val detector = AppDetectorRouter.getDetector(packageName)
+        if (detector == null) {
+            resetSession()
+            return
+        }
+
         detector.onEvent(event)
         val result = detector.detect(rootNode)
 
@@ -50,34 +55,26 @@ class ReelsDetectionManager(
             session.currentApp = packageName
 
             when (event.eventType) {
-
-                // ── User swiped to a new reel ─────────────────────────
                 AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
                     val now = System.currentTimeMillis()
                     if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
                         lastCountedMs = now
-                        hasCheckedBlockThisReel = false // reset so block is re-evaluated
-                        Log.d("REELSBREAK", "SCROLL detected → counting + block check")
+                        hasCheckedBlockThisReel = false
                         triggerReelAction(packageName)
-                    } else {
-                        Log.d("REELSBREAK", "SCROLL too soon (${now - lastCountedMs}ms) → skipped")
                     }
                 }
 
-                // ── First entry into reels screen ─────────────────────
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
                     if (!hasCheckedBlockThisReel) {
                         hasCheckedBlockThisReel = true
                         val now = System.currentTimeMillis()
                         if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
                             lastCountedMs = now
-                            Log.d("REELSBREAK", "WINDOW_STATE_CHANGED → first reel entry")
                             triggerReelAction(packageName)
                         }
                     }
                 }
 
-                // ── All other events: only check block, never count ───
                 else -> {
                     if (!hasCheckedBlockThisReel) {
                         hasCheckedBlockThisReel = true
@@ -85,11 +82,69 @@ class ReelsDetectionManager(
                     }
                 }
             }
-
         } else {
             resetSession()
         }
     }
+
+//    fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
+//        val packageName = event.packageName?.toString() ?: return
+//
+//        if (!SupportedAppsRegistry.isSupported(packageName)) {
+//            resetSession()
+//            return
+//        }
+//
+//        val detector = AppDetectorRouter.getDetector(packageName)
+//        detector.onEvent(event)
+//        val result = detector.detect(rootNode)
+//
+//
+//        if (result == DetectionResult.REELS_SCREEN) {
+//            session.reelsMode = true
+//            session.currentApp = packageName
+//
+//            when (event.eventType) {
+//
+//                // ── User swiped to a new reel ─────────────────────────
+//                AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
+//                    val now = System.currentTimeMillis()
+//                    if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
+//                        lastCountedMs = now
+//                        hasCheckedBlockThisReel = false // reset so block is re-evaluated
+//                        Log.d("REELSBREAK", "SCROLL detected → counting + block check")
+//                        triggerReelAction(packageName)
+//                    } else {
+//                        Log.d("REELSBREAK", "SCROLL too soon (${now - lastCountedMs}ms) → skipped")
+//                    }
+//                }
+//
+//                // ── First entry into reels screen ─────────────────────
+//                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
+//                    if (!hasCheckedBlockThisReel) {
+//                        hasCheckedBlockThisReel = true
+//                        val now = System.currentTimeMillis()
+//                        if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
+//                            lastCountedMs = now
+//                            Log.d("REELSBREAK", "WINDOW_STATE_CHANGED → first reel entry")
+//                            triggerReelAction(packageName)
+//                        }
+//                    }
+//                }
+//
+//                // ── All other events: only check block, never count ───
+//                else -> {
+//                    if (!hasCheckedBlockThisReel) {
+//                        hasCheckedBlockThisReel = true
+//                        checkBlockOnly(packageName)
+//                    }
+//                }
+//            }
+//
+//        } else {
+//            resetSession()
+//        }
+//    }
 
     // Count + block check
     private fun triggerReelAction(packageName: String?) {
