@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.androidx.ui.text)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.foundation.layout)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     //Compose UI

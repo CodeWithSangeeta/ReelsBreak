@@ -148,7 +148,7 @@ fun DashboardScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .background(colors.background)
-                .padding(horizontal = 24.dp)
+               // .padding(horizontal = 24.dp)
         ) {
             DashboardHeader(
                 isOverlayGranted = permissionState.overlayGranted,
@@ -166,7 +166,7 @@ fun DashboardScreen(
                 onThemeToggle = { dashboardViewModel.toggleTheme() }
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
             // ── Permission pager: only for missing permissions ─────────────────────
             val shouldShowPermissionPager = missingPermissionItems.isNotEmpty()
@@ -180,8 +180,9 @@ fun DashboardScreen(
                 Spacer(Modifier.height(12.dp))
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                    //modifier = Modifier.fillMaxWidth(),
+                   // verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     HorizontalPager(
                         state = pagerState,
@@ -216,8 +217,9 @@ fun DashboardScreen(
 
             // ── Main content list
             LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
                 item {

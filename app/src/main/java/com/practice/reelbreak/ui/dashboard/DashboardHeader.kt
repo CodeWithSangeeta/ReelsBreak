@@ -32,6 +32,114 @@ import androidx.compose.ui.unit.sp
 import com.practice.reelbreak.ui.theme.LocalAppColors
 
 
+
+//@Composable
+//fun DashboardHeader(
+//    isOverlayGranted: Boolean,
+//    isOverlayEnabled: Boolean,
+//    isDarkMode: Boolean,
+//   // isAccessibilityGranted: Boolean,
+//    onVisibilityClick: () -> Unit,
+//    onThemeToggle: () -> Unit
+//) {
+//    val colors = LocalAppColors.current
+//    Box(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
+//            .background(
+//                if (colors.isDark)
+//                    Brush.linearGradient(listOf(Color(0xFF2D1060), Color(0xFF1A0840)))
+//                else
+//                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
+//            )
+//            .padding(horizontal = 20.dp, vertical = 0.dp)
+//            .padding(top = 48.dp, bottom = 20.dp)
+//    ) {
+//        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//             //   horizontalArrangement = Arrangement.SpaceBetween,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    text = "ReelBreak",
+//                    fontSize = 26.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    color = Color.White
+//                )
+//                Spacer(modifier= Modifier.width(100.dp))
+//
+//                Box(
+//                    modifier = Modifier
+//                        .size(38.dp)
+//                        .clip(CircleShape)
+//                        .background(Color.White.copy(alpha = 0.15f)),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Icon(
+//                        imageVector = if (isOverlayGranted && isOverlayEnabled)
+//                    Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
+//                        contentDescription = "Visibility",
+//                        tint = Color.White,
+//                        modifier = Modifier
+//                            .size(20.dp)
+//                            .clip(CircleShape)
+//                            .clickable(onClick = onVisibilityClick)
+//                    )
+//                }
+//                Spacer(modifier= Modifier.width(8.dp))
+//
+//                Box(
+//                    modifier = Modifier
+//                        .size(38.dp)
+//                        .clip(CircleShape)
+//                        .background(Color.White.copy(alpha = 0.15f)),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Icon(
+//                        imageVector = if (isDarkMode) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
+//                        contentDescription = "Toggle theme",
+//                        tint = Color.White,
+//                        modifier = Modifier
+//                            .size(20.dp)
+//                            .clip(CircleShape)
+//                            .clickable(onClick = onThemeToggle)
+//                    )
+//                }
+//            }
+//
+//            // Service Active / Inactive status indicator
+////            Row(
+////                verticalAlignment = Alignment.CenterVertically,
+////                horizontalArrangement = Arrangement.spacedBy(6.dp)
+////            ) {
+////                Box(
+////                    modifier = Modifier
+////                        .size(10.dp)
+////                        .clip(CircleShape)
+////                        .background(
+////                            if (isAccessibilityGranted) Color(0xFF4ADE80)
+////                            else Color(0xFFFF6B6B)
+////                        )
+////                )
+////                Text(
+////                    text = if (isAccessibilityGranted) "Service Active" else "Service Inactive",
+////                    fontSize = 13.sp,
+////                    color = Color.White.copy(alpha = 0.85f),
+////                    fontWeight = FontWeight.Medium
+////                )
+////            }
+//        }
+//    }
+//}
+
+
+
+import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.practice.reelbreak.ui.theme.PremiumHeroHeader
+import com.practice.reelbreak.ui.theme.PremiumIconBubble
+
 @Composable
 fun DashboardHeader(
     isOverlayGranted: Boolean,
@@ -42,93 +150,76 @@ fun DashboardHeader(
     onThemeToggle: () -> Unit
 ) {
     val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-            .background(
-                if (colors.isDark)
-                    Brush.linearGradient(listOf(Color(0xFF2D1060), Color(0xFF1A0840)))
-                else
-                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
-            )
-            .padding(horizontal = 20.dp, vertical = 0.dp)
-            .padding(top = 48.dp, bottom = 20.dp)
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+
+    PremiumHeroHeader(
+        title = "ReelBreak",
+        subtitle = "Take control of reels with a calmer, cleaner and more focused experience.",
+        actions = {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-             //   horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "ReelBreak",
-                    fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                HeaderActionButton(
+                    icon = if (isOverlayGranted && isOverlayEnabled) {
+                        Icons.Outlined.Visibility
+                    } else {
+                        Icons.Outlined.VisibilityOff
+                    },
+                    onClick = onVisibilityClick
                 )
-                Spacer(modifier= Modifier.width(100.dp))
 
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isOverlayGranted && isOverlayEnabled)
-                    Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
-                        contentDescription = "Visibility",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
-                            .clickable(onClick = onVisibilityClick)
-                    )
-                }
-                Spacer(modifier= Modifier.width(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = if (isDarkMode) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
-                        contentDescription = "Toggle theme",
-                        tint = Color.White,
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
-                            .clickable(onClick = onThemeToggle)
-                    )
-                }
+                HeaderActionButton(
+                    icon = if (isDarkMode) {
+                        Icons.Outlined.DarkMode
+                    } else {
+                        Icons.Outlined.LightMode
+                    },
+                    onClick = onThemeToggle
+                )
             }
-
-            // Service Active / Inactive status indicator
+        },
+        bottomContent = {
 //            Row(
 //                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.spacedBy(6.dp)
+//                horizontalArrangement = Arrangement.spacedBy(8.dp)
 //            ) {
 //                Box(
 //                    modifier = Modifier
 //                        .size(10.dp)
 //                        .clip(CircleShape)
 //                        .background(
-//                            if (isAccessibilityGranted) Color(0xFF4ADE80)
-//                            else Color(0xFFFF6B6B)
+//                            if (isAccessibilityGranted) colors.successGreen else colors.errorRed
 //                        )
 //                )
+//
 //                Text(
 //                    text = if (isAccessibilityGranted) "Service Active" else "Service Inactive",
+//                    color = colors.textPrimary.copy(alpha = 0.84f),
 //                    fontSize = 13.sp,
-//                    color = Color.White.copy(alpha = 0.85f),
 //                    fontWeight = FontWeight.Medium
 //                )
 //            }
         }
+    )
+}
+
+@Composable
+private fun HeaderActionButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit
+) {
+    val colors = LocalAppColors.current
+
+    PremiumIconBubble(
+        modifier = Modifier
+            .size(40.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = colors.textPrimary,
+            modifier = Modifier.align(Alignment.Center)
+        )
     }
 }

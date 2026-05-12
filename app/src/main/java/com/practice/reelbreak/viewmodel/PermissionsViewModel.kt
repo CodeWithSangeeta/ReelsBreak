@@ -13,7 +13,7 @@ import com.practice.reelbreak.core.permission.OverlayPermissionChecker
 import com.practice.reelbreak.core.permission.UsagePermissionChecker
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.PermissionState
-import com.practice.reelbreak.ui.focusedmode.isAccessibilityServiceEnabled
+import com.practice.reelbreak.ui.focused_mode.isAccessibilityServiceEnabled
 import com.practice.reelbreak.ui.permission.BulletIconType
 import com.practice.reelbreak.ui.permission.PermissionAction
 import com.practice.reelbreak.ui.permission.PermissionSheetType

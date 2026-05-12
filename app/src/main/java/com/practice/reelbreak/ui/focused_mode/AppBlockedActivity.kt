@@ -4,7 +4,6 @@ package com.practice.reelbreak.ui.focused_mode
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.practice.reelbreak.ui.theme.ReelBreakTheme
 
 class AppBlockedActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,14 +14,13 @@ class AppBlockedActivity : ComponentActivity() {
         val focusEndTs = intent.getLongExtra("focus_end_ts", 0L)
 
         setContent {
-         //   ReelBreakTheme {
                 AppBlockedScreen(
                     blockedPackage = blockedPackage,
                     remainingFormatted = remainingFormatted,
                     focusEndTs = focusEndTs,
                     onGoBack = { finish() }
                 )
-            //}
+
         }
     }
 
