@@ -63,8 +63,8 @@ fun SettingsScreen(
 
                             FigmaToggleRow(
                                 icon = Icons.Outlined.Notifications,
-                                iconBg = Color(0xFFEDE8FF),
-                                iconTint = Color(0xFF6B3FA0),
+                                iconBg = colors.purplePrimary.copy(alpha = 0.12f),
+                                iconTint = colors.purplePrimary,
                                 title = "Notifications",
                                 subtitle = "Get reminders and limit alerts",
                                 isEnabled = uiState.isNotificationsEnabled,
@@ -73,8 +73,8 @@ fun SettingsScreen(
                             FigmaDivider()
                             FigmaToggleRow(
                                 icon = Icons.Outlined.CalendarToday,
-                                iconBg = Color(0xFFEDE8FF),
-                                iconTint = Color(0xFF6B3FA0),
+                                iconBg = colors.purplePrimary.copy(alpha = 0.12f),
+                                iconTint = colors.purplePrimary,
                                 title = "Weekend Relax",
                                 subtitle = "Disable limits on Saturdays and Sundays",
                                 isEnabled = uiState.isWeekendRelaxEnabled,
@@ -122,32 +122,33 @@ fun SettingsScreen(
 
                             FigmaActionRow(
                                 icon = Icons.Outlined.ChatBubbleOutline,
-                                iconBg = Color(0xFFEDE8FF),
-                                iconTint = Color(0xFF6B3FA0),
+                                iconBg  =colors.purplePrimary.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                                iconTint = colors.purplePrimary,
                                 title = "Send Feedback",
                                 onClick = viewModel::sendFeedback
                             )
                             FigmaDivider()
                             FigmaActionRow(
                                 icon = Icons.Outlined.StarOutline,
-                                iconBg = Color(0xFFFFF8E0),
-                                iconTint = Color(0xFFD4A017),
+                                iconBg  = colors.warningOrange.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+
+                                iconTint = colors.warningOrange,
                                 title = "Rate ReelBreak",
                                 onClick = viewModel::rateApp
                             )
                             FigmaDivider()
                             FigmaActionRow(
                                 icon = Icons.Outlined.Share,
-                                iconBg = Color(0xFFE0F2FF),
-                                iconTint = Color(0xFF3B6FE0),
+                                iconBg  = colors.blueAccent.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                                iconTint = colors.blueAccent,
                                 title = "Share with Friends",
                                 onClick = viewModel::shareApp
                             )
                             FigmaDivider()
                             FigmaActionRow(
                                 icon = Icons.Outlined.Shield,
-                                iconBg = Color(0xFFE8F5EE),
-                                iconTint = Color(0xFF22A860),
+                                iconBg  = colors.successGreen.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                                iconTint = colors.successGreen,
                                 title = "Privacy Policy",
                                 onClick = viewModel::openPrivacyPolicy
                             )
@@ -166,7 +167,7 @@ fun SettingsScreen(
                     ) {
                         Text(
                             text = "ReelBreak v${uiState.appVersion}",
-                            color = if (colors.isDark) colors.textMuted else Color(0xFF8B82A8),
+                            color = colors.textMuted,
                             fontSize = 12.sp
                         )
                         Row(
@@ -175,13 +176,13 @@ fun SettingsScreen(
                         ) {
                             Text(
                                 text = "Built with",
-                                color = if (colors.isDark) colors.textMuted else Color(0xFF8B82A8),
+                                color = colors.textMuted,
                                 fontSize = 12.sp
                             )
                             Text(text = "❤️", fontSize = 12.sp)
                             Text(
                                 text = "for mindful scrolling",
-                                color = if (colors.isDark) colors.textMuted else Color(0xFF8B82A8),
+                                color = colors.textMuted ,
                                 fontSize = 12.sp
                             )
                         }
@@ -201,13 +202,10 @@ private fun FigmaSettingsCard(content: @Composable () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(
-                if (colors.isDark) colors.cardSurface
-                else Brush.linearGradient(listOf(Color(0xFFFFFFFF), Color(0xFFFAF8FF)))
-            )
+            .background(colors.cardSurface)
             .border(
                 1.dp,
-                if (colors.isDark) colors.borderSubtle else Color(0xFFE0D8F0),
+                 colors.borderSubtle,
                 RoundedCornerShape(16.dp)
             )
             .padding(16.dp)
@@ -221,7 +219,7 @@ private fun FigmaCardTitle(text: String) {
     val colors = LocalAppColors.current
     Text(
         text = text,
-        color = if (colors.isDark) colors.textPrimary else Color(0xFF1A1035),
+        color = colors.textPrimary,
         fontSize = 17.sp,
         fontWeight = FontWeight.SemiBold
     )
@@ -232,7 +230,7 @@ private fun FigmaDivider() {
     val colors = LocalAppColors.current
     Divider(
         modifier = Modifier.padding(vertical = 0.dp),
-        color = if (colors.isDark) colors.borderSubtle else Color(0xFFF0EBF8),
+        color = colors.borderSubtle,
         thickness = 1.dp
     )
 }
@@ -265,18 +263,18 @@ private fun FigmaToggleRow(
             Icon(imageVector = icon, contentDescription = null, tint = if (colors.isDark) colors.purpleSoft else iconTint, modifier = Modifier.size(20.dp))
         }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(text = title, color = if (colors.isDark) colors.textPrimary else Color(0xFF1A1035), fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            Text(text = subtitle, color = if (colors.isDark) colors.textSecondary else Color(0xFF6B5F88), fontSize = 12.sp)
+            Text(text = title, color =colors.textPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
+            Text(text = subtitle, color =colors.textSecondary, fontSize = 12.sp)
         }
         Switch(
             checked = isEnabled,
             onCheckedChange = onToggle,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = if (colors.isDark) Color(0xFF7C3AED) else Color(0xFF6B3FA0),
-                uncheckedThumbColor = if (colors.isDark) colors.textMuted else Color(0xFFBBB0D0),
-                uncheckedTrackColor = if (colors.isDark) Color(0xFF2A1F40) else Color(0xFFEDE8FF),
-                uncheckedBorderColor = if (colors.isDark) colors.borderSubtle else Color(0xFFD0C4F0)
+                checkedTrackColor = colors.switchTrackOn,
+                uncheckedThumbColor = colors.textMuted,
+                uncheckedTrackColor = colors.switchTrackOff,
+                uncheckedBorderColor = colors.borderSubtle
             )
         )
     }
@@ -305,7 +303,7 @@ private fun FigmaFaqItem(question: String, answer: String) {
         ) {
             Text(
                 text = question,
-                color = if (colors.isDark) colors.textPrimary else Color(0xFF1A1035),
+                color = colors.textPrimary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.weight(1f).padding(end = 8.dp),
@@ -314,14 +312,14 @@ private fun FigmaFaqItem(question: String, answer: String) {
             Icon(
                 imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
                 contentDescription = null,
-                tint = if (colors.isDark) colors.textMuted else Color(0xFF8B82A8),
+                tint = colors.textMuted,
                 modifier = Modifier.size(20.dp)
             )
         }
         if (expanded) {
             Text(
                 text = answer,
-                color = if (colors.isDark) colors.textSecondary else Color(0xFF6B5F88),
+                color = colors.textSecondary,
                 fontSize = 13.sp,
                 lineHeight = 19.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -355,14 +353,14 @@ private fun FigmaActionRow(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(if (colors.isDark) Color(0xFF2A1F40) else iconBg),
+                .background( iconBg),
             contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = icon, contentDescription = null, tint = if (colors.isDark) colors.purpleSoft else iconTint, modifier = Modifier.size(20.dp))
+            Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
         }
         Text(
             text = title,
-            color = if (colors.isDark) colors.textPrimary else Color(0xFF1A1035),
+            color = colors.textPrimary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             modifier = Modifier.weight(1f)
@@ -370,7 +368,7 @@ private fun FigmaActionRow(
         Icon(
             imageVector = Icons.Filled.ChevronRight,
             contentDescription = null,
-            tint = if (colors.isDark) colors.textMuted else Color(0xFF8B82A8),
+            tint = colors.textMuted,
             modifier = Modifier.size(18.dp)
         )
     }

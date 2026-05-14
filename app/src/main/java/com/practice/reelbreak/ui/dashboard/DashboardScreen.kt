@@ -62,7 +62,7 @@ fun DashboardScreen(
     val context = LocalContext.current
 
     val sheetState by permissionsViewModel.sheetState.collectAsState()
-    val permModalState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val permModalState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val permissionUiState by permissionsViewModel.uiState.collectAsState()
     val permissionState = permissionUiState.permissionState
@@ -92,7 +92,7 @@ fun DashboardScreen(
         PermissionPagerItem(
             type = PermissionSheetType.ACCESSIBILITY,
             icon = Icons.Outlined.AccessibilityNew,
-            iconTint = Color(0xFF9B3DFF),
+            iconTint =  colors.purplePrimary,
             title = "Accessibility Permission",
             description = "Required to detect & block reels in real time.",
             buttonText = "Turn On"
@@ -100,7 +100,7 @@ fun DashboardScreen(
         PermissionPagerItem(
             type = PermissionSheetType.USAGE_ACCESS,
             icon = Icons.Outlined.BarChart,
-            iconTint = Color(0xFF3B82F6),
+            iconTint = colors.blueAccent,
             title = "Usage Access",
             description = "Required to track time spent on short-video apps.",
             buttonText = "Grant Access"
@@ -108,7 +108,7 @@ fun DashboardScreen(
         PermissionPagerItem(
             type = PermissionSheetType.OVERLAY,
             icon = Icons.Outlined.Layers,
-            iconTint = Color(0xFF2ECC71),
+            iconTint = colors.successGreen,
             title = "Overlay Permission",
             description = "Optional — shows a live reel counter over other apps.",
             buttonText = "Enable"

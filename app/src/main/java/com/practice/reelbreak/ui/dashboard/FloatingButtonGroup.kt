@@ -60,8 +60,8 @@ fun FloatingButtonGroup(
                 .shadow(
                     elevation = 16.dp,
                     shape = RoundedCornerShape(30.dp),
-                    ambientColor = if (colors.isDark) Color(0x408B5CF6) else Color(0x306B3FA0),
-                    spotColor   = if (colors.isDark) Color(0x408B5CF6) else Color(0x306B3FA0)
+                    ambientColor = colors.glowPurple,
+                    spotColor   =  colors.glowPurple
                 )
         ) {
             Row(
@@ -69,28 +69,10 @@ fun FloatingButtonGroup(
                     .fillMaxWidth()
                     .height(58.dp)
                     .clip(RoundedCornerShape(30.dp))
-                    .background(
-                        if (colors.isDark)
-                            Brush.linearGradient(listOf(Color(0xCC1C1230), Color(0xCC160E28)))
-                        else
-                            Brush.linearGradient(listOf(Color(0xFFFFFFFF), Color(0xFFFAF8FF)))
-                    )
+                    .background(colors.cardSurface)
                     .border(
                         width = 1.dp,
-                        brush = if (colors.isDark)
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFFA78BFA),       // light purple top
-                                    Color(0xFF6D28D9)        // deeper purple bottom
-                                )
-                            )
-                        else
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color(0xFFB39DDB),       // soft lavender top
-                                    Color(0xFF9C78D4)        // medium purple bottom
-                                )
-                            ),
+                        brush = colors.borderColor,
                         shape = RoundedCornerShape(30.dp)
                     )
                     .padding(horizontal = 6.dp),
@@ -124,34 +106,16 @@ private fun FigmaNavItem(
             .height(46.dp)
             .clip(RoundedCornerShape(23.dp))
             .background(
-                if (isSelected) {
-                    if (colors.isDark)
-                        Brush.verticalGradient(listOf(Color(0xFF7C3AED), Color(0xFF4C1D95)))
-                    else
-                        Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
-                } else {
+                if (isSelected)  colors.appColor
+                     else {
                     Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
                 }
             )
             .then(
                 if (isSelected) Modifier.border(
                     width = 1.dp,
-                    brush = if (colors.isDark)
-                        Brush.verticalGradient(
-                            listOf(
-                                Color(0xFFA78BFA),       // light purple top
-                                Color(0xFF6D28D9)        // deeper purple bottom
-                            )
-                        )
-                    else
-                        Brush.verticalGradient(
-                            listOf(
-//                                Color(0xFFB39DDB),       // soft lavender top
-//                                Color(0xFF9C78D4)        // medium purple bottom
-                                Color(0xFFA78BFA),       // light purple top
-                                Color(0xFF6D28D9)
-                            )
-                        ),
+
+                    brush = colors.borderColor,
                     shape = RoundedCornerShape(23.dp)
                 ) else Modifier
             )
@@ -163,7 +127,6 @@ private fun FigmaNavItem(
         contentAlignment = Alignment.Center
     ) {
         if (isSelected) {
-            // Selected state: icon + dot indicator below
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
@@ -187,7 +150,7 @@ private fun FigmaNavItem(
             Icon(
                 imageVector = item.icon,
                 contentDescription = item.label,
-                tint = if (colors.isDark) colors.textMuted else Color(0xFFAA9FC8),
+                tint = if (colors.isDark) colors.textMuted else colors.purplePrimary.copy(alpha = 0.5f),
                 modifier = Modifier.size(22.dp)
             )
         }

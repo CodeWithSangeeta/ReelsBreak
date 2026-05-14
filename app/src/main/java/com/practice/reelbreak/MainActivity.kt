@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
 
         // Force status bar icons to be WHITE (light icons = false)
         WindowInsetsControllerCompat(window, window.decorView).apply {
-            isAppearanceLightStatusBars = false  // false = white icons
+            isAppearanceLightStatusBars = false
         }
     }
 }

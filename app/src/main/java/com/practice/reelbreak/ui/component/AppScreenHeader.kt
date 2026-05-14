@@ -32,25 +32,17 @@ fun AppScreenHeader(
             .height(132.dp)
             .clip(RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp))
             .background(
-                if (colors.isDark) Brush.verticalGradient(listOf(Color(0xFF7C3AED), Color(0xFF4C1D95)))
-                else
-                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
+                colors.appColor
             )
             .border(
                 width = 1.dp,
                 brush = if (colors.isDark)
                     Brush.verticalGradient(
-                        listOf(
-                            Color(0xFFA78BFA),
-                            Color(0xFF6D28D9)
-                        )
+                        listOf(colors.purpleSoft, colors.purpleDeep)
                     )
                 else
                     Brush.verticalGradient(
-                        listOf(
-                            Color(0xFFB39DDB),
-                            Color(0xFF9C78D4)
-                        )
+                        listOf(colors.purpleSoft.copy(alpha = 0.7f), colors.purplePrimary.copy(alpha = 0.6f))
                     ),
                 shape = RoundedCornerShape(30.dp)
             )

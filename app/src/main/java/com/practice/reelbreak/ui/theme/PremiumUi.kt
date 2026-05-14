@@ -66,29 +66,7 @@ fun premiumChipColor(): Color {
     }
 }
 
-@Composable
-fun PremiumCard(
-    modifier: Modifier = Modifier,
-    padding: PaddingValues = PaddingValues(18.dp),
-    content: @Composable BoxScope.() -> Unit
-) {
-    val colors = LocalAppColors.current
 
-    Box(
-        modifier = modifier
-            .shadow(
-                elevation = if (colors.isDark) 12.dp else 4.dp,
-                shape = PremiumShapes.card,
-                ambientColor = colors.glowPurple.copy(alpha = if (colors.isDark) 0.16f else 0.05f),
-                spotColor = colors.glowPurple.copy(alpha = if (colors.isDark) 0.16f else 0.05f)
-            )
-            .clip(PremiumShapes.card)
-            .background(colors.cardSurface)
-            .border(1.dp, premiumCardBorderColor(), PremiumShapes.card)
-            .padding(padding),
-        content = content
-    )
-}
 
 
 @Composable

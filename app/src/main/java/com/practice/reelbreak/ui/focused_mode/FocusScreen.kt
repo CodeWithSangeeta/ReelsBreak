@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -70,9 +71,6 @@ import com.practice.reelbreak.ui.focusedmode.FocusViewModel
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
 import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.ui.theme.PremiumCard
-import com.practice.reelbreak.ui.theme.PremiumIconBubble
-import com.practice.reelbreak.ui.theme.PremiumShapes
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
 data class FocusAppChip(
@@ -102,7 +100,7 @@ fun FocusScreen(
     val colors       = LocalAppColors.current
     val context      = LocalContext.current
     val sheetState           by permissionsViewModel.sheetState.collectAsState()
-    val permModalState       = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val permModalState       = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lifecycleOwner       = LocalLifecycleOwner.current
 
     // Re-check accessibility on every resume
@@ -114,6 +112,11 @@ fun FocusScreen(
                     permissionsViewModel.updateAccessibilityGranted(true)
                     permissionsViewModel.dismissSheet()
                 } else {
+                    permissionsViewModel.updateAccessibilityGranted(false)
+                    // ← Stop the session if it's running without permission
+                    if (isFocusActive) {
+                        viewModel.stopFocusSession()
+                    }
                     permissionsViewModel.checkAndShowSheetIfNeeded(context)
                 }
             }
@@ -141,7 +144,7 @@ fun FocusScreen(
     }
 
     val totalMillis = state.selectedMinutes.toLong() * 60_000L
-    val progress    = if (totalMillis > 0 && state.isFocusActive)
+    val progress    = if (totalMillis > 0 && state.isFocusActive )
         (state.remainingMillis.toFloat() / totalMillis.toFloat()).coerceIn(0f, 1f)
     else 1f
 
@@ -153,21 +156,23 @@ fun FocusScreen(
                     title    = "Focus Mode",
                     subtitle = "Stay Focus",
                     actions  = {
-                        PremiumIconBubble(modifier = Modifier.size(42.dp)) {
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (isFocusActive) colors.successGreen.copy(alpha = 0.18f)
-                                        else Color.White.copy(alpha = 0.10f)
-                                    )
-                            )
+                        Box(
+                            modifier = Modifier
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background( Color.White.copy(alpha = 0.10f))
+                                .border(
+                                    1.dp,
+                                    Color.White.copy(alpha = 0.25f),
+                                    CircleShape
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Icon(
-                                imageVector   = Icons.Filled.Shield,
+                                imageVector = Icons.Filled.Shield,
                                 contentDescription = null,
-                                tint          = if (isFocusActive) colors.successGreen else Color.White,
-                                modifier      = Modifier.size(22.dp).align(Alignment.Center)
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     },
@@ -184,10 +189,10 @@ fun FocusScreen(
                         .padding(top = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Timer card
+
                     TimerCard(
                         remainingMillis = state.remainingMillis,
-                        isActive        = state.isFocusActive,
+                        isActive        = state.isFocusActive ,
                         progress        = progress,
                         isFocusActive   = state.isFocusActive,
                         onToggle        = {
@@ -203,14 +208,11 @@ fun FocusScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(paddingValues),
-                        contentPadding = PaddingValues(
-                            start = 16.dp, end = 16.dp,
-                            top = 16.dp, bottom = 120.dp
-                        ),
+                        contentPadding = PaddingValues(),
+
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
 
-                        // Duration card
                         item {
                             DurationCard(
                                 selectedMinutes = state.selectedMinutes,
@@ -219,7 +221,6 @@ fun FocusScreen(
                             )
                         }
 
-                        // Block apps card
                         item {
                             BlockAppsCard(
                                 selectedPackages = state.selectedApps,
@@ -227,7 +228,6 @@ fun FocusScreen(
                             )
                         }
 
-                        // Currently blocked — only when session is active
                         item {if (state.isFocusActive && state.selectedApps.isNotEmpty()) {
                             CurrentlyBlockedSection(blockedPackages = state.selectedApps)
                         }
@@ -261,39 +261,32 @@ private fun TimerCard(
 ) {
     val colors = LocalAppColors.current
 
-    PremiumCard(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        padding  = PaddingValues(16.dp)   // was 24.dp
+        padding  = PaddingValues(20.dp)
     ) {
         Column(
             modifier            = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(14.dp)  // was 24.dp
+            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            PremiumTimerCircle(
+            TimerCircle(
                 remainingMillis = remainingMillis,
                 isActive        = isActive,
                 progress        = progress
             )
-
-            val buttonBrush = if (isFocusActive) {
-                Brush.linearGradient(listOf(colors.successGreen.copy(alpha = 0.88f), colors.successGreen))
-            } else {
-                colors.button
-            }
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(44.dp)           // was 52.dp
+                    .height(44.dp)
                     .shadow(
-                        elevation    = 8.dp, // was 12.dp
+                        elevation    = 8.dp,
                         shape        = RoundedCornerShape(999.dp),
                         ambientColor = if (isFocusActive) colors.successGreen.copy(alpha = 0.20f) else colors.glowPurple,
                         spotColor    = if (isFocusActive) colors.successGreen.copy(alpha = 0.20f) else colors.glowPurple
                     )
                     .clip(RoundedCornerShape(999.dp))
-                    .background(buttonBrush)
+                    .background(if(isFocusActive) colors.borderColor else colors.appColor)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication        = null,
@@ -303,18 +296,18 @@ private fun TimerCard(
             ) {
                 Row(
                     verticalAlignment     = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)  // was 8.dp
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Icon(
                         imageVector        = if (isFocusActive) Icons.Filled.Stop else Icons.Filled.PlayArrow,
                         contentDescription = null,
                         tint               = Color.White,
-                        modifier           = Modifier.size(18.dp)  // was 20.dp
+                        modifier           = Modifier.size(18.dp)
                     )
                     Text(
                         text       = if (isFocusActive) "Stop Focus Session" else "Start Focus Session",
                         color      = Color.White,
-                        fontSize   = 13.sp,    // was 15.sp
+                        fontSize   = 13.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -326,13 +319,12 @@ private fun TimerCard(
 
 
 @Composable
-private fun PremiumTimerCircle(
+private fun TimerCircle(
     remainingMillis: Long,
     isActive: Boolean,
     progress: Float
 ) {
     val colors = LocalAppColors.current
-
     val animatedProgress by animateFloatAsState(
         targetValue   = progress,
         animationSpec = tween(800),
@@ -346,25 +338,25 @@ private fun PremiumTimerCircle(
 
     val timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds)
 
-    val trackColor = if (colors.isDark) Color(0xFF2D1B4E) else Color(0xFFEDE8FF)
-    val arcColor   = if (colors.isDark) Color(0xFF9333EA) else Color(0xFF6B3FA0)
-    val textColor  = if (colors.isDark) Color.White else Color(0xFF1A1035)
-    val mutedColor = if (colors.isDark) colors.textSecondary else Color(0xFF6B5F88)
-
     Box(
         modifier         = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier         = Modifier.size(160.dp),   // was 210.dp
+            modifier         = Modifier.size(160.dp),
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.size(160.dp)) {  // was 210.dp
-                val strokeW = 11.dp.toPx()              // was 14.dp
+            Canvas(modifier = Modifier.size(160.dp)) {
+                val strokeW = 11.dp.toPx()
                 val arcSz   = size.width - strokeW
 
                 drawArc(
-                    color      = trackColor,
+                    brush = Brush.verticalGradient(
+                        colors = if (colors.isDark)
+                            listOf(Color(0xFF7C3AED).copy(alpha = 0.25f), Color(0xFF4C1D95).copy(alpha = 0.25f))
+                        else
+                            listOf(Color(0xFF6B3FA0).copy(alpha = 0.18f), Color(0xFF4A2070).copy(alpha = 0.18f))
+                    ),
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter  = false,
@@ -374,7 +366,12 @@ private fun PremiumTimerCircle(
                 )
 
                 drawArc(
-                    color      = arcColor,
+                    brush = Brush.verticalGradient(
+                        colors = if (colors.isDark)
+                            listOf(Color(0xFF7C3AED), Color(0xFF4C1D95))   // dark header colors
+                        else
+                            listOf(Color(0xFF6B3FA0), Color(0xFF4A2070))   // light header colors
+                    ),
                     startAngle = -90f,
                     sweepAngle = 360f * animatedProgress,
                     useCenter  = false,
@@ -386,20 +383,20 @@ private fun PremiumTimerCircle(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)  // was 6.dp
+                verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 Text(
                     text          = if (isActive) timeString else "00:00:00",
-                    color         = if (isActive) textColor else textColor.copy(alpha = 0.35f),
-                    fontSize      = 24.sp,     // was 32.sp
+                    color         = if (isActive) colors.textPrimary else colors.textPrimary.copy(alpha = 0.35f),
+                    fontSize      = 24.sp,
                     fontWeight    = FontWeight.Bold,
                     letterSpacing = 1.sp
                 )
 
                 Text(
                     text       = if (isActive) "Remaining" else "Ready to focus",
-                    color      = mutedColor,
-                    fontSize   = 11.sp,        // was 12.sp
+                    color      = colors.textSecondary,
+                    fontSize   = 11.sp,
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -426,9 +423,9 @@ private fun DurationCard(
 ) {
     val colors = LocalAppColors.current
 
-    PremiumCard(
+    Card(
         modifier = Modifier.fillMaxWidth(),
-        padding  = androidx.compose.foundation.layout.PaddingValues(20.dp)
+        padding  = PaddingValues(20.dp)
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
             CardSectionTitle("Duration")
@@ -438,20 +435,18 @@ private fun DurationCard(
             ) {
                 items(durationChips) { chip ->
                     val isSelected = chip.minutes == selectedMinutes
-                    val bg = if (isSelected)
-                        Brush.linearGradient(listOf(colors.purplePrimary, colors.blueAccent))
-                    else
-                        colors.cardSurface
+                    val bg = if (isSelected) colors.appColor
+                    else colors.cardSurface
 
-                                Box(
+                      Box(
                         modifier = Modifier
                             .height(40.dp)
-                            .clip(PremiumShapes.pill)
+                            .clip(RoundedCornerShape(999.dp))
                             .background(bg)
                             .border(
                                 width = if (isSelected) 0.dp else 1.dp,
                                 color = colors.borderSubtle,
-                                shape = PremiumShapes.pill
+                                shape = RoundedCornerShape(999.dp)
                             )
                             .then(
                                 if (enabled) Modifier.clickable(
@@ -475,106 +470,6 @@ private fun DurationCard(
     }
 }
 
-// ── Block apps card ───────────────────────────────────────────────────────────
-//@Composable
-//fun BlockAppsCard(
-//    selectedPackages: Set<String>,
-//    isEnabled: Boolean = true,
-//    onToggle: (String) -> Unit
-//) {
-//    val colors = LocalAppColors.current
-//
-//    PremiumCard(
-//        modifier = Modifier.fillMaxWidth(),
-//        padding  = androidx.compose.foundation.layout.PaddingValues(20.dp)
-//    ) {
-//        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-//            CardSectionTitle("Block These Apps")
-//
-//            focusApps.chunked(3).forEach { rowApps ->
-//                Row(
-//                    modifier              = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-//                ) {
-//                    rowApps.forEach { app ->
-//                        val isSelected = selectedPackages.contains(app.packageName)
-//
-//                        Box(
-//                            modifier = Modifier
-//                                .weight(1f)
-//                                .height(90.dp)
-//                                .clip(RoundedCornerShape(16.dp))
-//                                .background(
-//                                    if (isSelected)
-//                                        Brush.linearGradient(
-//                                            listOf(
-//                                                colors.purplePrimary.copy(alpha = if (colors.isDark) 0.28f else 0.16f),
-//                                                colors.blueAccent.copy(alpha   = if (colors.isDark) 0.18f else 0.10f)
-//                                            )
-//                                        )
-//                                    else colors.cardSurface
-//                                )
-//                                .border(
-//                                    width = if (isSelected) 1.5.dp else 1.dp,
-//                                    color = if (isSelected) colors.borderActive else colors.borderSubtle,
-//                                    shape = RoundedCornerShape(16.dp)
-//                                )
-//                                .then(
-//                                    if (isEnabled) Modifier.clickable(
-//                                        interactionSource = remember { MutableInteractionSource() },
-//                                        indication        = null
-//                                    ) { onToggle(app.packageName) } else Modifier
-//                                )
-//                                .padding(8.dp),
-//                            contentAlignment = Alignment.Center
-//                        ) {
-//                            Column(
-//                                horizontalAlignment = Alignment.CenterHorizontally,
-//                                verticalArrangement = Arrangement.spacedBy(6.dp)
-//                            ) {
-//                                Box {
-//                                    Box(
-//                                        modifier = Modifier
-//                                            .size(40.dp)
-//                                            .clip(RoundedCornerShape(12.dp))
-//                                            .background(Color.White.copy(alpha = 0.06f)),
-//                                        contentAlignment = Alignment.Center
-//                                    ) {
-//                                        Image(
-//                                            painter           = painterResource(id = app.iconRes),
-//                                            contentDescription = app.name,
-//                                            modifier          = Modifier.size(28.dp)
-//                                        )
-//                                    }
-//                                    if (isSelected) {
-//                                        Box(
-//                                            modifier = Modifier
-//                                                .size(16.dp)
-//                                                .align(Alignment.TopEnd)
-//                                                .clip(CircleShape)
-//                                                .background(colors.successGreen),
-//                                            contentAlignment = Alignment.Center
-//                                        ) {
-//                                            Text("✓", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
-//                                        }
-//                                    }
-//                                }
-//                                Text(
-//                                    text       = app.name,
-//                                    color      = if (isSelected) colors.textPrimary else colors.textSecondary,
-//                                    fontSize   = 11.sp,
-//                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-//                                    maxLines   = 1
-//                                )
-//                            }
-//                        }
-//                    }
-//                    repeat(3 - rowApps.size) { Spacer(modifier = Modifier.weight(1f)) }
-//                }
-//            }
-//        }
-//    }
-//}
 
 @Composable
 fun BlockAppsCard(
@@ -584,14 +479,12 @@ fun BlockAppsCard(
 ) {
     val colors = LocalAppColors.current
 
-    // No PremiumCard wrapper — title stays in a card, icons float freely below
     Column(
         modifier = Modifier
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Section title inside a small card header
-        PremiumCard(
+        Card(
             modifier = Modifier.fillMaxWidth(),
             padding  = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
         ) {
@@ -599,7 +492,6 @@ fun BlockAppsCard(
 
          Spacer(Modifier.height(8.dp))
 
-        // Icons floating directly on background — no card
         focusApps.chunked(3).forEach { rowApps ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -710,7 +602,7 @@ fun BlockAppsCard(
 fun CurrentlyBlockedSection(blockedPackages: Set<String>) {
     val colors = LocalAppColors.current
 
-    PremiumCard(
+    Card(
         modifier = Modifier.fillMaxWidth(),
         padding  = androidx.compose.foundation.layout.PaddingValues(0.dp)
     ) {
@@ -813,6 +705,31 @@ private fun CardSectionTitle(title: String) {
         color      = colors.textPrimary,
         fontSize   = 17.sp,
         fontWeight = FontWeight.SemiBold
+    )
+}
+
+
+@Composable
+fun Card(
+    modifier: Modifier = Modifier,
+    padding: PaddingValues = PaddingValues(18.dp),
+    content: @Composable BoxScope.() -> Unit
+) {
+    val colors = LocalAppColors.current
+
+    Box(
+        modifier = modifier
+            .shadow(
+                elevation = if (colors.isDark) 12.dp else 4.dp,
+                shape =  RoundedCornerShape(20.dp),
+                ambientColor = colors.glowPurple.copy(alpha = if (colors.isDark) 0.16f else 0.05f),
+                spotColor = colors.glowPurple.copy(alpha = if (colors.isDark) 0.16f else 0.05f)
+            )
+            .clip(shape = RoundedCornerShape(20.dp))
+            .background(colors.cardSurface)
+            .border(1.dp, colors.borderColor, shape = RoundedCornerShape(20.dp))
+            .padding(padding),
+        content = content
     )
 }
 

@@ -38,8 +38,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.practice.reelbreak.ui.focused_mode.Card
 import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.ui.theme.PremiumCard
 import com.practice.reelbreak.ui.theme.PremiumIconBubble
 import com.practice.reelbreak.ui.theme.PremiumPill
 import com.practice.reelbreak.ui.theme.PremiumShapes
@@ -91,7 +91,7 @@ fun BlockModeCard(
             .fillMaxWidth()
             .clip(PremiumShapes.card)
     ) {
-        PremiumCard(
+       Card(
             modifier = Modifier.fillMaxWidth(),
             padding = androidx.compose.foundation.layout.PaddingValues(0.dp)
         ) {

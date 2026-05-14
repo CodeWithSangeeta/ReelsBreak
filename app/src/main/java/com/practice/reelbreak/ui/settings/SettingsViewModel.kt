@@ -18,19 +18,13 @@ import kotlinx.coroutines.launch
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val context: Context get() = getApplication<Application>().applicationContext
-
-    // Repository — single source of truth for persisted user preferences
     private val repository = UserPreferencesRepository(context)
 
-    // ── Internal mutable state ────────────────────────────────────────────
     private val _uiState = MutableStateFlow(SettingsState())
     val uiState: StateFlow<SettingsState> = _uiState.asStateFlow()
 
-    // ── Init: wire DataStore flows into uiState ───────────────────────────
     init {
         viewModelScope.launch {
-            // Combine both behavior toggles into a single collector
-            // so we don't launch two separate coroutines
             combine(
                 repository.isNotificationsEnabled,
                 repository.isWeekendRelaxEnabled
@@ -67,11 +61,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     }
 
 
-    // ── About & Support Actions ───────────────────────────────────────────
-    /**
-     * Opens Android's native share sheet — shows WhatsApp, Telegram, Gmail etc.
-     * No SDK needed for individual apps — Android handles all targets automatically.
-     */
     fun shareApp() {
         val intent = Intent(Intent.ACTION_SEND).apply {
             type = "text/plain"
@@ -100,7 +89,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             ).apply { addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) }
             context.startActivity(intent)
         } catch (e: android.content.ActivityNotFoundException) {
-            // Play Store not installed — open browser
             val intent = Intent(
                 Intent.ACTION_VIEW,
                 Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
@@ -109,10 +97,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    /**
-     * Opens email app with pre-filled subject for feedback.
-     * Device: auto-filled so you know what Android version they're on.
-     */
     fun sendFeedback() {
         val deviceInfo = "Device: ${Build.MANUFACTURER} ${Build.MODEL} | Android ${Build.VERSION.RELEASE}"
         val intent = Intent(Intent.ACTION_SENDTO).apply {
@@ -136,14 +120,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         context.startActivity(intent)
     }
 
-    // ── Private Helpers ───────────────────────────────────────────────────
     private fun loadAppVersion() {
         try {
             val versionName = context.packageManager
                 .getPackageInfo(context.packageName, 0).versionName
             _uiState.update { it.copy(appVersion = versionName ?: "1.0.0") }
         } catch (e: Exception) {
-            // Keep default "1.0.0" if PackageManager fails
         }
     }
 }

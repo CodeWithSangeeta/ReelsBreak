@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.practice.reelbreak.ui.theme.AppColors
 import com.practice.reelbreak.ui.theme.LocalAppColors
 
 sealed class PermissionSheetType {
@@ -66,12 +67,12 @@ private data class PermissionSheetContent(
     val agreeButtonText: String,
 )
 
-private fun buildContent(type: PermissionSheetType): PermissionSheetContent =
+private fun buildContent(type: PermissionSheetType, colors : AppColors): PermissionSheetContent =
     when (type) {
         is PermissionSheetType.ACCESSIBILITY -> PermissionSheetContent(
             icon = Icons.Outlined.AccessibilityNew,
-            iconTint = Color(0xFF9B3DFF),
-            iconGlowColor = Color(0x339B3DFF),
+            iconTint = colors.purplePrimary,
+            iconGlowColor = colors.purplePrimary.copy(alpha = 0.20f),
             badgeLabel = "Required",
             isMandatory = true,
             title = "Accessibility permission",
@@ -88,8 +89,8 @@ private fun buildContent(type: PermissionSheetType): PermissionSheetContent =
 
         is PermissionSheetType.USAGE_ACCESS -> PermissionSheetContent(
             icon = Icons.Outlined.BarChart,
-            iconTint = Color(0xFF3B82F6),
-            iconGlowColor = Color(0x333B82F6),
+            iconTint = colors.blueAccent,
+            iconGlowColor = colors.blueAccent.copy(alpha = 0.20f),
             badgeLabel = "Required",
             isMandatory = true,
             title = "Usage access permission",
@@ -106,8 +107,8 @@ private fun buildContent(type: PermissionSheetType): PermissionSheetContent =
 
         is PermissionSheetType.OVERLAY -> PermissionSheetContent(
             icon = Icons.Outlined.Layers,
-            iconTint = Color(0xFF2ECC71),
-            iconGlowColor = Color(0x332ECC71),
+            iconTint = colors.successGreen,
+            iconGlowColor = colors.successGreen.copy(alpha = 0.20f),
             badgeLabel = "Optional",
             isMandatory = false,
             title = "Overlay permission",
@@ -127,17 +128,17 @@ private fun buildContent(type: PermissionSheetType): PermissionSheetContent =
 @Composable
 fun PermissionBottomSheet(
     type: PermissionSheetType,
-    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false),
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     onDismiss: () -> Unit,
     onAgree: () -> Unit,
 ) {
-    val content = buildContent(type)
     val colors = LocalAppColors.current
+    val content = buildContent(type,colors)
+
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-      //  containerColor = Color(),
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -145,16 +146,16 @@ fun PermissionBottomSheet(
                     .width(36.dp)
                     .height(3.dp)
                     .clip(RoundedCornerShape(999.dp))
-                    .background(Color.White.copy(alpha = 0.25f))
+                    .background(colors.textMuted.copy(alpha = 0.35f))
             )
         },
         tonalElevation = 0.dp,
+        modifier         = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .navigationBarsPadding()
-                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 22.dp)
                 .padding(bottom = 20.dp, top = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -202,7 +203,6 @@ fun PermissionBottomSheet(
 
             ActionButtons(
                 agreeText = content.agreeButtonText,
-                accentColor = content.iconTint,
                 onDismiss = onDismiss,
                 onAgree = onAgree,
             )
@@ -281,17 +281,14 @@ private fun TitleWithBadge(
     }
 }
 
-// changed: now supports compact mode
+
 @Composable
 private fun PermissionBadge(
     label: String,
     isMandatory: Boolean,
     compact: Boolean = false,
 ) {
-    val bgColor = if (isMandatory) Color(0x33E05555) else Color(0x332ECC71)
-    val textColor = if (isMandatory) Color(0xFFFF8080) else Color(0xFF2ECC71)
-    val borderColor = if (isMandatory) Color(0x66E05555) else Color(0x662ECC71)
-
+    val colors = LocalAppColors.current
     val horizontalPadding = if (compact) 8.dp else 12.dp
     val verticalPadding = if (compact) 2.dp else 4.dp
     val fontSize = if (compact) 9.sp else 10.sp
@@ -299,15 +296,17 @@ private fun PermissionBadge(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
-            .background(bgColor)
-            .border(1.dp, borderColor, RoundedCornerShape(999.dp))
+            .background(if (isMandatory) colors.errorRed.copy(alpha = 0.20f)
+            else colors.successGreen.copy(alpha = 0.20f))
+            .border(1.dp, if (isMandatory) colors.errorRed.copy(alpha = 0.40f)
+            else colors.successGreen.copy(alpha = 0.40f), RoundedCornerShape(999.dp))
             .padding(horizontal = horizontalPadding, vertical = verticalPadding),
     ) {
         Text(
             text = label.uppercase(),
             fontSize = fontSize,
             fontWeight = FontWeight.Bold,
-            color = textColor,
+            color = if (isMandatory) colors.errorRed else colors.successGreen,
             letterSpacing = 1.1.sp,
         )
     }
@@ -392,14 +391,13 @@ private fun StepsSection(
 
 @Composable
 private fun PrivacyNote(note: String) {
-    val greenColor = Color(0xFF2ECC71)
     val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .background(colors.cardSurface)
-            .border(0.8.dp, greenColor.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
+            .border(0.8.dp, color = colors.successGreen.copy(alpha = 0.8f), RoundedCornerShape(12.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.Top,
@@ -407,14 +405,14 @@ private fun PrivacyNote(note: String) {
         Icon(
             imageVector = Icons.Outlined.VerifiedUser,
             contentDescription = null,
-            tint = greenColor,
+            tint = colors.successGreen,
             modifier = Modifier.size(16.dp),
         )
         Text(
             text = note,
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal,
-            color = greenColor.copy(alpha = 0.88f),
+            color = colors.successGreen.copy(alpha = 0.8f),
             lineHeight = 17.sp,
             modifier = Modifier.weight(1f),
         )
@@ -424,7 +422,6 @@ private fun PrivacyNote(note: String) {
 @Composable
 private fun ActionButtons(
     agreeText: String,
-    accentColor: Color,
     onDismiss: () -> Unit,
     onAgree: () -> Unit,
 ) {
@@ -453,7 +450,7 @@ private fun ActionButtons(
                 .height(48.dp)
                 .clip(RoundedCornerShape(14.dp))
                 .background(
-                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
+                   colors.appColor
                 )
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
