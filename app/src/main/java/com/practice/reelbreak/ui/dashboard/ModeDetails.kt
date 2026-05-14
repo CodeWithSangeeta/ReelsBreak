@@ -122,52 +122,6 @@ fun LimitSettingsContent(
 }
 
 
-@Composable
-fun SmartFilterDetails() {
-    val colors = LocalAppColors.current
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
-        // Coming soon badge
-       Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(colors.purplePrimary.copy(alpha = 0.18f))
-                .border(
-                    width = 1.dp,
-                    color = colors.purplePrimary.copy(alpha = 0.4f),
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(horizontal = 10.dp, vertical = 5.dp)
-        ) {
-            Text(
-                text = "Coming Soon",
-                color = colors.purpleSoft,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-
-        Spacer(Modifier.height(2.dp))
-
-        HowItWorksRow(
-            icon = Icons.Outlined.FilterList,
-            text = "Filters reels intelligently instead of blocking them all",
-            iconTint = colors.purpleSoft.copy(alpha = 0.9f)
-        )
-        HowItWorksRow(
-            icon = Icons.Outlined.AutoAwesome,
-            text = "Planned: allow content only from creators you have liked",
-            iconTint = colors.blueAccent.copy(alpha = 0.9f)
-        )
-        HowItWorksRow(
-            icon = Icons.Outlined.TipsAndUpdates,
-            text = "Will adapt based on your usage patterns over time",
-            iconTint = colors.warningOrange.copy(alpha = 0.9f)
-        )
-    }
-}
-
-
 
 @Composable
 fun HowItWorksRow(

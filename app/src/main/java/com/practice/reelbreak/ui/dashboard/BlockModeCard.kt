@@ -60,7 +60,6 @@ fun BlockModeCard(
     val accentColor = when (option.mode) {
         BlockMode.BLOCK_NOW -> colors.purplePrimary
         BlockMode.LIMIT_BASED -> colors.blueAccent
-        BlockMode.SMART_FILTER -> colors.successGreen
     }
 
     val borderColor by animateColorAsState(

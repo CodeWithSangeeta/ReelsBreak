@@ -56,14 +56,6 @@ class DashboardViewModel @Inject constructor(
         _uiState.update { it.copy(isDarkMode = !it.isDarkMode) }
     }
 
-    fun toggleCounterVisibility() {
-        _uiState.update { it.copy(isCounterVisible = !it.isCounterVisible) }
-    }
-
-    fun updateSelectedTab(tab: Int) {
-        _uiState.update { it.copy(selectedTab = tab) }
-    }
-
     fun toggleOverlayEnabled() {
         viewModelScope.launch {
             val current = uiState.value.isOverlayEnabled
@@ -92,11 +84,6 @@ class DashboardViewModel @Inject constructor(
                     userPreferencesRepository.setStrictMode(false)
                 }
 
-                BlockMode.SMART_FILTER -> {
-                    userPreferencesRepository.setActiveMode(ActiveBlockMode.SMART)
-                    userPreferencesRepository.setStrictMode(false)
-                    // later: set curated/smart flags too
-                }
             }
         }
 

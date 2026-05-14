@@ -132,11 +132,12 @@ fun PermissionBottomSheet(
     onAgree: () -> Unit,
 ) {
     val content = buildContent(type)
+    val colors = LocalAppColors.current
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFF1C1B2E),
+      //  containerColor = Color(),
         dragHandle = {
             Box(
                 modifier = Modifier
@@ -181,7 +182,7 @@ fun PermissionBottomSheet(
                 text = content.description,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Normal,
-                color = Color.White.copy(alpha = 0.72f),
+                color = colors.textSecondary,
                 textAlign = TextAlign.Center,
                 lineHeight = 19.sp,
             )
@@ -247,13 +248,14 @@ private fun PermissionIconSection(
     }
 }
 
-// NEW: compact title + badge row
+
 @Composable
 private fun TitleWithBadge(
     title: String,
     badgeLabel: String,
     isMandatory: Boolean
 ) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
@@ -261,9 +263,9 @@ private fun TitleWithBadge(
     ) {
         Text(
             text = title,
-            fontSize = 19.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
-            color = Color.White,
+            color = colors.textPrimary,
             textAlign = TextAlign.Center,
             lineHeight = 26.sp,
             modifier = Modifier.weight(1f, fill = false)
@@ -334,9 +336,9 @@ private fun StepsSection(
             )
             Text(
                 text = "How to enable",
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(alpha = 0.55f),
+                color = colors.textPrimary.copy(alpha = 0.55f),
                 letterSpacing = 0.6.sp,
             )
         }
@@ -346,7 +348,7 @@ private fun StepsSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.Black)
+                    .background(colors.cardSurface)
                     .border(
                         0.8.dp,
                         Color.White.copy(alpha = 0.05f),
@@ -379,7 +381,7 @@ private fun StepsSection(
                     text = step,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.White.copy(alpha = 0.9f),
+                    color = colors.textPrimary.copy(alpha = 0.9f),
                     lineHeight = 18.sp,
                     modifier = Modifier.weight(1f),
                 )
@@ -391,13 +393,13 @@ private fun StepsSection(
 @Composable
 private fun PrivacyNote(note: String) {
     val greenColor = Color(0xFF2ECC71)
-
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF0D2B1A))
-            .border(0.8.dp, greenColor.copy(alpha = 0.2f), RoundedCornerShape(12.dp))
+            .background(colors.cardSurface)
+            .border(0.8.dp, greenColor.copy(alpha = 0.4f), RoundedCornerShape(12.dp))
             .padding(horizontal = 14.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.Top,
@@ -426,6 +428,7 @@ private fun ActionButtons(
     onDismiss: () -> Unit,
     onAgree: () -> Unit,
 ) {
+    val colors = LocalAppColors.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -439,7 +442,7 @@ private fun ActionButtons(
                 text = "Not now",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color.White.copy(alpha = 0.5f),
+                color = colors.textPrimary.copy(alpha = 0.5f),
             )
         }
 
@@ -450,12 +453,7 @@ private fun ActionButtons(
                 .height(48.dp)
                 .clip(RoundedCornerShape(14.dp))
                 .background(
-                    Brush.horizontalGradient(
-                        colors = listOf(
-                            accentColor,
-                            accentColor.copy(alpha = 0.8f),
-                        )
-                    )
+                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
                 )
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },

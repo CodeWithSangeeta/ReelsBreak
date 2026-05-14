@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,27 +43,20 @@ fun PermissionPagerCard(
         modifier = Modifier
             .padding(horizontal = 4.dp)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(30.dp))
             .background(colors.cardSurface)
             .border(
-                width = 1.dp,
-                color = activeColor.copy(alpha = if (isGranted) 0.6f else 0.3f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
+                width = 1.3.dp,
+                color = activeColor.copy(alpha = if (isGranted) 0.9f else 0.6f),
+                shape = RoundedCornerShape(30.dp)
             )
             .padding(horizontal = 18.dp, vertical = 18.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
 
-            // Icon circle — bigger, like PermissionBottomSheet
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -90,7 +84,6 @@ fun PermissionPagerCard(
                 )
             }
 
-            // Title + description
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -127,7 +120,7 @@ fun PermissionPagerCard(
                         .padding(horizontal = 14.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = if (isGranted) "✓  Enabled" else item.buttonText,
+                        text = if (isGranted) "Enabled" else item.buttonText,
                         color = activeColor,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold

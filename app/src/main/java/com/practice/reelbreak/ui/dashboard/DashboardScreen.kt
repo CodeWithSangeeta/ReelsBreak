@@ -1,7 +1,5 @@
 package com.practice.reelbreak.ui.dashboard
 
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,7 +26,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.ui.component.MainScaffold
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
@@ -95,15 +92,15 @@ fun DashboardScreen(
         PermissionPagerItem(
             type = PermissionSheetType.ACCESSIBILITY,
             icon = Icons.Outlined.AccessibilityNew,
-            iconTint = androidx.compose.ui.graphics.Color(0xFF9B3DFF),
-            title = "Accessibility Access",
+            iconTint = Color(0xFF9B3DFF),
+            title = "Accessibility Permission",
             description = "Required to detect & block reels in real time.",
             buttonText = "Turn On"
         ),
         PermissionPagerItem(
             type = PermissionSheetType.USAGE_ACCESS,
             icon = Icons.Outlined.BarChart,
-            iconTint = androidx.compose.ui.graphics.Color(0xFF3B82F6),
+            iconTint = Color(0xFF3B82F6),
             title = "Usage Access",
             description = "Required to track time spent on short-video apps.",
             buttonText = "Grant Access"
@@ -111,7 +108,7 @@ fun DashboardScreen(
         PermissionPagerItem(
             type = PermissionSheetType.OVERLAY,
             icon = Icons.Outlined.Layers,
-            iconTint = androidx.compose.ui.graphics.Color(0xFF2ECC71),
+            iconTint = Color(0xFF2ECC71),
             title = "Overlay Permission",
             description = "Optional — shows a live reel counter over other apps.",
             buttonText = "Enable"
@@ -147,8 +144,6 @@ fun DashboardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(colors.background)
-               // .padding(horizontal = 24.dp)
         ) {
             DashboardHeader(
                 isOverlayGranted = permissionState.overlayGranted,
@@ -156,10 +151,8 @@ fun DashboardScreen(
                 isDarkMode = dashboardState.isDarkMode,
                 onVisibilityClick = {
                     if (!permissionState.overlayGranted) {
-                        // User wants overlay but no permission yet: open sheet.
                         permissionsViewModel.showSheet(PermissionSheetType.OVERLAY)
                     } else {
-                        // Permission already granted: simple toggle.
                         dashboardViewModel.toggleOverlayEnabled()
                     }
                 },
@@ -168,7 +161,7 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // ── Permission pager: only for missing permissions ─────────────────────
+            // ── Permission pager: only for missing permissions
             val shouldShowPermissionPager = missingPermissionItems.isNotEmpty()
 
             if (shouldShowPermissionPager) {
@@ -181,14 +174,11 @@ fun DashboardScreen(
 
                 Column(
                     modifier = Modifier.padding(horizontal = 20.dp)
-                    //modifier = Modifier.fillMaxWidth(),
-                   // verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier
                             .fillMaxWidth()
-                           // .height(140.dp)
                     ) { page ->
                         val item = missingPermissionItems[page]
                         val isGranted = when (item.type) {
@@ -206,6 +196,8 @@ fun DashboardScreen(
                         )
                     }
 
+                    Spacer(Modifier.height(8.dp))
+
                     PermissionPagerIndicator(
                         currentPage = pagerState.currentPage,
                         pageCount = missingPermissionItems.size
@@ -215,7 +207,6 @@ fun DashboardScreen(
                 Spacer(Modifier.height(12.dp))
             }
 
-            // ── Main content list
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
                     .padding(horizontal = 20.dp),
@@ -238,16 +229,13 @@ fun DashboardScreen(
                             BlockMode.BLOCK_NOW    -> dashboardState.activeMode == ActiveBlockMode.STRICT &&
                                     permissionState.accessibilityGranted
                             BlockMode.LIMIT_BASED  -> dashboardState.activeMode == ActiveBlockMode.LIMIT
-                            BlockMode.SMART_FILTER -> dashboardState.activeMode == ActiveBlockMode.SMART
                         }
 
-//
                         BlockModeCard(
                             option = option,
                             isSelected = dashboardState.activeMode == when (option.mode) {
                                 BlockMode.BLOCK_NOW    -> ActiveBlockMode.STRICT
                                 BlockMode.LIMIT_BASED  -> ActiveBlockMode.LIMIT
-                                BlockMode.SMART_FILTER -> ActiveBlockMode.SMART
                             },
                             isExpanded = dashboardState.expandedMode == option.mode,
                             isOn = isOn,
@@ -286,8 +274,6 @@ fun DashboardScreen(
                                             dashboardViewModel.incrementDailyReelLimit()
                                         }
                                     )
-
-                                    BlockMode.SMART_FILTER -> SmartFilterDetails()
                                 }
                             }
                         )

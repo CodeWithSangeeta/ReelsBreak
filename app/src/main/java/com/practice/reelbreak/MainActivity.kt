@@ -8,6 +8,8 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.practice.reelbreak.ui.theme.ReelBreakTheme
@@ -36,6 +38,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             mainViewModel.preloadOnboardingStatus(this@MainActivity)
         }
+        // Make your layout draw behind the status bar
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
             val dashboardViewModel: DashboardViewModel = viewModel()
@@ -47,6 +51,11 @@ class MainActivity : ComponentActivity() {
                     dashboardViewModel = dashboardViewModel
                 )
             }
+        }
+
+        // Force status bar icons to be WHITE (light icons = false)
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false  // false = white icons
         }
     }
 }
