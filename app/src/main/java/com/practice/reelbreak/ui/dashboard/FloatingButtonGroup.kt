@@ -1,24 +1,10 @@
 package com.practice.reelbreak.ui.dashboard
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -27,7 +13,6 @@ import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,9 +34,9 @@ data class NavItem(
 )
 
 val navItems = listOf(
-    NavItem(Icons.Filled.Home, "Home", Routes.DASHBOARD),
-    NavItem(Icons.Filled.Shield, "Focus", Routes.FOCUS),
-    NavItem(Icons.Filled.Settings, "Settings", Routes.SETTINGS)
+    NavItem(Icons.Filled.Home,     "Dashboard", Routes.DASHBOARD),
+    NavItem(Icons.Filled.Shield,   "Focus",     Routes.FOCUS),
+    NavItem(Icons.Filled.Settings, "Settings",  Routes.SETTINGS)
 )
 
 @Composable
@@ -65,46 +50,55 @@ fun FloatingButtonGroup(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = 24.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(74.dp)
+                .height(62.dp)
                 .shadow(
-                    elevation = 24.dp,
+                    elevation = 16.dp,
                     shape = RoundedCornerShape(30.dp),
-                    ambientColor = colors.glowPurple,
-                    spotColor = colors.glowPurple
-                )
-                .clip(RoundedCornerShape(30.dp))
-                .background(
-                    brush = colors.glassSurface
-                )
-                .border(
-                    width = 1.dp,
-                    brush = Brush.horizontalGradient(
-                        listOf(
-                            colors.borderSubtle,
-                            colors.borderPurple,
-                            colors.borderSubtle
-                        )
-                    ),
-                    shape = RoundedCornerShape(30.dp)
+                    ambientColor = if (colors.isDark) Color(0x408B5CF6) else Color(0x306B3FA0),
+                    spotColor   = if (colors.isDark) Color(0x408B5CF6) else Color(0x306B3FA0)
                 )
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(74.dp)
-                    .padding(horizontal = 8.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .height(58.dp)
+                    .clip(RoundedCornerShape(30.dp))
+                    .background(
+                        if (colors.isDark)
+                            Brush.linearGradient(listOf(Color(0xCC1C1230), Color(0xCC160E28)))
+                        else
+                            Brush.linearGradient(listOf(Color(0xFFFFFFFF), Color(0xFFFAF8FF)))
+                    )
+                    .border(
+                        width = 1.dp,
+                        brush = if (colors.isDark)
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color(0xFFA78BFA),       // light purple top
+                                    Color(0xFF6D28D9)        // deeper purple bottom
+                                )
+                            )
+                        else
+                            Brush.verticalGradient(
+                                listOf(
+                                    Color(0xFFB39DDB),       // soft lavender top
+                                    Color(0xFF9C78D4)        // medium purple bottom
+                                )
+                            ),
+                        shape = RoundedCornerShape(30.dp)
+                    )
+                    .padding(horizontal = 6.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 navItems.forEach { item ->
-                    GlassNavItem(
+                    FigmaNavItem(
                         item = item,
                         isSelected = selectedRoute == item.route,
                         onClick = { onItemSelected(item.route) },
@@ -115,8 +109,9 @@ fun FloatingButtonGroup(
         }
     }
 }
+
 @Composable
-private fun GlassNavItem(
+private fun FigmaNavItem(
     item: NavItem,
     isSelected: Boolean,
     onClick: () -> Unit,
@@ -124,34 +119,42 @@ private fun GlassNavItem(
 ) {
     val colors = LocalAppColors.current
 
-    val pillHeight by animateDpAsState(
-        targetValue = if (isSelected) 50.dp else 46.dp,
-        animationSpec = tween(220, easing = FastOutSlowInEasing),
-        label = "pillHeight"
-    )
-
-    val iconSize by animateDpAsState(
-        targetValue = if (isSelected) 18.dp else 22.dp,
-        animationSpec = tween(220, easing = FastOutSlowInEasing),
-        label = "iconSize"
-    )
-
-    val activeAlpha by animateFloatAsState(
-        targetValue = if (isSelected) 1f else 0f,
-        animationSpec = tween(220, easing = FastOutSlowInEasing),
-        label = "activeAlpha"
-    )
-
-    val iconTint by animateColorAsState(
-        targetValue = if (isSelected) colors.textPrimary else colors.textMuted,
-        animationSpec = tween(220),
-        label = "iconTint"
-    )
-
     Box(
         modifier = modifier
-            .height(56.dp)
-            .clip(RoundedCornerShape(24.dp))
+            .height(46.dp)
+            .clip(RoundedCornerShape(23.dp))
+            .background(
+                if (isSelected) {
+                    if (colors.isDark)
+                        Brush.verticalGradient(listOf(Color(0xFF7C3AED), Color(0xFF4C1D95)))
+                    else
+                        Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
+                } else {
+                    Brush.verticalGradient(listOf(Color.Transparent, Color.Transparent))
+                }
+            )
+            .then(
+                if (isSelected) Modifier.border(
+                    width = 1.dp,
+                    brush = if (colors.isDark)
+                        Brush.verticalGradient(
+                            listOf(
+                                Color(0xFFA78BFA),       // light purple top
+                                Color(0xFF6D28D9)        // deeper purple bottom
+                            )
+                        )
+                    else
+                        Brush.verticalGradient(
+                            listOf(
+//                                Color(0xFFB39DDB),       // soft lavender top
+//                                Color(0xFF9C78D4)        // medium purple bottom
+                                Color(0xFFA78BFA),       // light purple top
+                                Color(0xFF6D28D9)
+                            )
+                        ),
+                    shape = RoundedCornerShape(23.dp)
+                ) else Modifier
+            )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
@@ -159,89 +162,33 @@ private fun GlassNavItem(
             ),
         contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(pillHeight)
-                .padding(horizontal = 2.dp)
-                .clip(RoundedCornerShape(22.dp))
-                .background(
-                    if (isSelected) {
-                        Brush.verticalGradient(
-                            listOf(
-                                Color.White.copy(alpha = if (colors.isDark) 0.16f else 0.92f),
-                                Color.White.copy(alpha = if (colors.isDark) 0.08f else 0.65f)
-                            )
-                        )
-                    } else {
-                        Brush.verticalGradient(
-                            listOf(
-                                Color.Transparent,
-                                Color.Transparent
-                            )
-                        )
-                    }
-                )
-                .border(
-                    width = if (isSelected) 1.dp else 0.dp,
-                    brush = if (isSelected) {
-                        Brush.verticalGradient(
-                            listOf(
-                                colors.borderPurple.copy(alpha = 0.95f),
-                                colors.borderSubtle.copy(alpha = 0.65f)
-                            )
-                        )
-                    } else {
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color.Transparent)
-                        )
-                    },
-                    shape = RoundedCornerShape(22.dp)
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(pillHeight)
-                .padding(horizontal = 2.dp)
-                .clip(RoundedCornerShape(22.dp))
-                .background(
-                    Brush.verticalGradient(
-                        listOf(
-                            colors.purpleSoft.copy(alpha = 0.14f * activeAlpha),
-                            colors.purpleDeep.copy(alpha = 0.18f * activeAlpha)
-                        )
-                    )
-                )
-        )
-
         if (isSelected) {
+            // Selected state: icon + dot indicator below
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 12.dp)
             ) {
                 Icon(
                     imageVector = item.icon,
                     contentDescription = item.label,
-                    tint = iconTint,
-                    modifier = Modifier.size(iconSize)
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(Modifier.height(1.dp))
                 Text(
                     text = item.label,
-                    color = colors.textPrimary,
+                    color = Color.White,
                     fontSize = 10.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         } else {
             Icon(
                 imageVector = item.icon,
                 contentDescription = item.label,
-                tint = iconTint,
-                modifier = Modifier.size(iconSize)
+                tint = if (colors.isDark) colors.textMuted else Color(0xFFAA9FC8),
+                modifier = Modifier.size(22.dp)
             )
         }
     }

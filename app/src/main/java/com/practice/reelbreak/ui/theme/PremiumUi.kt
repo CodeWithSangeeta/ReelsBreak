@@ -32,27 +32,6 @@ object PremiumShapes {
     val pill = RoundedCornerShape(999.dp)
 }
 
-@Composable
-fun premiumHeroBrush(): Brush {
-    val colors = LocalAppColors.current
-    return if (colors.isDark) {
-        Brush.linearGradient(
-            listOf(
-                colors.purpleDeep.copy(alpha = 0.96f),
-                colors.purplePrimary.copy(alpha = 0.72f),
-                colors.blueAccent.copy(alpha = 0.30f)
-            )
-        )
-    } else {
-        Brush.linearGradient(
-            listOf(
-                colors.purpleSoft.copy(alpha = 0.18f),
-                colors.purplePrimary.copy(alpha = 0.10f),
-                colors.blueAccent.copy(alpha = 0.06f)
-            )
-        )
-    }
-}
 
 @Composable
 fun premiumCardBorderColor(): Color {
@@ -61,6 +40,7 @@ fun premiumCardBorderColor(): Color {
 }
 
 @Composable
+
 fun premiumGlassBorderColor(): Color {
     val colors = LocalAppColors.current
     return if (colors.isDark) colors.borderPurple.copy(alpha = 0.56f) else colors.borderPurple.copy(alpha = 0.20f)
@@ -110,29 +90,6 @@ fun PremiumCard(
     )
 }
 
-@Composable
-fun PremiumGlassCard(
-    modifier: Modifier = Modifier,
-    padding: PaddingValues = PaddingValues(16.dp),
-    content: @Composable BoxScope.() -> Unit
-) {
-    val colors = LocalAppColors.current
-
-    Box(
-        modifier = modifier
-            .shadow(
-                elevation = if (colors.isDark) 18.dp else 6.dp,
-                shape = PremiumShapes.card,
-                ambientColor = colors.glowPurple.copy(alpha = if (colors.isDark) 0.22f else 0.08f),
-                spotColor = colors.glowPurple.copy(alpha = if (colors.isDark) 0.22f else 0.08f)
-            )
-            .clip(PremiumShapes.card)
-            .background(colors.glassSurface)
-            .border(1.dp, premiumGlassBorderColor(), PremiumShapes.card)
-            .padding(padding),
-        content = content
-    )
-}
 
 @Composable
 fun PremiumIconBubble(
@@ -193,51 +150,3 @@ fun PremiumSectionTitle(
     }
 }
 
-@Composable
-fun PremiumHeroHeader(
-    title: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    actions: @Composable (() -> Unit)? = null,
-    bottomContent: @Composable (() -> Unit)? = null
-) {
-    val colors = LocalAppColors.current
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(PremiumShapes.hero)
-            .background(premiumHeroBrush())
-            .padding(horizontal = 20.dp)
-            .padding(top = 48.dp, bottom = 22.dp)
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = title,
-                        color = colors.textPrimary,
-                        fontSize = 26.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = subtitle,
-                        color = colors.textPrimary.copy(alpha = if (colors.isDark) 0.76f else 0.84f),
-                        fontSize = 13.sp,
-                        lineHeight = 18.sp
-                    )
-                }
-                if (actions != null) actions()
-            }
-
-            if (bottomContent != null) bottomContent()
-        }
-    }
-}

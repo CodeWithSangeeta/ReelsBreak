@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.practice.reelbreak.ui.component.AppScreenHeader
 import com.practice.reelbreak.ui.component.MainScaffold
 import com.practice.reelbreak.ui.theme.LocalAppColors
 
@@ -30,18 +32,17 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 fun SettingsScreen(
     selectedTab: Int = 2,
     onTabSelected: (Int) -> Unit,
-    viewModel: SettingsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: SettingsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val colors = LocalAppColors.current
 
     MainScaffold(selectedTab = selectedTab, onTabSelected = onTabSelected) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colors.background)
-        ) {
-            SettingsPurpleHeader()
+        Column(modifier = Modifier.fillMaxSize()) {
+           AppScreenHeader(
+               title = "Setting",
+               subtitle = "Customize your experience"
+           )
 
             LazyColumn(
                 modifier = Modifier
@@ -191,31 +192,8 @@ fun SettingsScreen(
     }
 }
 
-// ── Purple Header ─────────────────────────────────────────────────────────────
-@Composable
-private fun SettingsPurpleHeader() {
-    val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-            .background(
-                if (colors.isDark)
-                    Brush.linearGradient(listOf(Color(0xFF2D1060), Color(0xFF1A0840)))
-                else
-                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
-            )
-            .padding(horizontal = 20.dp)
-            .padding(top = 48.dp, bottom = 20.dp)
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(text = "Settings", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color.White)
-            Text(text = "Customize your experience", fontSize = 13.sp, color = Color.White.copy(alpha = 0.80f))
-        }
-    }
-}
 
-// ── Shared card wrapper ───────────────────────────────────────────────────────
+
 @Composable
 private fun FigmaSettingsCard(content: @Composable () -> Unit) {
     val colors = LocalAppColors.current
@@ -259,7 +237,6 @@ private fun FigmaDivider() {
     )
 }
 
-// ── Toggle row ────────────────────────────────────────────────────────────────
 @Composable
 private fun FigmaToggleRow(
     icon: ImageVector,
@@ -305,7 +282,6 @@ private fun FigmaToggleRow(
     }
 }
 
-// ── FAQ item ──────────────────────────────────────────────────────────────────
 @Composable
 private fun FigmaFaqItem(question: String, answer: String) {
     val colors = LocalAppColors.current
@@ -354,7 +330,6 @@ private fun FigmaFaqItem(question: String, answer: String) {
     }
 }
 
-// ── Action row (chevron) ──────────────────────────────────────────────────────
 @Composable
 private fun FigmaActionRow(
     icon: ImageVector,

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,12 +23,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Shield
@@ -63,18 +63,18 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.practice.reelbreak.R
 import com.practice.reelbreak.core.accessibility.ReelsAccessibilityService
+import com.practice.reelbreak.data.FocusStateHolder.isFocusActive
+import com.practice.reelbreak.ui.component.AppScreenHeader
 import com.practice.reelbreak.ui.component.MainScaffold
 import com.practice.reelbreak.ui.focusedmode.FocusViewModel
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
 import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.ui.theme.PremiumCard
-import com.practice.reelbreak.ui.theme.PremiumHeroHeader
 import com.practice.reelbreak.ui.theme.PremiumIconBubble
 import com.practice.reelbreak.ui.theme.PremiumShapes
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 
-// ── App chip model ────────────────────────────────────────────────────────────
 data class FocusAppChip(
     val name: String,
     val packageName: String,
@@ -90,7 +90,6 @@ private val focusApps = listOf(
     FocusAppChip("Twitter",    "com.twitter.android",        R.drawable.ic_twitter)
 )
 
-// ── Main screen ───────────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FocusScreen(
@@ -102,9 +101,6 @@ fun FocusScreen(
     val state        by viewModel.uiState.collectAsState()
     val colors       = LocalAppColors.current
     val context      = LocalContext.current
-
-    val permissionUiState    by permissionsViewModel.uiState.collectAsState()
-    val isAccessibilityGranted = permissionUiState.permissionState.accessibilityGranted
     val sheetState           by permissionsViewModel.sheetState.collectAsState()
     val permModalState       = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val lifecycleOwner       = LocalLifecycleOwner.current
@@ -150,22 +146,38 @@ fun FocusScreen(
     else 1f
 
     MainScaffold(selectedTab = selectedTab, onTabSelected = onTabSelected) { paddingValues ->
+            Column(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                AppScreenHeader(
+                    title    = "Focus Mode",
+                    subtitle = "Stay Focus",
+                    actions  = {
+                        PremiumIconBubble(modifier = Modifier.size(42.dp)) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isFocusActive) colors.successGreen.copy(alpha = 0.18f)
+                                        else Color.White.copy(alpha = 0.10f)
+                                    )
+                            )
+                            Icon(
+                                imageVector   = Icons.Filled.Shield,
+                                contentDescription = null,
+                                tint          = if (isFocusActive) colors.successGreen else Color.White,
+                                modifier      = Modifier.size(22.dp).align(Alignment.Center)
+                            )
+                        }
+                    },
+                )
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(brush = colors.background)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(paddingValues)
-                    .padding(bottom = 120.dp)
-            ) {
-                // ── Hero header (same family as Dashboard) ─────────────────
-                FocusHeroHeader(isFocusActive = state.isFocusActive)
 
-                // ── Content cards ──────────────────────────────────────────
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
@@ -187,32 +199,48 @@ fun FocusScreen(
                             }
                         }
                     )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        contentPadding = PaddingValues(
+                            start = 16.dp, end = 16.dp,
+                            top = 16.dp, bottom = 120.dp
+                        ),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
 
-                    // Duration card
-                    DurationCard(
-                        selectedMinutes = state.selectedMinutes,
-                        enabled         = !state.isFocusActive,
-                        onSelect        = { viewModel.setSelectedMinutes(it) }
-                    )
+                        // Duration card
+                        item {
+                            DurationCard(
+                                selectedMinutes = state.selectedMinutes,
+                                enabled = !state.isFocusActive,
+                                onSelect = { viewModel.setSelectedMinutes(it) }
+                            )
+                        }
 
-                    // Block apps card
-                    BlockAppsCard(
-                        selectedPackages = state.selectedApps,
-                        onToggle         = { pkg -> viewModel.toggleAppSelection(pkg) }
-                    )
+                        // Block apps card
+                        item {
+                            BlockAppsCard(
+                                selectedPackages = state.selectedApps,
+                                onToggle = { pkg -> viewModel.toggleAppSelection(pkg) }
+                            )
+                        }
 
-                    // Currently blocked — only when session is active
-                    if (state.isFocusActive && state.selectedApps.isNotEmpty()) {
-                        CurrentlyBlockedSection(blockedPackages = state.selectedApps)
+                        // Currently blocked — only when session is active
+                        item {if (state.isFocusActive && state.selectedApps.isNotEmpty()) {
+                            CurrentlyBlockedSection(blockedPackages = state.selectedApps)
+                        }
+                            }
                     }
 
                 }
-            }
+           }
         }
     }
 }
 
-// ── Accessibility check helper ────────────────────────────────────────────────
+
 fun isAccessibilityServiceEnabled(context: android.content.Context): Boolean {
     val expected = ComponentName(context, ReelsAccessibilityService::class.java)
     val enabled  = Settings.Secure.getString(
@@ -220,61 +248,6 @@ fun isAccessibilityServiceEnabled(context: android.content.Context): Boolean {
         Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
     ) ?: return false
     return enabled.split(":").any { ComponentName.unflattenFromString(it) == expected }
-}
-
-// ── Hero header (premium, same family as Dashboard) ──────────────────────────
-@Composable
-private fun FocusHeroHeader(isFocusActive: Boolean) {
-    val colors = LocalAppColors.current
-
-    PremiumHeroHeader(
-        title    = "Focus Mode",
-        subtitle = if (isFocusActive)
-            "Session active — distractions are blocked while you stay in flow."
-        else
-            "Block distracting apps, protect your time, and stay consistent.",
-        actions  = {
-            PremiumIconBubble(modifier = Modifier.size(42.dp)) {
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(CircleShape)
-                        .background(
-                            if (isFocusActive) colors.successGreen.copy(alpha = 0.18f)
-                            else Color.White.copy(alpha = 0.10f)
-                        )
-                )
-           Icon(
-                    imageVector   = Icons.Filled.Shield,
-                    contentDescription = null,
-                    tint          = if (isFocusActive) colors.successGreen else Color.White,
-                    modifier      = Modifier.size(22.dp).align(Alignment.Center)
-                )
-            }
-        },
-        bottomContent = {
-            Row(
-                verticalAlignment   = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(10.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (isFocusActive) colors.successGreen
-                            else Color.White.copy(alpha = 0.40f)
-                        )
-                )
-                Text(
-                    text      = if (isFocusActive) "Session Active" else "Ready to Start",
-                    color     = Color.White.copy(alpha = 0.86f),
-                    fontSize  = 13.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-        }
-    )
 }
 
 
@@ -290,12 +263,12 @@ private fun TimerCard(
 
     PremiumCard(
         modifier = Modifier.fillMaxWidth(),
-        padding  = androidx.compose.foundation.layout.PaddingValues(24.dp)
+        padding  = PaddingValues(16.dp)   // was 24.dp
     ) {
         Column(
             modifier            = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp)  // was 24.dp
         ) {
             PremiumTimerCircle(
                 remainingMillis = remainingMillis,
@@ -312,9 +285,9 @@ private fun TimerCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp)
+                    .height(44.dp)           // was 52.dp
                     .shadow(
-                        elevation    = 12.dp,
+                        elevation    = 8.dp, // was 12.dp
                         shape        = RoundedCornerShape(999.dp),
                         ambientColor = if (isFocusActive) colors.successGreen.copy(alpha = 0.20f) else colors.glowPurple,
                         spotColor    = if (isFocusActive) colors.successGreen.copy(alpha = 0.20f) else colors.glowPurple
@@ -330,18 +303,18 @@ private fun TimerCard(
             ) {
                 Row(
                     verticalAlignment     = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)  // was 8.dp
                 ) {
                     Icon(
                         imageVector        = if (isFocusActive) Icons.Filled.Stop else Icons.Filled.PlayArrow,
                         contentDescription = null,
                         tint               = Color.White,
-                        modifier           = Modifier.size(20.dp)
+                        modifier           = Modifier.size(18.dp)  // was 20.dp
                     )
                     Text(
                         text       = if (isFocusActive) "Stop Focus Session" else "Start Focus Session",
                         color      = Color.White,
-                        fontSize   = 15.sp,
+                        fontSize   = 13.sp,    // was 15.sp
                         fontWeight = FontWeight.SemiBold
                     )
                 }
@@ -350,7 +323,8 @@ private fun TimerCard(
     }
 }
 
-// ── Premium timer circle — HH:MM:SS format ────────────────────────────────────
+
+
 @Composable
 private fun PremiumTimerCircle(
     remainingMillis: Long,
@@ -382,11 +356,11 @@ private fun PremiumTimerCircle(
         contentAlignment = Alignment.Center
     ) {
         Box(
-            modifier         = Modifier.size(210.dp),
+            modifier         = Modifier.size(160.dp),   // was 210.dp
             contentAlignment = Alignment.Center
         ) {
-            Canvas(modifier = Modifier.size(210.dp)) {
-                val strokeW = 14.dp.toPx()
+            Canvas(modifier = Modifier.size(160.dp)) {  // was 210.dp
+                val strokeW = 11.dp.toPx()              // was 14.dp
                 val arcSz   = size.width - strokeW
 
                 drawArc(
@@ -412,20 +386,20 @@ private fun PremiumTimerCircle(
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(4.dp)  // was 6.dp
             ) {
                 Text(
-                    text       = if (isActive) timeString else "00:00:00",
-                    color      = if (isActive) textColor else textColor.copy(alpha = 0.35f),
-                    fontSize   = 32.sp,
-                    fontWeight = FontWeight.Bold,
+                    text          = if (isActive) timeString else "00:00:00",
+                    color         = if (isActive) textColor else textColor.copy(alpha = 0.35f),
+                    fontSize      = 24.sp,     // was 32.sp
+                    fontWeight    = FontWeight.Bold,
                     letterSpacing = 1.sp
                 )
 
                 Text(
-                    text      = if (isActive) "Remaining" else "Ready to focus",
-                    color     = mutedColor,
-                    fontSize  = 12.sp,
+                    text       = if (isActive) "Remaining" else "Ready to focus",
+                    color      = mutedColor,
+                    fontSize   = 11.sp,        // was 12.sp
                     fontWeight = FontWeight.Medium
                 )
             }
@@ -502,6 +476,106 @@ private fun DurationCard(
 }
 
 // ── Block apps card ───────────────────────────────────────────────────────────
+//@Composable
+//fun BlockAppsCard(
+//    selectedPackages: Set<String>,
+//    isEnabled: Boolean = true,
+//    onToggle: (String) -> Unit
+//) {
+//    val colors = LocalAppColors.current
+//
+//    PremiumCard(
+//        modifier = Modifier.fillMaxWidth(),
+//        padding  = androidx.compose.foundation.layout.PaddingValues(20.dp)
+//    ) {
+//        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+//            CardSectionTitle("Block These Apps")
+//
+//            focusApps.chunked(3).forEach { rowApps ->
+//                Row(
+//                    modifier              = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+//                ) {
+//                    rowApps.forEach { app ->
+//                        val isSelected = selectedPackages.contains(app.packageName)
+//
+//                        Box(
+//                            modifier = Modifier
+//                                .weight(1f)
+//                                .height(90.dp)
+//                                .clip(RoundedCornerShape(16.dp))
+//                                .background(
+//                                    if (isSelected)
+//                                        Brush.linearGradient(
+//                                            listOf(
+//                                                colors.purplePrimary.copy(alpha = if (colors.isDark) 0.28f else 0.16f),
+//                                                colors.blueAccent.copy(alpha   = if (colors.isDark) 0.18f else 0.10f)
+//                                            )
+//                                        )
+//                                    else colors.cardSurface
+//                                )
+//                                .border(
+//                                    width = if (isSelected) 1.5.dp else 1.dp,
+//                                    color = if (isSelected) colors.borderActive else colors.borderSubtle,
+//                                    shape = RoundedCornerShape(16.dp)
+//                                )
+//                                .then(
+//                                    if (isEnabled) Modifier.clickable(
+//                                        interactionSource = remember { MutableInteractionSource() },
+//                                        indication        = null
+//                                    ) { onToggle(app.packageName) } else Modifier
+//                                )
+//                                .padding(8.dp),
+//                            contentAlignment = Alignment.Center
+//                        ) {
+//                            Column(
+//                                horizontalAlignment = Alignment.CenterHorizontally,
+//                                verticalArrangement = Arrangement.spacedBy(6.dp)
+//                            ) {
+//                                Box {
+//                                    Box(
+//                                        modifier = Modifier
+//                                            .size(40.dp)
+//                                            .clip(RoundedCornerShape(12.dp))
+//                                            .background(Color.White.copy(alpha = 0.06f)),
+//                                        contentAlignment = Alignment.Center
+//                                    ) {
+//                                        Image(
+//                                            painter           = painterResource(id = app.iconRes),
+//                                            contentDescription = app.name,
+//                                            modifier          = Modifier.size(28.dp)
+//                                        )
+//                                    }
+//                                    if (isSelected) {
+//                                        Box(
+//                                            modifier = Modifier
+//                                                .size(16.dp)
+//                                                .align(Alignment.TopEnd)
+//                                                .clip(CircleShape)
+//                                                .background(colors.successGreen),
+//                                            contentAlignment = Alignment.Center
+//                                        ) {
+//                                            Text("✓", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+//                                        }
+//                                    }
+//                                }
+//                                Text(
+//                                    text       = app.name,
+//                                    color      = if (isSelected) colors.textPrimary else colors.textSecondary,
+//                                    fontSize   = 11.sp,
+//                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+//                                    maxLines   = 1
+//                                )
+//                            }
+//                        }
+//                    }
+//                    repeat(3 - rowApps.size) { Spacer(modifier = Modifier.weight(1f)) }
+//                }
+//            }
+//        }
+//    }
+//}
+
 @Composable
 fun BlockAppsCard(
     selectedPackages: Set<String>,
@@ -510,95 +584,123 @@ fun BlockAppsCard(
 ) {
     val colors = LocalAppColors.current
 
-    PremiumCard(
-        modifier = Modifier.fillMaxWidth(),
-        padding  = androidx.compose.foundation.layout.PaddingValues(20.dp)
+    // No PremiumCard wrapper — title stays in a card, icons float freely below
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            CardSectionTitle("Block These Apps")
+        // Section title inside a small card header
+        PremiumCard(
+            modifier = Modifier.fillMaxWidth(),
+            padding  = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+        ) {
+            CardSectionTitle("Supported Apps")
 
-            focusApps.chunked(3).forEach { rowApps ->
-                Row(
-                    modifier              = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    rowApps.forEach { app ->
-                        val isSelected = selectedPackages.contains(app.packageName)
+         Spacer(Modifier.height(8.dp))
 
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(90.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(
-                                    if (isSelected)
-                                        Brush.linearGradient(
-                                            listOf(
-                                                colors.purplePrimary.copy(alpha = if (colors.isDark) 0.28f else 0.16f),
-                                                colors.blueAccent.copy(alpha   = if (colors.isDark) 0.18f else 0.10f)
+        // Icons floating directly on background — no card
+        focusApps.chunked(3).forEach { rowApps ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
+            ) {
+                rowApps.forEach { app ->
+                    val isSelected = selectedPackages.contains(app.packageName)
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .then(
+                                if (isEnabled) Modifier.clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication        = null
+                                ) { onToggle(app.packageName) } else Modifier
+                            )
+                            .padding(vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.TopEnd) {
+                            // App icon — subtle selected ring
+                            Box(
+                                modifier = Modifier
+                                    .size(52.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .then(
+                                        if (isSelected)
+                                            Modifier.border(
+                                                width = 2.dp,
+                                                brush = Brush.linearGradient(
+                                                    listOf(colors.purplePrimary, colors.blueAccent)
+                                                ),
+                                                shape = RoundedCornerShape(16.dp)
                                             )
-                                        )
-                                    else colors.cardSurface
-                                )
-                                .border(
-                                    width = if (isSelected) 1.5.dp else 1.dp,
-                                    color = if (isSelected) colors.borderActive else colors.borderSubtle,
-                                    shape = RoundedCornerShape(16.dp)
-                                )
-                                .then(
-                                    if (isEnabled) Modifier.clickable(
-                                        interactionSource = remember { MutableInteractionSource() },
-                                        indication        = null
-                                    ) { onToggle(app.packageName) } else Modifier
-                                )
-                                .padding(8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                                        else
+                                            Modifier.border(
+                                                width = 1.dp,
+                                                brush = Brush.linearGradient(
+                                                    listOf(
+                                                        colors.borderSubtle.copy(alpha = 0.40f),
+                                                        colors.borderSubtle.copy(alpha = 0.20f)
+                                                    )
+                                                ),
+                                                shape = RoundedCornerShape(16.dp)
+                                            )
+                                    )
+                                    .background(
+                                        if (isSelected)
+                                            colors.purplePrimary.copy(alpha = if (colors.isDark) 0.12f else 0.07f)
+                                        else
+                                            Color.Transparent
+                                    ),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Box {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(40.dp)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .background(Color.White.copy(alpha = 0.06f)),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Image(
-                                            painter           = painterResource(id = app.iconRes),
-                                            contentDescription = app.name,
-                                            modifier          = Modifier.size(28.dp)
-                                        )
-                                    }
-                                    if (isSelected) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(16.dp)
-                                                .align(Alignment.TopEnd)
-                                                .clip(CircleShape)
-                                                .background(colors.successGreen),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Text("✓", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
-                                        }
-                                    }
-                                }
-                                Text(
-                                    text       = app.name,
-                                    color      = if (isSelected) colors.textPrimary else colors.textSecondary,
-                                    fontSize   = 11.sp,
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                    maxLines   = 1
+                                Image(
+                                    painter            = painterResource(id = app.iconRes),
+                                    contentDescription = app.name,
+                                    modifier           = Modifier.size(34.dp)
                                 )
                             }
+
+                            // Checkmark badge — only when selected
+                            if (isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clip(CircleShape)
+                                        .background(
+                                            Brush.linearGradient(
+                                                listOf(colors.purplePrimary, colors.blueAccent)
+                                            )
+                                        )
+                                        .border(1.5.dp, colors.background, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text       = "✓",
+                                        color      = Color.White,
+                                        fontSize   = 8.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
                         }
+
+                        Text(
+                            text       = app.name,
+                            color      = if (isSelected) colors.textPrimary else colors.textSecondary,
+                            fontSize   = 11.sp,
+                            fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                            maxLines   = 1
+                        )
                     }
-                    repeat(3 - rowApps.size) { Spacer(modifier = Modifier.weight(1f)) }
                 }
+                // Fill empty slots in last row
+                repeat(3 - rowApps.size) { Spacer(modifier = Modifier.weight(1f)) }
             }
         }
+            }
     }
 }
 

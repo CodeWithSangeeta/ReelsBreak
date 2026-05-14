@@ -2,224 +2,70 @@ package com.practice.reelbreak.ui.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.theme.LocalAppColors
-
-
-
-//@Composable
-//fun DashboardHeader(
-//    isOverlayGranted: Boolean,
-//    isOverlayEnabled: Boolean,
-//    isDarkMode: Boolean,
-//   // isAccessibilityGranted: Boolean,
-//    onVisibilityClick: () -> Unit,
-//    onThemeToggle: () -> Unit
-//) {
-//    val colors = LocalAppColors.current
-//    Box(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .clip(RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp))
-//            .background(
-//                if (colors.isDark)
-//                    Brush.linearGradient(listOf(Color(0xFF2D1060), Color(0xFF1A0840)))
-//                else
-//                    Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
-//            )
-//            .padding(horizontal = 20.dp, vertical = 0.dp)
-//            .padding(top = 48.dp, bottom = 20.dp)
-//    ) {
-//        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//             //   horizontalArrangement = Arrangement.SpaceBetween,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(
-//                    text = "ReelBreak",
-//                    fontSize = 26.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    color = Color.White
-//                )
-//                Spacer(modifier= Modifier.width(100.dp))
-//
-//                Box(
-//                    modifier = Modifier
-//                        .size(38.dp)
-//                        .clip(CircleShape)
-//                        .background(Color.White.copy(alpha = 0.15f)),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Icon(
-//                        imageVector = if (isOverlayGranted && isOverlayEnabled)
-//                    Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
-//                        contentDescription = "Visibility",
-//                        tint = Color.White,
-//                        modifier = Modifier
-//                            .size(20.dp)
-//                            .clip(CircleShape)
-//                            .clickable(onClick = onVisibilityClick)
-//                    )
-//                }
-//                Spacer(modifier= Modifier.width(8.dp))
-//
-//                Box(
-//                    modifier = Modifier
-//                        .size(38.dp)
-//                        .clip(CircleShape)
-//                        .background(Color.White.copy(alpha = 0.15f)),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Icon(
-//                        imageVector = if (isDarkMode) Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
-//                        contentDescription = "Toggle theme",
-//                        tint = Color.White,
-//                        modifier = Modifier
-//                            .size(20.dp)
-//                            .clip(CircleShape)
-//                            .clickable(onClick = onThemeToggle)
-//                    )
-//                }
-//            }
-//
-//            // Service Active / Inactive status indicator
-////            Row(
-////                verticalAlignment = Alignment.CenterVertically,
-////                horizontalArrangement = Arrangement.spacedBy(6.dp)
-////            ) {
-////                Box(
-////                    modifier = Modifier
-////                        .size(10.dp)
-////                        .clip(CircleShape)
-////                        .background(
-////                            if (isAccessibilityGranted) Color(0xFF4ADE80)
-////                            else Color(0xFFFF6B6B)
-////                        )
-////                )
-////                Text(
-////                    text = if (isAccessibilityGranted) "Service Active" else "Service Inactive",
-////                    fontSize = 13.sp,
-////                    color = Color.White.copy(alpha = 0.85f),
-////                    fontWeight = FontWeight.Medium
-////                )
-////            }
-//        }
-//    }
-//}
-
-
-
-import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.ui.theme.PremiumHeroHeader
-import com.practice.reelbreak.ui.theme.PremiumIconBubble
+import com.practice.reelbreak.ui.component.AppScreenHeader
 
 @Composable
 fun DashboardHeader(
     isOverlayGranted: Boolean,
     isOverlayEnabled: Boolean,
     isDarkMode: Boolean,
-   // isAccessibilityGranted: Boolean,
     onVisibilityClick: () -> Unit,
     onThemeToggle: () -> Unit
 ) {
-    val colors = LocalAppColors.current
-
-    PremiumHeroHeader(
-        title = "ReelBreak",
-        subtitle = "Take control of reels with a calmer, cleaner and more focused experience.",
-        actions = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                HeaderActionButton(
-                    icon = if (isOverlayGranted && isOverlayEnabled) {
-                        Icons.Outlined.Visibility
-                    } else {
-                        Icons.Outlined.VisibilityOff
-                    },
-                    onClick = onVisibilityClick
-                )
-
-                HeaderActionButton(
-                    icon = if (isDarkMode) {
-                        Icons.Outlined.DarkMode
-                    } else {
-                        Icons.Outlined.LightMode
-                    },
-                    onClick = onThemeToggle
-                )
-            }
-        },
-        bottomContent = {
-//            Row(
-//                verticalAlignment = Alignment.CenterVertically,
-//                horizontalArrangement = Arrangement.spacedBy(8.dp)
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .size(10.dp)
-//                        .clip(CircleShape)
-//                        .background(
-//                            if (isAccessibilityGranted) colors.successGreen else colors.errorRed
-//                        )
-//                )
-//
-//                Text(
-//                    text = if (isAccessibilityGranted) "Service Active" else "Service Inactive",
-//                    color = colors.textPrimary.copy(alpha = 0.84f),
-//                    fontSize = 13.sp,
-//                    fontWeight = FontWeight.Medium
-//                )
-//            }
+    AppScreenHeader(
+        title    = "ReelBreak",
+        subtitle = "Stay Mindful",
+        actions  = {
+            HeaderActionButton(
+                icon = if (isOverlayGranted && isOverlayEnabled)
+                    Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
+                onClick = onVisibilityClick
+            )
+            HeaderActionButton(
+                icon = if (isDarkMode)
+                    Icons.Outlined.DarkMode else Icons.Outlined.LightMode,
+                onClick = onThemeToggle
+            )
         }
     )
 }
 
 @Composable
 private fun HeaderActionButton(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     onClick: () -> Unit
 ) {
-    val colors = LocalAppColors.current
-
-    PremiumIconBubble(
+    Box(
         modifier = Modifier
-            .size(40.dp)
-            .clickable(onClick = onClick)
+            .size(38.dp)
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.15f)),
+        contentAlignment = Alignment.Center
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = colors.textPrimary,
-            modifier = Modifier.align(Alignment.Center)
+            tint = Color.White,
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
+                .clickable(onClick = onClick)
         )
     }
 }
