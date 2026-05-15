@@ -34,8 +34,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 import androidx.compose.ui.graphics.Color
-
-
+import kotlinx.coroutines.delay
 
 
 data class PermissionPagerItem(
@@ -93,24 +92,24 @@ fun DashboardScreen(
             type = PermissionSheetType.ACCESSIBILITY,
             icon = Icons.Outlined.AccessibilityNew,
             iconTint =  colors.purplePrimary,
-            title = "Accessibility Permission",
-            description = "Required to detect & block reels in real time.",
-            buttonText = "Turn On"
+            title = "Accessibility Access",
+            description = "Needed to detect short-video screens and block them when protection is on.",
+            buttonText = "Enable Access"
         ),
         PermissionPagerItem(
             type = PermissionSheetType.USAGE_ACCESS,
             icon = Icons.Outlined.BarChart,
             iconTint = colors.blueAccent,
             title = "Usage Access",
-            description = "Required to track time spent on short-video apps.",
-            buttonText = "Grant Access"
+            description = "Needed to measure time spent on supported short-video apps.",
+            buttonText = "Allow Access"
         ),
         PermissionPagerItem(
             type = PermissionSheetType.OVERLAY,
             icon = Icons.Outlined.Layers,
             iconTint = colors.successGreen,
-            title = "Overlay Permission",
-            description = "Optional — shows a live reel counter over other apps.",
+            title =  "Display Over Other Apps",
+            description = "Optional — shows a live session counter while you use supported apps.",
             buttonText = "Enable"
         )
     )
@@ -126,6 +125,7 @@ fun DashboardScreen(
 
     // Check permissions every time Dashboard opens (initial UX nudging)
     LaunchedEffect(Unit) {
+        delay(600L)
         permissionsViewModel.checkAndShowSheetIfNeeded(context)
     }
 
@@ -215,8 +215,9 @@ fun DashboardScreen(
             ) {
                 item {
                     SectionTitle(
-                        title = "BLOCKING MODE",
-                        subtitle = "Select how ReelsBreak protects your focus"
+                        title = "Protection Modes",
+                        subtitle = "Choose how ReelBreak helps you avoid short-video distractions.",
+                        modifier = Modifier.padding(horizontal = 2.dp)
                     )
                 }
 

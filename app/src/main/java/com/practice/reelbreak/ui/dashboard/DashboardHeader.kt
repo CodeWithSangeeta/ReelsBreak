@@ -30,7 +30,7 @@ fun DashboardHeader(
 ) {
     AppScreenHeader(
         title    = "ReelBreak",
-        subtitle = "Stay Mindful",
+        subtitle = "Reduce short-video distractions",
         actions  = {
             HeaderActionButton(
                 icon = if (isOverlayGranted && isOverlayEnabled)

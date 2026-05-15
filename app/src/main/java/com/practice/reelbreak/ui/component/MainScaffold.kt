@@ -18,10 +18,10 @@ fun MainScaffold(
 ) {
 
     val selectedRoute = when (selectedTab) {
-        0 -> "dashboard"
+        0 -> "home"
         1 -> "focus"
         2 -> "settings"
-        else -> "dashboard"
+        else -> "home"
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -32,7 +32,7 @@ fun MainScaffold(
             onItemSelected = { route ->
                 // Map route string → Int index for the existing callers
                 val index = when (route) {
-                    "dashboard" -> 0
+                    "home" -> 0
                     "focus"     -> 1
                     "settings"  -> 2
                     else        -> 0

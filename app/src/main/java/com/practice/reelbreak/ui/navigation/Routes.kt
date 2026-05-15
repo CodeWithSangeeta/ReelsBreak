@@ -16,7 +16,7 @@ data object FocusKey : NavKey
 data object SettingsKey : NavKey
 
 object Routes {
-    const val DASHBOARD = "dashboard"
+    const val DASHBOARD = "home"
     const val FOCUS = "focus"
     const val SETTINGS = "settings"
 }
