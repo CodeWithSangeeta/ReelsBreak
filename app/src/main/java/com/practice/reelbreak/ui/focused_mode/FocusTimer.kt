@@ -140,9 +140,17 @@ private fun TimerCircle(
                 drawArc(
                     brush = Brush.verticalGradient(
                         colors = if (colors.isDark)
-                            listOf(Color(0xFF7C3AED).copy(alpha = 0.25f), Color(0xFF4C1D95).copy(alpha = 0.25f))
+                            listOf(
+                                Color(0xFF4C1D95).copy(alpha = 0.22f),
+                                Color(0xFF2E1065).copy(alpha = 0.22f)
+                            )
+                                //Color(0xFF7C3AED).copy(alpha = 0.25f), Color(0xFF4C1D95).copy(alpha = 0.25f))
                         else
-                            listOf(Color(0xFF6B3FA0).copy(alpha = 0.18f), Color(0xFF4A2070).copy(alpha = 0.18f))
+                            listOf(
+                                Color(0xFF4A2070).copy(alpha = 0.16f),
+                                Color(0xFF2E1346).copy(alpha = 0.16f)
+                            )
+                              //  Color(0xFF6B3FA0).copy(alpha = 0.18f), Color(0xFF4A2070).copy(alpha = 0.18f))
                     ),
                     startAngle = -90f,
                     sweepAngle = 360f,
@@ -155,9 +163,15 @@ private fun TimerCircle(
                 drawArc(
                     brush = Brush.verticalGradient(
                         colors = if (colors.isDark)
-                            listOf(Color(0xFF7C3AED), Color(0xFF4C1D95))   // dark header colors
+                            listOf(
+                                Color(0xFFA78BFA),
+                                Color(0xFF7C3AED)
+                            )
                         else
-                            listOf(Color(0xFF6B3FA0), Color(0xFF4A2070))   // light header colors
+                            listOf(
+                                Color(0xFFB39DDB),
+                                Color(0xFF6B3FA0)
+                            )
                     ),
                     startAngle = -90f,
                     sweepAngle = 360f * animatedProgress,
