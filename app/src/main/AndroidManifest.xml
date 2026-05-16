@@ -4,8 +4,8 @@
 <!--    <uses-permission-->
 <!--        android:name="android.permission.PACKAGE_USAGE_STATS"-->
 <!--        tools:ignore="ProtectedPermissions" />-->
-<!--    <uses-permission-->
-<!--        android:name="android.permission.SYSTEM_ALERT_WINDOW" />-->
+    <uses-permission
+        android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name=".ReelBreakApplication"
@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".ui.focused_mode.AppBlockedActivity"
+            android:name=".core.engine.FocusAppBlockedActivity"
             android:exported="false"
             android:showOnLockScreen="true"
             android:turnScreenOn="true"
@@ -52,9 +52,9 @@
                 android:resource="@xml/accessibility_service_config" />
         </service>
 
-<!--        <service-->
-<!--            android:name=".core.overlay.OverlayService"-->
-<!--            android:exported="false" />-->
+        <service
+            android:name=".core.overlay.OverlayService"
+            android:exported="false" />
 
     </application>
 

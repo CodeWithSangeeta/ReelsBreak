@@ -42,7 +42,6 @@ import com.practice.reelbreak.ui.focused_mode.Card
 import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.ui.theme.PremiumIconBubble
 import com.practice.reelbreak.ui.theme.PremiumPill
-import com.practice.reelbreak.ui.theme.PremiumShapes
 import com.practice.reelbreak.ui.theme.premiumChipColor
 
 @Composable
@@ -89,7 +88,7 @@ fun BlockModeCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(PremiumShapes.card)
+            .clip(RoundedCornerShape(22))
     ) {
        Card(
             modifier = Modifier.fillMaxWidth(),
