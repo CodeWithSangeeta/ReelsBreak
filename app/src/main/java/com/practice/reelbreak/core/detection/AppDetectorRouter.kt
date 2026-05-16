@@ -3,7 +3,6 @@ package com.practice.reelbreak.core.detection
 
 import com.practice.reelbreak.core.detection.detectors.AppDetector
 //import com.practice.reelbreak.core.detection.detectors.FacebookReelsDetector
-import com.practice.reelbreak.core.detection.detectors.GenericReelsDetector
 import com.practice.reelbreak.core.detection.detectors.InstagramReelsDetector
 import com.practice.reelbreak.core.detection.detectors.SnapchatSpotlightDetector
 import com.practice.reelbreak.core.detection.detectors.YouTubeReelsDetector

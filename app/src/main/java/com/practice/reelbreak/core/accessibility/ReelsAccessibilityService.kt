@@ -19,15 +19,13 @@ import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.practice.reelbreak.R
 import com.practice.reelbreak.core.registry.SupportedAppsRegistry
 import com.practice.reelbreak.data.FocusStateHolder
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.ActiveBlockMode
-import com.practice.reelbreak.ui.focused_mode.AppBlockedActivity
+import com.practice.reelbreak.core.engine.FocusAppBlockedActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -312,11 +310,7 @@ import kotlinx.coroutines.launch
 //}
 
 
-
-
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class ReelsAccessibilityService : AccessibilityService() {
@@ -573,7 +567,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
     private fun launchBlockedScreen(blockedPackage: String) {
-        val intent = Intent(applicationContext, AppBlockedActivity::class.java).apply {
+        val intent = Intent(applicationContext, FocusAppBlockedActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP

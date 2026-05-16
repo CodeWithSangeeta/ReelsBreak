@@ -2,30 +2,34 @@ package com.practice.reelbreak.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.practice.reelbreak.ui.component.AppScreenHeader
 import com.practice.reelbreak.ui.component.MainScaffold
 import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.practice.reelbreak.viewmodel.SettingsViewModel
+
+data class SettingsState(
+    val isNotificationsEnabled: Boolean = false,
+    val isWeekendRelaxEnabled: Boolean = false,
+    val isPrivacySectionExpanded: Boolean = false,
+    val isHelpSectionExpanded: Boolean = false,
+    val appVersion: String = "1.0.0"
+)
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,8 +44,29 @@ fun SettingsScreen(
     MainScaffold(selectedTab = selectedTab, onTabSelected = onTabSelected) { paddingValues ->
         Column(modifier = Modifier.fillMaxSize()) {
            AppScreenHeader(
-               title = "Setting",
-               subtitle = "Customize your experience"
+               title = "Settings",
+               subtitle = "Manage preferences, reminders, and privacy",
+               actions  = {
+                   Box(
+                       modifier = Modifier
+                           .size(38.dp)
+                           .clip(CircleShape)
+                           .background( Color.White.copy(alpha = 0.10f))
+                           .border(
+                               1.dp,
+                               Color.White.copy(alpha = 0.25f),
+                               CircleShape
+                           ),
+                       contentAlignment = Alignment.Center
+                   ) {
+                       Icon(
+                           imageVector = Icons.Filled.Settings,
+                           contentDescription = null,
+                           tint = Color.White,
+                           modifier = Modifier.size(20.dp)
+                       )
+                   }
+               },
            )
 
             LazyColumn(
@@ -54,29 +79,28 @@ fun SettingsScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // App Settings card
                 item {
-                    FigmaSettingsCard {
+                    SettingsCard {
                         Column {
-                            FigmaCardTitle(text = "App Settings")
+                            SettingsCardTitle(text = "Preferences")
                             Spacer(Modifier.height(4.dp))
 
-                            FigmaToggleRow(
+                            ToggleRow(
                                 icon = Icons.Outlined.Notifications,
                                 iconBg = colors.purplePrimary.copy(alpha = 0.12f),
                                 iconTint = colors.purplePrimary,
-                                title = "Notifications",
-                                subtitle = "Get reminders and limit alerts",
+                                title = "Reminders and alerts",
+                                subtitle = "Receive reminders, session updates, and limit alerts",
                                 isEnabled = uiState.isNotificationsEnabled,
                                 onToggle = viewModel::toggleNotifications
                             )
-                            FigmaDivider()
-                            FigmaToggleRow(
+                            Divider()
+                            ToggleRow(
                                 icon = Icons.Outlined.CalendarToday,
                                 iconBg = colors.purplePrimary.copy(alpha = 0.12f),
                                 iconTint = colors.purplePrimary,
-                                title = "Weekend Relax",
-                                subtitle = "Disable limits on Saturdays and Sundays",
+                                title = "Weekend  pause",
+                                subtitle = "Pause limits on Saturdays and Sundays",
                                 isEnabled = uiState.isWeekendRelaxEnabled,
                                 onToggle = viewModel::toggleWeekendRelax
                             )
@@ -84,79 +108,117 @@ fun SettingsScreen(
                     }
                 }
 
-                // Frequently Asked Questions card
                 item {
-                    FigmaSettingsCard {
+                    SettingsCard {
                         Column {
-                            FigmaCardTitle(text = "Frequently Asked Questions")
+                            SettingsCardTitle(text = "Help & FAQs")
                             Spacer(Modifier.height(8.dp))
-                            FigmaFaqItem(
+                            FaqItem(
                                 question = "How does ReelBreak detect short-form videos?",
-                                answer = "ReelBreak uses Android's Accessibility Service to detect when you open a reels or shorts screen inside Instagram, YouTube, TikTok, Snapchat, or Facebook."
-                            )
-                            FigmaDivider()
-                            FigmaFaqItem(
+                                answer = "ReelBreak uses Android Accessibility access to recognize when supported short-video screens open in apps like Instagram, YouTube, TikTok, Snapchat, and Facebook so it can apply the protection mode you choose."                            )
+                            Divider()
+                            FaqItem(
                                 question = "What permissions does ReelBreak need?",
-                                answer = "Accessibility Service (required), Usage Access (required for time tracking), and Display Over Apps (optional for overlay bubble)."
-                            )
-                            FigmaDivider()
-                            FigmaFaqItem(
+                                answer = "ReelBreak may ask for Accessibility access to detect supported short-video screens, Usage Access to measure time spent, and Display Over Other Apps for the optional floating counter."                            )
+                            Divider()
+                            FaqItem(
                                 question = "Can I customize which apps are blocked?",
-                                answer = "Yes! In Focus Mode you can choose exactly which apps to block during a session."
+                                answer = "Yes. In Focus Mode, you can select which supported apps should be blocked during your session."
                             )
-                            FigmaDivider()
-                            FigmaFaqItem(
+                            Divider()
+                            FaqItem(
                                 question = "Is my data private?",
-                                answer = "All data stays on your device. ReelBreak never sends anything to any server. It only reads which app is on screen — never content, messages, or personal data."
+                                answer = "Yes. ReelBreak keeps your data on your device and does not read your messages, photos, or personal content. Its permissions are only used to support features like screen detection, time tracking, and the optional overlay."                            )
+
+                            Divider()
+                            FaqItem(
+                                question = "Why does ReelBreak need Accessibility access?",
+                                        answer = "ReelBreak uses Accessibility access only to detect when supported short-video screens are shown so it can apply your chosen protection mode. It does not read or store your text, messages, or passwords."
                             )
+
+                            Divider()
+                            FaqItem(
+                                question = "What happens if I turn permissions off?",
+                                answer = "If you turn off Accessibility or Usage Access, ReelBreak may not be able to block reels or track time correctly. You can always reopen the app later to turn permissions back on."
+                            )
+
+                            Divider()
+                            FaqItem(
+                                question = "Does ReelBreak work offline?",
+                                answer = "Yes. ReelBreak does not require an internet connection to block reels or track your usage time. Some support links, like feedback or rating, may open online apps."
+                            )
+
+                            Divider()
+                            FaqItem(
+                                question = "Will ReelBreak affect my battery or performance?",
+                                answer = "ReelBreak is designed to be lightweight. It only runs checks when you open supported apps or when a focus session is active, and it does not do heavy work in the background."
+                            )
+
+                            Divider()
+                            FaqItem(
+                                question = "Can I pause protection temporarily?",
+                                answer = "Yes. You can stop an active focus session at any time from the Focus Mode screen. You can also switch to a lighter protection mode, like limits instead of instant blocking."
+                            )
+
+                            Divider()
+                            FaqItem(
+                                question = "How can I contact support or suggest features?",
+                                answer = "Use the Send feedback option in Settings to email us or share your thoughts. We read every message and use it to improve ReelBreak."
+                            )
+
+                            Divider()
+                            FaqItem(
+                                question = "How is my data handled?",
+                                answer = "ReelBreak stores your usage and settings on your device. If we ever add analytics or remote services, we will update our privacy policy and let you review the changes inside the app."
+                            )
+
+
                         }
                     }
                 }
 
-                // Support & Info card
                 item {
-                    FigmaSettingsCard {
+                    SettingsCard {
                         Column {
-                            FigmaCardTitle(text = "Support & Info")
+                            SettingsCardTitle(text = "Support and Legal")
                             Spacer(Modifier.height(4.dp))
 
-                            FigmaActionRow(
+                            ActionRow(
                                 icon = Icons.Outlined.ChatBubbleOutline,
                                 iconBg  =colors.purplePrimary.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
                                 iconTint = colors.purplePrimary,
-                                title = "Send Feedback",
+                                title = "Send feedback",
                                 onClick = viewModel::sendFeedback
                             )
-                            FigmaDivider()
-                            FigmaActionRow(
+                            Divider()
+                            ActionRow(
                                 icon = Icons.Outlined.StarOutline,
                                 iconBg  = colors.warningOrange.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
 
                                 iconTint = colors.warningOrange,
-                                title = "Rate ReelBreak",
+                                title = "Rate the app",
                                 onClick = viewModel::rateApp
                             )
-                            FigmaDivider()
-                            FigmaActionRow(
+                            Divider()
+                            ActionRow(
                                 icon = Icons.Outlined.Share,
                                 iconBg  = colors.blueAccent.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
                                 iconTint = colors.blueAccent,
-                                title = "Share with Friends",
+                                title = "Share ReelBreak",
                                 onClick = viewModel::shareApp
                             )
-                            FigmaDivider()
-                            FigmaActionRow(
+                            Divider()
+                            ActionRow(
                                 icon = Icons.Outlined.Shield,
                                 iconBg  = colors.successGreen.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
                                 iconTint = colors.successGreen,
-                                title = "Privacy Policy",
+                                title = "Privacy policy",
                                 onClick = viewModel::openPrivacyPolicy
                             )
                         }
                     }
                 }
 
-                // Version footer
                 item {
                     Column(
                         modifier = Modifier
@@ -175,14 +237,8 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
-                                text = "Built with",
+                                text = "Built to support mindful scrolling",
                                 color = colors.textMuted,
-                                fontSize = 12.sp
-                            )
-                            Text(text = "❤️", fontSize = 12.sp)
-                            Text(
-                                text = "for mindful scrolling",
-                                color = colors.textMuted ,
                                 fontSize = 12.sp
                             )
                         }
@@ -192,186 +248,3 @@ fun SettingsScreen(
         }
     }
 }
-
-
-
-@Composable
-private fun FigmaSettingsCard(content: @Composable () -> Unit) {
-    val colors = LocalAppColors.current
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(colors.cardSurface)
-            .border(
-                1.dp,
-                 colors.borderSubtle,
-                RoundedCornerShape(16.dp)
-            )
-            .padding(16.dp)
-    ) {
-        content()
-    }
-}
-
-@Composable
-private fun FigmaCardTitle(text: String) {
-    val colors = LocalAppColors.current
-    Text(
-        text = text,
-        color = colors.textPrimary,
-        fontSize = 17.sp,
-        fontWeight = FontWeight.SemiBold
-    )
-}
-
-@Composable
-private fun FigmaDivider() {
-    val colors = LocalAppColors.current
-    Divider(
-        modifier = Modifier.padding(vertical = 0.dp),
-        color = colors.borderSubtle,
-        thickness = 1.dp
-    )
-}
-
-@Composable
-private fun FigmaToggleRow(
-    icon: ImageVector,
-    iconBg: Color,
-    iconTint: Color,
-    title: String,
-    subtitle: String,
-    isEnabled: Boolean,
-    onToggle: (Boolean) -> Unit
-) {
-    val colors = LocalAppColors.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(if (colors.isDark) Color(0xFF2A1F40) else iconBg),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(imageVector = icon, contentDescription = null, tint = if (colors.isDark) colors.purpleSoft else iconTint, modifier = Modifier.size(20.dp))
-        }
-        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-            Text(text = title, color =colors.textPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            Text(text = subtitle, color =colors.textSecondary, fontSize = 12.sp)
-        }
-        Switch(
-            checked = isEnabled,
-            onCheckedChange = onToggle,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = colors.switchTrackOn,
-                uncheckedThumbColor = colors.textMuted,
-                uncheckedTrackColor = colors.switchTrackOff,
-                uncheckedBorderColor = colors.borderSubtle
-            )
-        )
-    }
-}
-
-@Composable
-private fun FigmaFaqItem(question: String, answer: String) {
-    val colors = LocalAppColors.current
-    var expanded by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = null
-                ) { expanded = !expanded }
-                .padding(vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = question,
-                color = colors.textPrimary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.weight(1f).padding(end = 8.dp),
-                lineHeight = 20.sp
-            )
-            Icon(
-                imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                contentDescription = null,
-                tint = colors.textMuted,
-                modifier = Modifier.size(20.dp)
-            )
-        }
-        if (expanded) {
-            Text(
-                text = answer,
-                color = colors.textSecondary,
-                fontSize = 13.sp,
-                lineHeight = 19.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun FigmaActionRow(
-    icon: ImageVector,
-    iconBg: Color,
-    iconTint: Color,
-    title: String,
-    onClick: () -> Unit
-) {
-    val colors = LocalAppColors.current
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = onClick
-            )
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background( iconBg),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(imageVector = icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(20.dp))
-        }
-        Text(
-            text = title,
-            color = colors.textPrimary,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f)
-        )
-        Icon(
-            imageVector = Icons.Filled.ChevronRight,
-            contentDescription = null,
-            tint = colors.textMuted,
-            modifier = Modifier.size(18.dp)
-        )
-    }
-}
-
-
