@@ -24,6 +24,7 @@ class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
 
     private val permissionsViewModel: PermissionsViewModel by viewModels()
+    private var initialTab: Int = 0
 
     override fun onResume() {
         super.onResume()
@@ -33,6 +34,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
+
+        initialTab = intent?.getIntExtra("openTab", 0) ?: 0
+
         enableEdgeToEdge()
 
         lifecycleScope.launch {
@@ -48,7 +53,8 @@ class MainActivity : ComponentActivity() {
             ReelBreakTheme(isDarkMode = dashboardState.isDarkMode) {
                 ReelsBreakApp(
                     mainViewModel = mainViewModel,
-                    dashboardViewModel = dashboardViewModel
+                    dashboardViewModel = dashboardViewModel,
+                    initialTab = initialTab
                 )
             }
         }
@@ -57,5 +63,11 @@ class MainActivity : ComponentActivity() {
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
         }
+    }
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        initialTab = intent.getIntExtra("openTab", 0)
     }
 }

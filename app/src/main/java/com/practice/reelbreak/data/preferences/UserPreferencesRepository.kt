@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.practice.reelbreak.data.preferences.UserPreferences.DAILY_TIME_LIMIT_MINUTES
 import com.practice.reelbreak.domain.model.ActiveBlockMode
@@ -246,6 +247,17 @@ class UserPreferencesRepository(private val context: Context) {
     val focusEndTimestamp: Flow<Long> = context.dataStore.data
         .map { prefs -> prefs[UserPreferences.FOCUS_END_TIMESTAMP] ?: 0L }
 
+
+    val blockedPackages: Flow<Set<String>> =
+        context.dataStore.data.map { prefs ->
+            prefs[UserPreferences.BLOCKED_PACKAGES] ?: emptySet()
+        }
+
+    suspend fun setBlockedPackages(packages: Set<String>) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.BLOCKED_PACKAGES] = packages
+        }
+    }
     // Set focus active + end time
     suspend fun startFocusSession(endTimestampMillis: Long) {
         context.dataStore.edit { prefs ->
@@ -258,6 +270,17 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[UserPreferences.IS_FOCUS_ACTIVE] = false
             prefs[UserPreferences.FOCUS_END_TIMESTAMP] = 0L
+            prefs[UserPreferences.BLOCKED_PACKAGES] = emptySet()
+        }
+    }
+
+    val selectedFocusMinutes: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[UserPreferences.SELECTED_FOCUS_MINUTES] ?: 0
+    }
+
+    suspend fun setSelectedFocusMinutes(minutes: Int) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.SELECTED_FOCUS_MINUTES] = minutes
         }
     }
 }

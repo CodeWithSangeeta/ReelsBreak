@@ -25,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,14 +36,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.practice.reelbreak.core.accessibility.ReelsAccessibilityService
-import com.practice.reelbreak.data.FocusStateHolder.isFocusActive
 import com.practice.reelbreak.ui.component.AppScreenHeader
 import com.practice.reelbreak.ui.component.MainScaffold
-import com.practice.reelbreak.ui.focusedmode.FocusViewModel
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
 import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.practice.reelbreak.viewmodel.FocusViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 import kotlinx.coroutines.delay
 
@@ -64,12 +65,16 @@ fun FocusScreen(
     selectedTab: Int = 1,
     onTabSelected: (Int) -> Unit
 ) {
-    val state        by viewModel.uiState.collectAsState()
-    val colors       = LocalAppColors.current
-    val context      = LocalContext.current
-    val sheetState           by permissionsViewModel.sheetState.collectAsState()
+
+    val state  by viewModel.uiState.collectAsStateWithLifecycle()
+    val colors  = LocalAppColors.current
+    val context  = LocalContext.current
+    val sheetState by permissionsViewModel.sheetState.collectAsStateWithLifecycle()
     val permModalState       = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lifecycleOwner       = LocalLifecycleOwner.current
+    val currentIsFocusActive by rememberUpdatedState(state.isFocusActive)
+    val chipSelectedMinutes =
+        if (currentIsFocusActive) state.sessionDurationMinutes else state.selectedMinutes
 
     // Re-check accessibility on every resume
     DisposableEffect(lifecycleOwner) {
@@ -82,7 +87,7 @@ fun FocusScreen(
                 } else {
                     permissionsViewModel.updateAccessibilityGranted(false)
 
-                    if (isFocusActive) {
+                    if (currentIsFocusActive) {
                         viewModel.stopFocusSession()
                     }
                     permissionsViewModel.checkAndShowSheetIfNeeded(context)
@@ -113,8 +118,10 @@ fun FocusScreen(
         }
     }
 
-    val totalMillis = state.selectedMinutes.toLong() * 60_000L
-    val progress    = if (totalMillis > 0 && state.isFocusActive )
+    val totalMillis =
+        if (currentIsFocusActive) state.sessionDurationMinutes.toLong() * 60_000L
+        else state.selectedMinutes.toLong() * 60_000L
+    val progress    = if (totalMillis > 0 && currentIsFocusActive )
         (state.remainingMillis.toFloat() / totalMillis.toFloat()).coerceIn(0f, 1f)
     else 1f
 
@@ -162,14 +169,15 @@ fun FocusScreen(
 
                     TimerCard(
                         remainingMillis = state.remainingMillis,
-                        isActive        = state.isFocusActive ,
+//                        selectedMinutes = chipSelectedMinutes.toLong(),
+                        isActive        = currentIsFocusActive ,
                         progress        = progress,
-                        isFocusActive   = state.isFocusActive,
+                        isFocusActive   = currentIsFocusActive,
                         onToggle        = {
                             val granted = isAccessibilityServiceEnabled(context)
                             when {
                                 !granted            -> permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
-                                state.isFocusActive -> viewModel.stopFocusSession()
+                                currentIsFocusActive -> viewModel.stopFocusSession()
                                 else                -> viewModel.startFocusSession()
                             }
                         }
@@ -184,8 +192,8 @@ fun FocusScreen(
 
                         item {
                             DurationCard(
-                                selectedMinutes = state.selectedMinutes,
-                                enabled = !state.isFocusActive,
+                                selectedMinutes = chipSelectedMinutes,
+                                enabled = true,
                                 onSelect = { viewModel.setSelectedMinutes(it) }
                             )
                         }
@@ -193,6 +201,7 @@ fun FocusScreen(
                         item {
                             SupportedAppsCard(
                                 selectedPackages = state.selectedApps,
+                                isEnabled = true,
                                 onToggle = { pkg -> viewModel.toggleAppSelection(pkg) }
                             )
                         }

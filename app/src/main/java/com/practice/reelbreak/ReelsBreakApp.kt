@@ -19,7 +19,8 @@ import com.practice.reelbreak.viewmodel.MainViewModel
 @Composable
 fun ReelsBreakApp(
     mainViewModel: MainViewModel,
-    dashboardViewModel: DashboardViewModel
+    dashboardViewModel: DashboardViewModel,
+    initialTab: Int = 0
 ) {
     val isOnboardingCompleted by mainViewModel.isOnboardingCompleted.collectAsState()
     val colors = LocalAppColors.current

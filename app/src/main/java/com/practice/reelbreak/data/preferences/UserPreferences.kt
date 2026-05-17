@@ -116,7 +116,10 @@ object UserPreferences {
     // Is a focus session currently active
     val IS_FOCUS_ACTIVE = booleanPreferencesKey("is_focus_active")
 
+    val BLOCKED_PACKAGES = stringSetPreferencesKey("blocked_packages")
+
     // When the current focus session ends (epoch millis)
     val FOCUS_END_TIMESTAMP = longPreferencesKey("focus_end_timestamp")
 
+    val SELECTED_FOCUS_MINUTES = intPreferencesKey("selected_focus_minutes")
 }

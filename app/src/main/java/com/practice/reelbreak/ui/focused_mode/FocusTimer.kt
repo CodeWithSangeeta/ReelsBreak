@@ -48,6 +48,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 ) {
     val colors = LocalAppColors.current
 
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         padding  = PaddingValues(20.dp)

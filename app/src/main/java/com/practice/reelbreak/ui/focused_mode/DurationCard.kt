@@ -55,8 +55,7 @@ private val durationChips = listOf(
             ) {
                 items(durationChips) { chip ->
                     val isSelected = chip.minutes == selectedMinutes
-                    val bg = if (isSelected) colors.appColor
-                    else colors.cardSurface
+                    val bg = if (isSelected) colors.appColor else colors.cardSurface
 
                     Box(
                         modifier = Modifier

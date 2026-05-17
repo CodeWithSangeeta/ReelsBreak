@@ -10,9 +10,7 @@ import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.PermissionState
 import com.practice.reelbreak.ui.focused_mode.isAccessibilityServiceEnabled
 import com.practice.reelbreak.ui.permission.PermissionSheetType
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import com.practice.reelbreak.ui.permission.PermissionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,11 +33,6 @@ class PermissionsViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(PermissionUiState())
     val uiState = _uiState.asStateFlow()
-
-//    private val _events = MutableSharedFlow<PermissionAction>()
-//    val events = _events.asSharedFlow()
-
-    // --- Sheet state ---
     private val _sheetState = MutableStateFlow(PermissionSheetState())
     val sheetState: StateFlow<PermissionSheetState> = _sheetState.asStateFlow()
 
@@ -67,11 +60,8 @@ class PermissionsViewModel @Inject constructor(
 
         val prev = lastAccessibilityGranted
         lastAccessibilityGranted = newState.accessibilityGranted
-
-        // Update uiState as you already do
         _uiState.update { it.copy(permissionState = newState) }
 
-        // Auto-turn on strict when accessibility just became true
         if (prev == false && newState.accessibilityGranted) {
             viewModelScope.launch {
                 userPreferencesRepository.setStrictMode(true)
@@ -86,25 +76,13 @@ class PermissionsViewModel @Inject constructor(
         }
     }
 
-//        fun checkAndShowSheetIfNeeded(context: Context) {
-//            val hasAccessibility = AccessibilityPermissionChecker.isAccessibilityEnabled(context)
-//            val hasUsage = UsagePermissionChecker.isUsageAccessGranted(context)
-//            when {
-//                !hasAccessibility -> showSheet(PermissionSheetType.ACCESSIBILITY)
-//                !hasUsage -> showSheet(PermissionSheetType.USAGE_ACCESS)
-//                // both granted → do nothing
-//            }
-//        }
-
     fun checkAndShowSheetIfNeeded(context: Context) {
         val isGranted = isAccessibilityServiceEnabled(context)
 
-        // Always update the state
         _uiState.update {
             it.copy(permissionState = it.permissionState.copy(accessibilityGranted = isGranted))
         }
 
-        // ✅ Only open sheet if NOT granted — never open if already granted
         if (!isGranted && !_sheetState.value.isVisible) {
             showSheet(PermissionSheetType.ACCESSIBILITY)
         }
@@ -140,7 +118,6 @@ class PermissionsViewModel @Inject constructor(
                 }
             }
         }
-
 
 
     fun updateAccessibilityGranted(granted: Boolean) {
