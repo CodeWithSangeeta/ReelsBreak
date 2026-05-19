@@ -40,7 +40,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SelectedAppsPreview(
-    selectedApps: List<com.practice.reelbreak.core.registry.SupportedAppInfo>,
+    selectedApps: List<com.practice.reelbreak.core.registry.FocusModeSupportAppInfo>,
     isEnabled: Boolean,
     onRemove: (String) -> Unit
 ) {
