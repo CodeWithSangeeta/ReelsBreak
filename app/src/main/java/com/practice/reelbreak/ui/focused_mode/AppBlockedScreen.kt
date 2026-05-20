@@ -45,7 +45,7 @@
 //import androidx.compose.ui.text.style.TextAlign
 //import androidx.compose.ui.unit.dp
 //import androidx.compose.ui.unit.sp
-//import com.practice.reelbreak.core.registry.SupportedAppsCatalog
+//import com.practice.reelbreak.core.registry.FocusModeSupportedAppsCatalog
 //import com.practice.reelbreak.ui.theme.LocalAppColors
 //import kotlinx.coroutines.delay
 //
@@ -60,7 +60,7 @@
 ////    onGoBack: () -> Unit
 ////) {
 ////    val colors = LocalAppColors.current
-////    val appName = SupportedAppsCatalog.displayNameOf(blockedPackage)
+////    val appName = FocusModeSupportedAppsCatalog.displayNameOf(blockedPackage)
 ////
 ////    // Live countdown inside this screen
 ////    var liveRemaining by remember { mutableStateOf(remainingFormatted) }
@@ -288,8 +288,8 @@
 //    onOpenFocusMode: () -> Unit
 //) {
 //    val colors = LocalAppColors.current
-//    val appInfo = SupportedAppsCatalog.findByPackage(blockedPackage)
-//    val appName = appInfo?.displayName ?: SupportedAppsCatalog.displayNameOf(blockedPackage)
+//    val appInfo = FocusModeSupportedAppsCatalog.findByPackage(blockedPackage)
+//    val appName = appInfo?.displayName ?: FocusModeSupportedAppsCatalog.displayNameOf(blockedPackage)
 //
 //    var liveRemaining by remember { mutableStateOf(remainingFormatted) }
 //    LaunchedEffect(focusEndTs) {
@@ -563,7 +563,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.practice.reelbreak.R
-import com.practice.reelbreak.core.registry.SupportedAppsCatalog
+import com.practice.reelbreak.core.registry.FocusModeSupportedAppsCatalog
 import com.practice.reelbreak.ui.theme.LocalAppColors
 import kotlinx.coroutines.delay
 
@@ -576,8 +576,8 @@ fun AppBlockedScreen(
     onOpenFocusMode: () -> Unit
 ) {
     val colors = LocalAppColors.current
-    val appInfo = SupportedAppsCatalog.findByPackage(blockedPackage)
-    val appName = appInfo?.displayName ?: SupportedAppsCatalog.displayNameOf(blockedPackage)
+    val appInfo = FocusModeSupportedAppsCatalog.findByPackage(blockedPackage)
+    val appName = appInfo?.displayName ?: FocusModeSupportedAppsCatalog.displayNameOf(blockedPackage)
 
     var liveRemaining by remember { mutableStateOf(remainingFormatted) }
 

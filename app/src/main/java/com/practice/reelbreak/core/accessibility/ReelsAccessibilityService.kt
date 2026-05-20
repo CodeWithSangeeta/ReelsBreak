@@ -21,11 +21,12 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
-import com.practice.reelbreak.core.registry.SupportedAppsRegistry
+import com.practice.reelbreak.core.debug.AccessibilityDebugLogger
 import com.practice.reelbreak.data.FocusStateHolder
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.core.engine.FocusAppBlockedActivity
+import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -353,7 +354,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         // NEW CRITICAL GUARD: If the user is NOT in a supported app,
         // kill the overlay INSTANTLY. No delay.
-        if (packageName != null && !SupportedAppsRegistry.isSupported(packageName)) {
+        if (packageName != null && !ReelsDetectionRegistry.isDetectionSupported(packageName)) {
             hideHandler.removeCallbacks(hideRunnable)
             stopTimerAndHideOverlay() // Remove the overlay immediately
             AppDetectorRouter.resetAll()
@@ -377,12 +378,34 @@ class ReelsAccessibilityService : AccessibilityService() {
             }
         }
 
-        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
+//        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
+//
+//        detectionManager.processEvent(event, rootNode)
+//
+//        val isOnReels = detectionManager.isOnReelsScreen
+//        val overlayEnabled = shouldShowOverlay(packageName)
+
+        val shouldInspectTree = when (event.eventType) {
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+            AccessibilityEvent.TYPE_VIEW_SCROLLED -> true
+            else -> false
+        }
+
+        val rootNode: AccessibilityNodeInfo? =
+            if (shouldInspectTree) rootInActiveWindow else null
 
         detectionManager.processEvent(event, rootNode)
 
         val isOnReels = detectionManager.isOnReelsScreen
         val overlayEnabled = shouldShowOverlay(packageName)
+
+        AccessibilityDebugLogger.logEvent(
+            event = event,
+            rootNodeRequested = shouldInspectTree,
+            rootNode = rootNode,
+            detectorState = "isOnReels=$isOnReels overlayEnabled=$overlayEnabled"
+        )
 
         if (overlayEnabled && isOnReels) {
             hideHandler.removeCallbacks(hideRunnable)
@@ -406,9 +429,9 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     private fun shouldShowOverlay(packageName: String?): Boolean {
         if (packageName == null) return false
-        if (!SupportedAppsRegistry.isSupported(packageName)) return false
+        if (!ReelsDetectionRegistry.isDetectionSupported(packageName)) return false
         val prefs = userPrefs ?: return false
-        if (!prefs.isOverlayEnabledBlocking()) return false
+      //  if (!prefs.isOverlayEnabledBlocking()) return false
         if (prefs.getActiveModeBlocking() != ActiveBlockMode.LIMIT.value) return false
         val isLimitHit = runBlocking { prefs.isLimitExceededToday.first() }
         if (isLimitHit) return false
@@ -578,3 +601,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         applicationContext.startActivity(intent)
     }
 }
+
+
+
+

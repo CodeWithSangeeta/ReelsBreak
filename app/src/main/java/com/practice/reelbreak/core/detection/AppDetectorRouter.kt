@@ -1,42 +1,31 @@
 package com.practice.reelbreak.core.detection
 
-
 import com.practice.reelbreak.core.detection.detectors.AppDetector
-//import com.practice.reelbreak.core.detection.detectors.FacebookReelsDetector
 import com.practice.reelbreak.core.detection.detectors.InstagramReelsDetector
 import com.practice.reelbreak.core.detection.detectors.SnapchatSpotlightDetector
 import com.practice.reelbreak.core.detection.detectors.YouTubeReelsDetector
-import com.practice.reelbreak.core.registry.SupportedAppsRegistry
+import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
 
 object AppDetectorRouter {
-
     private val youtubeDetector = YouTubeReelsDetector()
     private val instagramDetector = InstagramReelsDetector()
     private val snapchatDetector = SnapchatSpotlightDetector()
-  //  private val facebookDetector = FacebookReelsDetector()
+
     fun getDetector(packageName: String?): AppDetector? {
 
         return when (packageName) {
 
-            SupportedAppsRegistry.YOUTUBE -> {
+            ReelsDetectionRegistry.YOUTUBE -> {
                 youtubeDetector
             }
 
-            SupportedAppsRegistry.INSTAGRAM -> {
+            ReelsDetectionRegistry.INSTAGRAM -> {
                 instagramDetector
             }
 
-            SupportedAppsRegistry.SNAPCHAT -> {
+            ReelsDetectionRegistry.SNAPCHAT -> {
                 snapchatDetector
             }
-
-
-//            SupportedAppsRegistry.FACEBOOK -> {
-//                facebookDetector
-//            }
-//            SupportedAppsRegistry.FACEBOOK_LITE -> {
-//                facebookDetector
-//            }
 
             else -> {
               null
@@ -46,6 +35,8 @@ object AppDetectorRouter {
 
 
     fun resetAll() {
-      //  facebookDetector.reset()
+        instagramDetector.reset()
+        snapchatDetector.reset()
+        youtubeDetector.reset()
     }
 }

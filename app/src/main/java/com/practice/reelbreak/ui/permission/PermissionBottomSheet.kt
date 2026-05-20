@@ -50,8 +50,8 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 
 sealed class PermissionSheetType {
     object ACCESSIBILITY : PermissionSheetType()
-    object USAGE_ACCESS : PermissionSheetType()
-    object OVERLAY : PermissionSheetType()
+ //   object USAGE_ACCESS : PermissionSheetType()
+  //  object OVERLAY : PermissionSheetType()
 }
 
 private data class PermissionSheetContent(
@@ -87,41 +87,41 @@ private fun buildContent(type: PermissionSheetType, colors : AppColors): Permiss
             agreeButtonText = "Agree & Open Settings",
         )
 
-        is PermissionSheetType.USAGE_ACCESS -> PermissionSheetContent(
-            icon = Icons.Outlined.BarChart,
-            iconTint = colors.blueAccent,
-            iconGlowColor = colors.blueAccent.copy(alpha = 0.20f),
-            badgeLabel = "Required",
-            isMandatory = true,
-            title = "Usage access permission",
-            description = "ReelsBreak needs Usage Access to track time on short-video apps and apply your limits.",
-            steps = listOf(
-                "Tap \"Agree & Open Settings\" below",
-                "Find \"ReelsBreak\" in the list",
-                "Enable \"Permit usage access\"",
-                "Press back to return"
-            ),
-            privacyNote = "Only reads app usage time. It never sees history, content, or personal data.",
-            agreeButtonText = "Agree & Open Settings",
-        )
+//        is PermissionSheetType.USAGE_ACCESS -> PermissionSheetContent(
+//            icon = Icons.Outlined.BarChart,
+//            iconTint = colors.blueAccent,
+//            iconGlowColor = colors.blueAccent.copy(alpha = 0.20f),
+//            badgeLabel = "Required",
+//            isMandatory = true,
+//            title = "Usage access permission",
+//            description = "ReelsBreak needs Usage Access to track time on short-video apps and apply your limits.",
+//            steps = listOf(
+//                "Tap \"Agree & Open Settings\" below",
+//                "Find \"ReelsBreak\" in the list",
+//                "Enable \"Permit usage access\"",
+//                "Press back to return"
+//            ),
+//            privacyNote = "Only reads app usage time. It never sees history, content, or personal data.",
+//            agreeButtonText = "Agree & Open Settings",
+//        )
 
-        is PermissionSheetType.OVERLAY -> PermissionSheetContent(
-            icon = Icons.Outlined.Layers,
-            iconTint = colors.successGreen,
-            iconGlowColor = colors.successGreen.copy(alpha = 0.20f),
-            badgeLabel = "Optional",
-            isMandatory = false,
-            title = "Overlay permission",
-            description = "ReelsBreak uses an overlay bubble to show your live reel counter above other apps.",
-            steps = listOf(
-                "Tap \"Allow Overlay\" below",
-                "Find \"ReelsBreak\" in the list",
-                "Enable \"Allow display over other apps\"",
-                "Press back to return"
-            ),
-            privacyNote = "Overlay only shows the counter. It cannot read or interact with anything on screen.",
-            agreeButtonText = "Allow Overlay",
-        )
+//        is PermissionSheetType.OVERLAY -> PermissionSheetContent(
+//            icon = Icons.Outlined.Layers,
+//            iconTint = colors.successGreen,
+//            iconGlowColor = colors.successGreen.copy(alpha = 0.20f),
+//            badgeLabel = "Optional",
+//            isMandatory = false,
+//            title = "Overlay permission",
+//            description = "ReelsBreak uses an overlay bubble to show your live reel counter above other apps.",
+//            steps = listOf(
+//                "Tap \"Allow Overlay\" below",
+//                "Find \"ReelsBreak\" in the list",
+//                "Enable \"Allow display over other apps\"",
+//                "Press back to return"
+//            ),
+//            privacyNote = "Overlay only shows the counter. It cannot read or interact with anything on screen.",
+//            agreeButtonText = "Allow Overlay",
+//        )
     }
 
 @OptIn(ExperimentalMaterial3Api::class)

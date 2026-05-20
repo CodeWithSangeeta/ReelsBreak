@@ -45,23 +45,23 @@ class DashboardViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            userPreferencesRepository.isOverlayEnabled.collectLatest { enabled ->
-                _uiState.update { it.copy(isOverlayEnabled = enabled) }
-            }
-        }
+//        viewModelScope.launch {
+//            userPreferencesRepository.isOverlayEnabled.collectLatest { enabled ->
+//                _uiState.update { it.copy(isOverlayEnabled = enabled) }
+//            }
+//        }
     }
 
     fun toggleTheme() {
         _uiState.update { it.copy(isDarkMode = !it.isDarkMode) }
     }
 
-    fun toggleOverlayEnabled() {
-        viewModelScope.launch {
-            val current = uiState.value.isOverlayEnabled
-            userPreferencesRepository.setOverlayEnabled(!current)
-        }
-    }
+//    fun toggleOverlayEnabled() {
+//        viewModelScope.launch {
+//            val current = uiState.value.isOverlayEnabled
+//            userPreferencesRepository.setOverlayEnabled(!current)
+//        }
+//    }
 
     fun onBlockModeCardClicked(mode: BlockMode) {
         _uiState.update { state ->

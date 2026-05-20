@@ -5,12 +5,13 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.practice.reelbreak.core.action.ActionController
 import com.practice.reelbreak.core.engine.BlockingDecisionEngine
-import com.practice.reelbreak.core.registry.SupportedAppsRegistry
+import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
 import com.practice.reelbreak.domain.model.DetectionResult
 import com.practice.reelbreak.domain.model.ReelsSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 
@@ -18,7 +19,6 @@ class ReelsDetectionManager(
     private val actionController: ActionController,
     private val engine: BlockingDecisionEngine
 ) {
-
     val isOnReelsScreen: Boolean get() = session.reelsMode
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -36,7 +36,7 @@ class ReelsDetectionManager(
     fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
         val packageName = event.packageName?.toString() ?: return
 
-        if (!SupportedAppsRegistry.isSupported(packageName)) {
+        if (!ReelsDetectionRegistry.isDetectionSupported(packageName)) {
             resetSession()
             return
         }
@@ -87,64 +87,6 @@ class ReelsDetectionManager(
         }
     }
 
-//    fun processEvent(event: AccessibilityEvent, rootNode: AccessibilityNodeInfo?) {
-//        val packageName = event.packageName?.toString() ?: return
-//
-//        if (!SupportedAppsRegistry.isSupported(packageName)) {
-//            resetSession()
-//            return
-//        }
-//
-//        val detector = AppDetectorRouter.getDetector(packageName)
-//        detector.onEvent(event)
-//        val result = detector.detect(rootNode)
-//
-//
-//        if (result == DetectionResult.REELS_SCREEN) {
-//            session.reelsMode = true
-//            session.currentApp = packageName
-//
-//            when (event.eventType) {
-//
-//                // ── User swiped to a new reel ─────────────────────────
-//                AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
-//                    val now = System.currentTimeMillis()
-//                    if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
-//                        lastCountedMs = now
-//                        hasCheckedBlockThisReel = false // reset so block is re-evaluated
-//                        Log.d("REELSBREAK", "SCROLL detected → counting + block check")
-//                        triggerReelAction(packageName)
-//                    } else {
-//                        Log.d("REELSBREAK", "SCROLL too soon (${now - lastCountedMs}ms) → skipped")
-//                    }
-//                }
-//
-//                // ── First entry into reels screen ─────────────────────
-//                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
-//                    if (!hasCheckedBlockThisReel) {
-//                        hasCheckedBlockThisReel = true
-//                        val now = System.currentTimeMillis()
-//                        if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
-//                            lastCountedMs = now
-//                            Log.d("REELSBREAK", "WINDOW_STATE_CHANGED → first reel entry")
-//                            triggerReelAction(packageName)
-//                        }
-//                    }
-//                }
-//
-//                // ── All other events: only check block, never count ───
-//                else -> {
-//                    if (!hasCheckedBlockThisReel) {
-//                        hasCheckedBlockThisReel = true
-//                        checkBlockOnly(packageName)
-//                    }
-//                }
-//            }
-//
-//        } else {
-//            resetSession()
-//        }
-//    }
 
     // Count + block check
     private fun triggerReelAction(packageName: String?) {
@@ -192,5 +134,9 @@ class ReelsDetectionManager(
         session.lastReelHash = 0
         hasCheckedBlockThisReel = false
         lastCountedMs = 0L
+    }
+
+    fun cancel() {
+        scope.cancel()
     }
 }

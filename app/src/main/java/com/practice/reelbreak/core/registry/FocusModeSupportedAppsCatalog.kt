@@ -3,49 +3,70 @@ package com.practice.reelbreak.core.registry
 import androidx.annotation.DrawableRes
 import com.practice.reelbreak.R
 
-data class SupportedAppInfo(
+data class FocusModeSupportAppInfo(
     val packageName: String,
     val displayName: String,
     @DrawableRes val iconRes: Int,
     val availableInFocusMode: Boolean = true
 )
 
-object SupportedAppsCatalog {
+object FocusModeSupportedAppsCatalog {
 
     val apps = listOf(
-        SupportedAppInfo(
-            packageName = SupportedAppsRegistry.INSTAGRAM,
-            displayName = "Instagram",
-            iconRes = R.drawable.ic_instagram
-        ),
-        SupportedAppInfo(
-            packageName = SupportedAppsRegistry.YOUTUBE,
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.YOUTUBE,
             displayName = "YouTube",
             iconRes = R.drawable.ic_youtube
         ),
-        SupportedAppInfo(
-            packageName = SupportedAppsRegistry.TIKTOK,
-            displayName = "TikTok",
-            iconRes = R.drawable.ic_tiktok
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.INSTAGRAM,
+            displayName = "Instagram",
+            iconRes = R.drawable.ic_instagram
         ),
-        SupportedAppInfo(
-            packageName = SupportedAppsRegistry.FACEBOOK,
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.INSTAGRAM_LITE,
+            displayName = "Instagram lite",
+            iconRes = R.drawable.ic_instagram
+        ),
+
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.FACEBOOK,
             displayName = "Facebook",
             iconRes = R.drawable.ic_facebook
         ),
-        SupportedAppInfo(
-            packageName = SupportedAppsRegistry.SNAPCHAT,
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.FACEBOOK_LITE,
+            displayName = "Facebook lite",
+            iconRes = R.drawable.ic_facebook
+        ),
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.SNAPCHAT,
             displayName = "Snapchat",
             iconRes = R.drawable.ic_snapchat
         ),
-        SupportedAppInfo(
-            packageName = SupportedAppsRegistry.TWITTER,
-            displayName = "Twitter",
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.TIKTOK,
+            displayName = "TikTok",
+            iconRes = R.drawable.ic_tiktok
+        ),
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.X,
+            displayName = "X",
+            iconRes = R.drawable.ic_twitter
+        ),
+        FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.SHARECHAT,
+            displayName = "ShareChat",
+            iconRes = R.drawable.ic_twitter
+        ),
+    FocusModeSupportAppInfo(
+            packageName = FocusModeAppsRegistry.MOJ,
+            displayName = "Moj",
             iconRes = R.drawable.ic_twitter
         )
     )
 
-    fun findByPackage(packageName: String): SupportedAppInfo? {
+    fun findByPackage(packageName: String): FocusModeSupportAppInfo? {
         return apps.find { it.packageName == packageName }
     }
 
