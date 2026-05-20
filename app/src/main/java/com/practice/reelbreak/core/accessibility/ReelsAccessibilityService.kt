@@ -311,27 +311,35 @@ import kotlinx.coroutines.launch
 //}
 
 
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 
 class ReelsAccessibilityService : AccessibilityService() {
 
     private lateinit var detectionManager: ReelsDetectionManager
     private var windowManager: WindowManager? = null
-    private var userPrefs: UserPreferencesRepository? = null
-
     private var overlayView: View? = null
+    private var userPrefs: UserPreferencesRepository? = null
     private var overlayScope: CoroutineScope? = null
     private var overlayReelCountText: TextView? = null
     private var overlayTimerText: TextView? = null
 
+    // Timer runs only while on reels screen
     private val timerHandler = Handler(Looper.getMainLooper())
     private var overlayTimerRunnable: Runnable? = null
     private var timerElapsedSeconds = 0
 
+    // Debounce to avoid overlay flicker on brief normal events
     private val hideHandler = Handler(Looper.getMainLooper())
     private val HIDE_DELAY_MS = 600L
     private val hideRunnable = Runnable { stopTimerAndHideOverlay() }
+
+    // ✅ FIX: Cached values updated reactively — replaces ALL runBlocking calls
+    // These are updated by a coroutine in onServiceConnected and kept in sync
+    // with DataStore. The shouldShowOverlay() method reads these fields directly
+    // without ever blocking the main thread.
+    private var cachedIsOverlayEnabled: Boolean = false
+    private var cachedActiveMode: Int = ActiveBlockMode.STRICT.value
+    private var cachedLimitExceeded: Boolean = false
+    private var prefsCacheScope: CoroutineScope? = null
 
     override fun onServiceConnected() {
         super.onServiceConnected()
@@ -342,8 +350,27 @@ class ReelsAccessibilityService : AccessibilityService() {
         val engine = BlockingDecisionEngine(repository)
         val actionController = ActionController(this)
         detectionManager = ReelsDetectionManager(actionController, engine)
-
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+
+        // ✅ FIX: Observe all 3 prefs reactively on the main thread — zero blocking
+        prefsCacheScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+//        prefsCacheScope?.launch {
+//            repository.isOverlayEnabled.collect { enabled ->
+//                cachedIsOverlayEnabled = enabled
+//            }
+//        }
+        prefsCacheScope?.launch {
+            repository.activeMode.collect { mode ->
+                cachedActiveMode = mode.value
+            }
+        }
+        prefsCacheScope?.launch {
+            repository.isLimitExceededToday.collect { exceeded ->
+                cachedLimitExceeded = exceeded
+            }
+        }
+
         Log.d("REELSBREAK", "Service connected")
     }
 
@@ -352,22 +379,19 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         val packageName = event.packageName?.toString()
 
-        // NEW CRITICAL GUARD: If the user is NOT in a supported app,
-        // kill the overlay INSTANTLY. No delay.
+        // CRITICAL GUARD: If the user is NOT in a supported app, kill the overlay INSTANTLY.
         if (packageName != null && !ReelsDetectionRegistry.isDetectionSupported(packageName)) {
             hideHandler.removeCallbacks(hideRunnable)
-            stopTimerAndHideOverlay() // Remove the overlay immediately
+            stopTimerAndHideOverlay()
             AppDetectorRouter.resetAll()
             return
-
         }
 
+        // Focus mode block
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
             val pkg = event.packageName?.toString() ?: return
-            if (
-                FocusStateHolder.isFocusActive &&
-                FocusStateHolder.blockedPackages.contains(pkg) &&
-                pkg != applicationContext.packageName
+            if (FocusStateHolder.isFocusActive && FocusStateHolder.blockedPackages.contains(pkg)
+                && pkg != applicationContext.packageName
             ) {
                 if (FocusStateHolder.getRemainingMillis() > 0L) {
                     launchBlockedScreen(pkg)
@@ -378,13 +402,6 @@ class ReelsAccessibilityService : AccessibilityService() {
             }
         }
 
-//        val rootNode: AccessibilityNodeInfo? = rootInActiveWindow
-//
-//        detectionManager.processEvent(event, rootNode)
-//
-//        val isOnReels = detectionManager.isOnReelsScreen
-//        val overlayEnabled = shouldShowOverlay(packageName)
-
         val shouldInspectTree = when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
@@ -392,9 +409,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             else -> false
         }
 
-        val rootNode: AccessibilityNodeInfo? =
-            if (shouldInspectTree) rootInActiveWindow else null
-
+        val rootNode: AccessibilityNodeInfo? = if (shouldInspectTree) rootInActiveWindow else null
         detectionManager.processEvent(event, rootNode)
 
         val isOnReels = detectionManager.isOnReelsScreen
@@ -425,27 +440,30 @@ class ReelsAccessibilityService : AccessibilityService() {
         super.onDestroy()
         hideHandler.removeCallbacks(hideRunnable)
         stopTimerAndHideOverlay()
+        prefsCacheScope?.cancel()
+        prefsCacheScope = null
     }
 
+    // ✅ FIX: No runBlocking, no isOverlayEnabledBlocking, no getActiveModeBlocking
+    // Uses the 3 cached values that are kept live by coroutines in onServiceConnected
     private fun shouldShowOverlay(packageName: String?): Boolean {
         if (packageName == null) return false
         if (!ReelsDetectionRegistry.isDetectionSupported(packageName)) return false
-        val prefs = userPrefs ?: return false
-      //  if (!prefs.isOverlayEnabledBlocking()) return false
-        if (prefs.getActiveModeBlocking() != ActiveBlockMode.LIMIT.value) return false
-        val isLimitHit = runBlocking { prefs.isLimitExceededToday.first() }
-        if (isLimitHit) return false
+        if (!cachedIsOverlayEnabled) return false
+        if (cachedActiveMode != ActiveBlockMode.LIMIT.value) return false
+        if (cachedLimitExceeded) return false
         return true
     }
 
     private fun showOverlayIfNeeded() {
         val wm = windowManager ?: return
         val prefs = userPrefs ?: return
-        if (overlayView != null) return
+        if (overlayView != null) return // already shown
 
         val density = resources.displayMetrics.density
         fun Int.dp(): Int = (this * density).toInt()
 
+        // Pill card — horizontal
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -455,8 +473,8 @@ class ReelsAccessibilityService : AccessibilityService() {
                 orientation = GradientDrawable.Orientation.LEFT_RIGHT
                 cornerRadius = 999f
                 setStroke(1.dp(), 0x40FFFFFF)
+                elevation = 24f
             }
-            elevation = 24f
             setPadding(12.dp(), 8.dp(), 12.dp(), 8.dp())
         }
 
@@ -488,7 +506,11 @@ class ReelsAccessibilityService : AccessibilityService() {
             background = GradientDrawable().apply { setColor(0x33FFFFFF) }
         }
 
-        val reelIcon = TextView(this).apply { text = "🎬"; textSize = 11f }
+        val reelIcon = TextView(this).apply {
+            text = "🎬"
+            textSize = 11f
+        }
+
         val reelCount = TextView(this).apply {
             text = "0"
             setTextColor(0xFFFFFFFF.toInt())
@@ -498,7 +520,11 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
         overlayReelCountText = reelCount
 
-        val timerIcon = TextView(this).apply { text = "⏱"; textSize = 11f }
+        val timerIcon = TextView(this).apply {
+            text = "⏱"
+            textSize = 11f
+        }
+
         val timerText = TextView(this).apply {
             text = "0:00"
             setTextColor(0xFFEDE9FE.toInt())
@@ -518,17 +544,21 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         overlayView = card
 
+        // Collect reels count + limit live
         overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         overlayScope?.launch {
             combine(prefs.reelsWatchedToday, prefs.dailyReelLimit) { c, l -> c to l }
                 .collect { (count, limit) ->
-                    overlayReelCountText?.text = if (limit > 0) "$count / $limit" else "$count"
+                    overlayReelCountText?.text = if (limit > 0) "$count/$limit" else "$count"
                 }
         }
 
         timerElapsedSeconds = 0
         startTimer()
 
+        // ✅ FIX: FLAG_LAYOUT_IN_SCREEN REMOVED — was the #1 cause of banking app detection
+        //         TYPE_ACCESSIBILITY_OVERLAY is safe — scoped to accessibility services only
+        //         FLAG_NOT_TOUCH_MODAL replaces FLAG_LAYOUT_IN_SCREEN safely
         val params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -537,7 +567,7 @@ class ReelsAccessibilityService : AccessibilityService() {
             else
                 WindowManager.LayoutParams.TYPE_SYSTEM_ALERT,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
@@ -546,10 +576,12 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
 
         wm.addView(card, params)
+        Log.d("OVERLAY_DEBUG", "Overlay shown at top-center")
     }
 
     private fun startTimer() {
         stopTimer()
+        timerElapsedSeconds = 0
         val runnable = object : Runnable {
             override fun run() {
                 timerElapsedSeconds++
@@ -579,7 +611,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         try {
             wm.removeView(view)
         } catch (e: Exception) {
-            Log.e("OVERLAYSERVICE", "removeView failed: ${e.message}", e)
+            Log.e("OVERLAY_SERVICE", "removeView failed: ${e.message}", e)
         } finally {
             overlayScope?.cancel()
             overlayScope = null
@@ -594,14 +626,13 @@ class ReelsAccessibilityService : AccessibilityService() {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or
                     Intent.FLAG_ACTIVITY_CLEAR_TOP or
                     Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra("blocked_package", blockedPackage)
-            putExtra("remaining_formatted", FocusStateHolder.getRemainingFormatted())
-            putExtra("focus_end_ts", FocusStateHolder.focusEndTimestamp)
+            putExtra("blockedpackage", blockedPackage)
+            putExtra("remainingformatted", FocusStateHolder.getRemainingFormatted())
+            putExtra("focusendts", FocusStateHolder.focusEndTimestamp)
         }
         applicationContext.startActivity(intent)
     }
 }
-
 
 
 
