@@ -29,7 +29,7 @@ android:accessibilityEventTypes="typeWindowStateChanged|typeViewScrolled|typeWin
 
 android:accessibilityFeedbackType="feedbackGeneric"
 
-android:accessibilityFlags="flagDefault"
+    android:accessibilityFlags="flagDefault|flagIncludeNotImportantViews|flagReportViewIds"
 
 android:canRetrieveWindowContent="true"
 
@@ -38,11 +38,15 @@ android:description="@string/accessibility_service_description"
 android:notificationTimeout="100"
 
 android:packageNames="
-        com.google.android.youtube,
-        com.instagram.android,
-        com.snapchat.android,
-        com.facebook.katana,
-        com.facebook.lite,
-        com.zhiliaoapp.musically"
+           com.google.android.youtube,
+    com.instagram.android,
+    com.instagram.lite,
+    com.snapchat.android,
+    com.zhiliaoapp.musically,
+    com.facebook.katana,
+    com.facebook.lite,
+    com.twitter.android,
+    in.mohalla.sharechat,
+    in.mohalla.video"
 
 android:settingsActivity=".MainActivity" />

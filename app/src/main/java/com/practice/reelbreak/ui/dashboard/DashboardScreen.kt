@@ -67,23 +67,23 @@ fun DashboardScreen(
     val permissionState = permissionUiState.permissionState
 
 
-    LaunchedEffect(
-        //dashboardState.isOverlayEnabled,
-       // permissionState.overlayGranted,
-        dashboardState.activeMode
-    ) {
-        val shouldShowOverlay =
-          //  dashboardState.isOverlayEnabled &&
-                //    permissionState.overlayGranted &&
-                    dashboardState.activeMode == ActiveBlockMode.LIMIT
-
-//        android.util.Log.d(
-//            "OVERLAY_DEBUG",
-//            "shouldShowOverlay=$shouldShowOverlay enabled=${dashboardState.isOverlayEnabled} " +
-//                    "granted=${permissionState.overlayGranted} mode=${dashboardState.activeMode}"
-//        )
-
-    }
+//    LaunchedEffect(
+//        //dashboardState.isOverlayEnabled,
+//       // permissionState.overlayGranted,
+//        dashboardState.activeMode
+//    ) {
+//        val shouldShowOverlay =
+//          //  dashboardState.isOverlayEnabled &&
+//                //    permissionState.overlayGranted &&
+//                    dashboardState.activeMode == ActiveBlockMode.LIMIT
+//
+////        android.util.Log.d(
+////            "OVERLAY_DEBUG",
+////            "shouldShowOverlay=$shouldShowOverlay enabled=${dashboardState.isOverlayEnabled} " +
+////                    "granted=${permissionState.overlayGranted} mode=${dashboardState.activeMode}"
+////        )
+//
+//    }
 
 
     // Base list of all possible permission cards
