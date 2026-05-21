@@ -18,6 +18,4 @@ data class DashboardState(
     val dailyReelLimit: Int = 0,
     val dailyTimeLimitMinutes: Int = 0,
 
- //   val isOverlayEnabled: Boolean = false
-
 )

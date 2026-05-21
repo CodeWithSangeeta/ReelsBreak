@@ -67,24 +67,6 @@ fun DashboardScreen(
     val permissionState = permissionUiState.permissionState
 
 
-//    LaunchedEffect(
-//        //dashboardState.isOverlayEnabled,
-//       // permissionState.overlayGranted,
-//        dashboardState.activeMode
-//    ) {
-//        val shouldShowOverlay =
-//          //  dashboardState.isOverlayEnabled &&
-//                //    permissionState.overlayGranted &&
-//                    dashboardState.activeMode == ActiveBlockMode.LIMIT
-//
-////        android.util.Log.d(
-////            "OVERLAY_DEBUG",
-////            "shouldShowOverlay=$shouldShowOverlay enabled=${dashboardState.isOverlayEnabled} " +
-////                    "granted=${permissionState.overlayGranted} mode=${dashboardState.activeMode}"
-////        )
-//
-//    }
-
 
     // Base list of all possible permission cards
     val basePermissionPagerItems = listOf(
@@ -96,30 +78,13 @@ fun DashboardScreen(
             description = "Needed to detect short-video screens and block them when protection is on.",
             buttonText = "Enable Access"
         ),
-//        PermissionPagerItem(
-//            type = PermissionSheetType.USAGE_ACCESS,
-//            icon = Icons.Outlined.BarChart,
-//            iconTint = colors.blueAccent,
-//            title = "Usage Access",
-//            description = "Needed to measure time spent on supported short-video apps.",
-//            buttonText = "Allow Access"
-//        ),
-//        PermissionPagerItem(
-//            type = PermissionSheetType.OVERLAY,
-//            icon = Icons.Outlined.Layers,
-//            iconTint = colors.successGreen,
-//            title =  "Display Over Other Apps",
-//            description = "Optional — shows a live session counter while you use supported apps.",
-//            buttonText = "Enable"
-//        )
+
     )
 
     // Only keep cards for permissions that are NOT granted
     val missingPermissionItems = basePermissionPagerItems.filter { item ->
         when (item.type) {
             PermissionSheetType.ACCESSIBILITY -> !permissionState.accessibilityGranted
-        //    PermissionSheetType.USAGE_ACCESS  -> !permissionState.usageStatsGranted
-      //      PermissionSheetType.OVERLAY       -> !permissionState.overlayGranted
         }
     }
 
@@ -146,16 +111,8 @@ fun DashboardScreen(
                 .padding(paddingValues)
         ) {
             DashboardHeader(
-             //   isOverlayGranted = permissionState.overlayGranted,
-           //     isOverlayEnabled = dashboardState.isOverlayEnabled,
                 isDarkMode = dashboardState.isDarkMode,
-                onVisibilityClick = {
-//                    if (!permissionState.overlayGranted) {
-//                        permissionsViewModel.showSheet(PermissionSheetType.OVERLAY)
-//                    } else {
-//                        dashboardViewModel.toggleOverlayEnabled()
-//                    }
-                },
+
                onThemeToggle = { dashboardViewModel.toggleTheme() }
             )
 
@@ -183,8 +140,6 @@ fun DashboardScreen(
                         val item = missingPermissionItems[page]
                         val isGranted = when (item.type) {
                             PermissionSheetType.ACCESSIBILITY -> permissionState.accessibilityGranted
-                       //     PermissionSheetType.USAGE_ACCESS  -> permissionState.usageStatsGranted
-                       //     PermissionSheetType.OVERLAY       -> permissionState.overlayGranted
                         }
 
                         PermissionPagerCard(

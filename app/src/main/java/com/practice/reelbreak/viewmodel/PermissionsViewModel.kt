@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
-//import com.practice.reelbreak.core.permission.OverlayPermissionChecker
-//import com.practice.reelbreak.core.permission.UsagePermissionChecker
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.PermissionState
 import com.practice.reelbreak.ui.focused_mode.isAccessibilityServiceEnabled
@@ -39,23 +37,9 @@ class PermissionsViewModel @Inject constructor(
 
     private var lastAccessibilityGranted: Boolean? = null
 
-//    var overlayToggleRequested: Boolean = false
-//        private set
-//
-//    fun markOverlayToggleRequested() {
-//        overlayToggleRequested = true
-//    }
-//
-//    fun clearOverlayToggleRequested() {
-//        overlayToggleRequested = false
-//    }
-
-
     fun refreshPermissionState(context: Context) {
         val newState = PermissionState(
             accessibilityGranted = AccessibilityPermissionChecker.isAccessibilityEnabled(context),
-            //usageStatsGranted = UsagePermissionChecker.isUsageAccessGranted(context),
-          //  overlayGranted = OverlayPermissionChecker.isOverlayEnabled(context)
         )
 
         val prev = lastAccessibilityGranted
@@ -67,13 +51,6 @@ class PermissionsViewModel @Inject constructor(
                 userPreferencesRepository.setStrictMode(true)
             }
         }
-
-//        if (overlayToggleRequested && newState.overlayGranted) {
-//            overlayToggleRequested = false
-//            viewModelScope.launch {
-//                userPreferencesRepository.setOverlayEnabled(true)
-//            }
-//        }
     }
 
     fun checkAndShowSheetIfNeeded(context: Context) {
@@ -92,10 +69,6 @@ class PermissionsViewModel @Inject constructor(
             _sheetState.value = PermissionSheetState(isVisible = true, type = type)
         }
 
-//        fun showOverlaySheet() {
-//            _sheetState.value =
-//                PermissionSheetState(isVisible = true, type = PermissionSheetType.OVERLAY)
-//        }
 
         fun dismissSheet() {
             _sheetState.value = PermissionSheetState(isVisible = false, type = null)
@@ -108,14 +81,6 @@ class PermissionsViewModel @Inject constructor(
                     context
                 )
 
-//                is PermissionSheetType.USAGE_ACCESS -> UsagePermissionChecker.openUsageAccessSettings(
-//                    context
-//                )
-
-//                is PermissionSheetType.OVERLAY -> {
-//                    markOverlayToggleRequested()
-//                    OverlayPermissionChecker.openOverlaySettings(context)
-//                }
             }
         }
 

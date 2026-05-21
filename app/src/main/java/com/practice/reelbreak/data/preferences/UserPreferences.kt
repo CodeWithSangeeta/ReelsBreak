@@ -33,8 +33,6 @@ object UserPreferences {
      */
     val IS_STRICT_MODE = booleanPreferencesKey("is_strict_mode")
 
-//    val IS_OVERLAY_ENABLED = booleanPreferencesKey("is_overlay_enabled")
-
     /**
      * Curated Mode — only allow shorts from followed creators.
      * Default: false

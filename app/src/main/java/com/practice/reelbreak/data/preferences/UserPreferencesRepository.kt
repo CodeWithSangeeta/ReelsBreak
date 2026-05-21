@@ -212,14 +212,6 @@ class UserPreferencesRepository(private val context: Context) {
         }
     }
 
-//    val isOverlayEnabled: Flow<Boolean> = context.dataStore.data
-//        .map { prefs -> prefs[UserPreferences.IS_OVERLAY_ENABLED] ?: false }
-//
-//    suspend fun setOverlayEnabled(enabled: Boolean) {
-//        context.dataStore.edit { prefs ->
-//            prefs[UserPreferences.IS_OVERLAY_ENABLED] = enabled
-//        }
-//    }
 
 
     fun getActiveModeBlocking(): Int = runBlocking {
@@ -228,11 +220,6 @@ class UserPreferencesRepository(private val context: Context) {
         }.first()
     }
 
-//    fun isOverlayEnabledBlocking(): Boolean = runBlocking {
-//        context.dataStore.data.map { prefs ->
-//            prefs[UserPreferences.IS_OVERLAY_ENABLED] ?: false
-//        }.first()
-//    }
 
     suspend fun setDailyTimeLimitMinutes(minutes: Int) {
         context.dataStore.edit { prefs ->

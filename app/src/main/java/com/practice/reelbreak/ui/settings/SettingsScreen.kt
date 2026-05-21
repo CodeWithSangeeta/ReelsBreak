@@ -125,10 +125,6 @@ fun SettingsScreen(
                                 question = "Can I customize which apps are blocked?",
                                 answer = "Yes. In Focus Mode, you can select which supported apps should be blocked during your session."
                             )
-                            Divider()
-                            FaqItem(
-                                question = "Is my data private?",
-                                answer = "Yes. ReelBreak keeps your data on your device and does not read your messages, photos, or personal content. Its permissions are only used to support features like screen detection, time tracking, and the optional overlay."                            )
 
                             Divider()
                             FaqItem(

@@ -22,21 +22,13 @@ import com.practice.reelbreak.ui.component.AppScreenHeader
 
 @Composable
 fun DashboardHeader(
- //   isOverlayGranted: Boolean,
-  //  isOverlayEnabled: Boolean,
     isDarkMode: Boolean,
-    onVisibilityClick: () -> Unit,
     onThemeToggle: () -> Unit
 ) {
     AppScreenHeader(
         title    = "ReelBreak",
         subtitle = "Reduce short-video distractions",
         actions  = {
-//            HeaderActionButton(
-//                icon = if (isOverlayGranted && isOverlayEnabled)
-//                    Icons.Outlined.Visibility else Icons.Outlined.VisibilityOff,
-//                onClick = onVisibilityClick
-//            )
             HeaderActionButton(
                 icon = if (isDarkMode)
                     Icons.Outlined.DarkMode else Icons.Outlined.LightMode,

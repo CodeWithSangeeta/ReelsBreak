@@ -167,7 +167,7 @@ fun lightAppColors() = AppColors(
     appColor       = Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070))),
     borderColor = Brush.verticalGradient(listOf(Color(0xFFB39DDB), Color(0xFF9C78D4))),
 
-    // Always dark regardless of app theme — this screen is a full overlay
+
     screenBlockedBg = Brush.verticalGradient(listOf(Color(0xFF0D0818), Color(0xFF130D26), Color(0xFF0A0515))),
 
     timerTrack      = Color(0xFFEDE8FF),
