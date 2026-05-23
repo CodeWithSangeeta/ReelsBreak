@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+
+# Shrink and optimize application strings
+-repackageclasses ''
+-allowaccessmodification
+
+# Obfuscate core internal logic path structures
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+
+# Protect the main Android system components from stripping while hiding internal sub-routines
+-keep class * extends android.app.Activity
+-keep class * extends android.app.Application
+-keep class * extends android.app.Service
+
+# Explicitly keep Hilt/Dagger initialization paths clean
+-keep class * extends dagger.hilt.internal.GeneratedComponent

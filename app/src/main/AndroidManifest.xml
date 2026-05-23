@@ -24,14 +24,7 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".core.engine.FocusAppBlockedActivity"
-            android:exported="false"
-            android:showOnLockScreen="true"
-            android:turnScreenOn="true"
-            android:theme="@style/Theme.ReelBreak"
-            android:launchMode="singleTop"
-            android:excludeFromRecents="true" />
+
 
         <service
             android:name="com.practice.reelbreak.core.accessibility.ReelsAccessibilityService"

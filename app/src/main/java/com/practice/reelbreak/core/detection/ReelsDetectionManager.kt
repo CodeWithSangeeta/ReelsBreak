@@ -89,17 +89,23 @@ class ReelsDetectionManager(
 
 
     // Count + block check
+    // In ReelsDetectionManager.kt
+
     private fun triggerReelAction(packageName: String?) {
-        val currentPackage = session.currentApp
+        val currentPackage = session.currentApp ?: return
         scope.launch {
             try {
+                // Ask your decision engine what to do
                 when (engine.decide()) {
                     BlockingDecisionEngine.Decision.BLOCK -> {
-                        Log.d("REELSBREAK", "Decision=BLOCK for $currentPackage")
+                        Log.d("REELSBREAK", "Decision=BLOCK for $currentPackage. Redirecting natively.")
+
+                        // ✅ Fire your actionController directly!
+                        // It cleanly triggers blockController.closeCurrentApp() which calls GLOBAL_ACTION_BACK
                         actionController.triggerBlock(currentPackage)
                     }
                     BlockingDecisionEngine.Decision.ALLOW -> {
-                        Log.d("REELSBREAK", "Decision=ALLOW → counting reel")
+                        Log.d("REELSBREAK", "Decision=ALLOW → counting reel chunk")
                         engine.onReelAllowed()
                     }
                     BlockingDecisionEngine.Decision.SKIP_REEL -> {
