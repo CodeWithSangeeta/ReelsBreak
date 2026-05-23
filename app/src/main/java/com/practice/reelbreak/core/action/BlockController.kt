@@ -84,7 +84,7 @@ class BlockController(
 
             // CRITICAL: If the child node tree didn't contain our target description,
             // free it from active framework memory immediately.
-            child.recycle()
+           // child.recycle()
         }
         return null
     }

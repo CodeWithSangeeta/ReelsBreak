@@ -17,6 +17,12 @@ class InstagramReelsDetector : AppDetector {
         )
         val isReelsTabSelected = clipsTab.any { it.isSelected }
 
+//         🔧 CRITICAL FIX: We extracted hooks into a list. Now that we have our
+//         boolean answer, we MUST iterate through the list and recycle every single one.
+//        clipsTab.forEach { node ->
+//            node.recycle()
+//        }
+
         if (!isReelsTabSelected) {
             return DetectionResult.NORMAL_SCREEN
         }

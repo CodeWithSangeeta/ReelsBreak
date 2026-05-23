@@ -17,7 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -71,10 +71,10 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 @Composable
  fun Divider() {
     val colors = LocalAppColors.current
-    Divider(
+    HorizontalDivider(
         modifier = Modifier.padding(vertical = 0.dp),
-        color = colors.borderSubtle,
-        thickness = 1.dp
+        thickness = 1.dp,
+        color = colors.borderSubtle
     )
 }
 

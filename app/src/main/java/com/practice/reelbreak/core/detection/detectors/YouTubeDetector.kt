@@ -69,7 +69,7 @@ class YouTubeReelsDetector : AppDetector {
             val foundInChild = containsShortsRecycler(child)
 
             // CRITICAL: Recycle the child node immediately after matching to clear memory hooks
-            child.recycle()
+         //   child.recycle()
 
             if (foundInChild) {
                 return true

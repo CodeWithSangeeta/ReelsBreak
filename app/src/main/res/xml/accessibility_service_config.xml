@@ -1,52 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-   <!--
-       ✅ BANKING APP FIX — Accessibility Service Configuration
-       =========================================================
-       KEY CHANGES made to prevent banking app false positives:
+<accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/accessibility_service_description"
+    android:accessibilityEventTypes="typeWindowStateChanged|typeWindowContentChanged|typeViewScrolled"
+    android:accessibilityFeedbackType="feedbackGeneric"
 
-       1. android:packageNames — MOST IMPORTANT FIX
-          Restricts your service to ONLY watch these specific apps.
-          Banking app scanners check this field. If it's empty (watches
-          ALL apps), the scanner flags it as a potential keylogger/spy.
-          Now it explicitly says: "I only watch YouTube, Instagram, etc."
+    android:accessibilityFlags="flagReportViewIds|flagRetrieveInteractiveWindows"
+    android:notificationTimeout="100"
+    android:canRetrieveWindowContent="true"
 
-       2. android:accessibilityEventTypes — reduced to minimum needed
-          Only TYPE_WINDOW_STATE_CHANGED, TYPE_VIEW_SCROLLED, and
-          TYPE_WINDOW_CONTENT_CHANGED. No broad event listening.
-
-       3. android:canRetrieveWindowContent="true"
-          Required for your detection logic (reading view IDs).
-          Keep as true — this is declared openly and honestly.
-
-       4. android:accessibilityFeedbackType="feedbackGeneric"
-          Minimal feedback type — does not claim haptic/audio/visual
-          feedback which would raise more flags.
-   -->
-<accessibility-service
-xmlns:android="http://schemas.android.com/apk/res/android"
-
-android:accessibilityEventTypes="typeWindowStateChanged"
-
-android:accessibilityFeedbackType="feedbackGeneric"
-
-android:accessibilityFlags="flagReportViewIds"
-
-android:canRetrieveWindowContent="true"
-
-android:description="@string/accessibility_service_description"
-
-android:notificationTimeout="300"
-
-android:packageNames="
-    com.google.android.youtube,
-    com.instagram.android,
-    com.instagram.lite,
-    com.snapchat.android,
-    com.zhiliaoapp.musically,
-    com.facebook.katana,
-    com.facebook.lite,
-    com.twitter.android,
-    in.mohalla.sharechat,
-    in.mohalla.video"
-
-android:settingsActivity=".MainActivity" />
+    android:packageNames="com.google.android.youtube,com.instagram.android,com.snapchat.android"
+    android:settingsActivity="com.practice.reelbreak.MainActivity" />
