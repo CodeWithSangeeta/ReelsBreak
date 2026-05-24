@@ -1,30 +1,29 @@
-//package com.practice.reelbreak.core.accessibility
-//
-//import android.accessibilityservice.AccessibilityService
-//import android.content.Intent
-//import android.util.Log
-//import android.view.accessibility.AccessibilityEvent
-//import android.view.accessibility.AccessibilityNodeInfo
-//import com.practice.reelbreak.ReelBreakApplication
-//import com.practice.reelbreak.core.action.ActionController
-//import com.practice.reelbreak.core.detection.AppDetectorRouter
-//import com.practice.reelbreak.core.detection.ReelsDetectionManager
-//import com.practice.reelbreak.core.engine.BlockingDecisionEngine
-//import com.practice.reelbreak.core.debug.AccessibilityDebugLogger
-//import com.practice.reelbreak.data.FocusStateHolder
-//import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-//import com.practice.reelbreak.domain.model.ActiveBlockMode
-//import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.SupervisorJob
-//import kotlinx.coroutines.cancel
-//import kotlinx.coroutines.flow.combine
-//import kotlinx.coroutines.launch
-//import android.os.PowerManager
-//
-//
-//
+package com.practice.reelbreak.core.accessibility
+
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.Intent
+import android.util.Log
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import com.practice.reelbreak.ReelBreakApplication
+import com.practice.reelbreak.core.action.ActionController
+import com.practice.reelbreak.core.detection.AppDetectorRouter
+import com.practice.reelbreak.core.detection.ReelsDetectionManager
+import com.practice.reelbreak.core.engine.BlockingDecisionEngine
+import com.practice.reelbreak.core.debug.AccessibilityDebugLogger
+import com.practice.reelbreak.data.FocusStateHolder
+import com.practice.reelbreak.data.preferences.UserPreferencesRepository
+import com.practice.reelbreak.domain.model.ActiveBlockMode
+import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import android.os.PowerManager
+
+
+
 //
 //class ReelsAccessibilityService : AccessibilityService() {
 //
@@ -154,31 +153,7 @@
 //    }
 //
 //}
-//
-//
-//
 
-//package com.practice.reelbreak.core.accessibility
-//
-//import android.accessibilityservice.AccessibilityService
-//import android.accessibilityservice.AccessibilityServiceInfo
-//import android.os.PowerManager
-//import android.util.Log
-//import android.view.accessibility.AccessibilityEvent
-//import com.practice.reelbreak.ReelBreakApplication
-//import com.practice.reelbreak.core.action.ActionController
-//import com.practice.reelbreak.core.detection.AppDetectorRouter
-//import com.practice.reelbreak.core.detection.ReelsDetectionManager
-//import com.practice.reelbreak.core.engine.BlockingDecisionEngine
-//import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
-//import com.practice.reelbreak.data.FocusStateHolder
-//import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.SupervisorJob
-//import kotlinx.coroutines.cancel
-//import kotlinx.coroutines.launch
-//
 //class ReelsAccessibilityService : AccessibilityService() {
 //
 //    private lateinit var engine: BlockingDecisionEngine
@@ -285,42 +260,17 @@
 
 
 
-
-
-// FILE: app/src/main/java/com/practice/reelbreak/core/accessibility/ReelsAccessibilityService.kt
-
-package com.practice.reelbreak.core.accessibility
-
-import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
-import android.os.PowerManager
-import android.util.Log
-import android.view.accessibility.AccessibilityEvent
-import com.practice.reelbreak.ReelBreakApplication
-import com.practice.reelbreak.core.action.ActionController
-import com.practice.reelbreak.core.detection.AppDetectorRouter
-import com.practice.reelbreak.core.engine.BlockingDecisionEngine
-import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
-import com.practice.reelbreak.data.FocusStateHolder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
-
 class ReelsAccessibilityService : AccessibilityService() {
-
     private lateinit var engine: BlockingDecisionEngine
     private lateinit var actionController: ActionController
+    private lateinit var detectionManager: ReelsDetectionManager
+
     private var prefsCacheScope: CoroutineScope? = null
     private val powerManager by lazy { getSystemService(POWER_SERVICE) as PowerManager }
 
-    private val DIAG_TAG = "RB_DIAGNOSTIC"
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        Log.i(DIAG_TAG, "==================================================")
-        Log.i(DIAG_TAG, "SERVICE INITIALIZED: onServiceConnected called")
 
         val info = serviceInfo ?: return
 
@@ -330,42 +280,32 @@ class ReelsAccessibilityService : AccessibilityService() {
             "com.instagram.android",
             "com.snapchat.android"
         )
-
-        // 🔧 FIX: Re-enforce your XML flags explicitly so they don't get lost in translation!
-        info.flags = info.flags or AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+        info.flags = info.flags or
+                AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+                AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
 
         serviceInfo = info
-
-//        // Log the initial configuration directly as loaded from your XML
-//        logCurrentServiceInfo("Initial XML Configuration")
+        Log.i("RB_CFG", "eventTypes=${serviceInfo?.eventTypes}")
+        Log.i("RB_CFG", "flags=${serviceInfo?.flags}")
 
         val app = applicationContext as ReelBreakApplication
         engine = BlockingDecisionEngine(app.repository)
         actionController = ActionController(this)
+        detectionManager = ReelsDetectionManager(actionController, engine)
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
-
+        Log.d("RB_EVT", "pkg=${event?.packageName} type=${AccessibilityEvent.eventTypeToString(event?.eventType ?: -1)}")
         val packageName = event.packageName?.toString() ?: ""
-
-        // 🔍 DIAGNOSTIC LOG: Capture EVERY event that hits this service before any filters.
-        // This will tell us if a banking app package name is leaking into your service.
-        Log.d(DIAG_TAG, "EVENT RECEIVED -> pkg: $packageName | eventType: ${AccessibilityEvent.eventTypeToString(event.eventType)}")
-
         if (!powerManager.isInteractive) return
 
         val isTargetApp = ReelsDetectionRegistry.isDetectionSupported(packageName)
         val isFocusBlocked = FocusStateHolder.isFocusActive && FocusStateHolder.blockedPackages.contains(packageName)
 
-        if (!isTargetApp && !isFocusBlocked) {
-            // 🔍 DIAGNOSTIC LOG: Log exactly when we reject an app and drop it
-            Log.v(DIAG_TAG, "GUARD TRIGGERED: Dropping event for unmanaged package: $packageName")
-            return
-        }
+        if (!isTargetApp && !isFocusBlocked) return
 
         if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            Log.i(DIAG_TAG, "WINDOW STATE CHANGED FOR MANAGED APP: $packageName")
 
             // Log service info right before processing to check if packageNames has dynamically become null
             logCurrentServiceInfo("Pre-Processing State ($packageName)")
@@ -373,57 +313,43 @@ class ReelsAccessibilityService : AccessibilityService() {
             // Focus Mode Interceptor
             if (FocusStateHolder.isFocusActive && isFocusBlocked) {
                 if (FocusStateHolder.getRemainingMillis() > 0L) {
-                    Log.w(DIAG_TAG, "FOCUS MODE ACTION: Bouncing user back from $packageName")
-                    performGlobalAction(GLOBAL_ACTION_BACK)
+                    performGlobalAction(GLOBAL_ACTION_HOME)
                 } else {
                     FocusStateHolder.isFocusActive = false
                 }
                 return
             }
 
-            // Distraction Limit Interceptor (Reels/Shorts target)
-            if (isTargetApp) {
-                prefsCacheScope?.cancel()
-                prefsCacheScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-                prefsCacheScope?.launch {
-                    val decision = engine.decide()
-                    Log.d(DIAG_TAG, "DECISION ENGINE RESULT: $decision for $packageName")
-                    if (decision == BlockingDecisionEngine.Decision.BLOCK) {
-                        actionController.triggerBlock(packageName)
-                    } else {
-                        engine.onReelAllowed()
-                    }
-                }
+            val shouldInspectTree = when (event.eventType) {
+                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+                AccessibilityEvent.TYPE_VIEW_SCROLLED -> true
+                else -> false
             }
+            Log.d("RB_DEBUG", "pkg=${event.packageName} type=${AccessibilityEvent.eventTypeToString(event.eventType)}")
+            val rootNode: AccessibilityNodeInfo? = if (shouldInspectTree) rootInActiveWindow else null
+            Log.d("RB_DEBUG", "rootNode=${rootNode != null} childCount=${rootNode?.childCount}")
+            if (::detectionManager.isInitialized) {
+                detectionManager.processEvent(event, rootNode)
+            }
+            rootNode?.recycle()  // ✅ Always free the node
+
         }
     }
 
     private fun logCurrentServiceInfo(stage: String) {
         val info = serviceInfo
-        if (info == null) {
-            Log.w(DIAG_TAG, "[$stage] serviceInfo is NULL!")
-            return
-        }
-
-        val packages = info.packageNames?.joinToString(", ") ?: "ALL PACKAGES (GLOBAL SCOPE / NULL)"
-        val flags = info.flags
-
-        Log.i(DIAG_TAG, "--- Accessibility Info Snapshot: $stage ---")
-        Log.i(DIAG_TAG, "Mapped Packages: $packages")
-        Log.i(DIAG_TAG, "Active Flags: $flags (flagRetrieveInteractiveWindows = ${flags and AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS != 0})")
-        Log.i(DIAG_TAG, "Can Retrieve Window Content: ${info.capabilities and AccessibilityServiceInfo.CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT != 0}")
-        Log.i(DIAG_TAG, "-------------------------------------------------------")
+        if (info == null) return
     }
 
     override fun onInterrupt() {
-        Log.w(DIAG_TAG, "SERVICE INTERRUPTED")
         AppDetectorRouter.resetAll()
     }
 
     override fun onDestroy() {
-        Log.w(DIAG_TAG, "SERVICE DESTROYED")
         super.onDestroy()
         prefsCacheScope?.cancel()
         prefsCacheScope = null
+        if (::detectionManager.isInitialized) detectionManager.cancel()
     }
 }

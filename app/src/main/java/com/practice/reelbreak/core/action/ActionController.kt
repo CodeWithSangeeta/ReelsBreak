@@ -8,6 +8,5 @@ class ActionController(
     private val blockController = BlockController(service)
     fun triggerBlock(packageName: String? = null) {
         blockController.closeCurrentApp()
-
         }
     }
