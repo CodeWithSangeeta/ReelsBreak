@@ -77,6 +77,7 @@ class BlockingDecisionEngine(
         // Step 2: Limit mode – only if active
         if (activeMode == ActiveBlockMode.LIMIT) {
             if (isLimitExceeded) {
+                Log.d("ENGINE_DEBUG", "activeMode=$activeMode isStrictMode=$isStrictMode dailyReelLimit=$dailyReelLimit reelsWatched=$reelsWatched")
                 Log.d("ENGINE_DEBUG", "Decision=BLOCK (Limit already exceeded today)")
                 return Decision.BLOCK
             }

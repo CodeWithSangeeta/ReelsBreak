@@ -88,6 +88,26 @@ fun DashboardScreen(
         }
     }
 
+
+    val homeUiState = DashboardHomeUiState(
+        isProtectionEnabled = permissionState.accessibilityGranted,
+        selectedMode = when (dashboardState.activeMode) {
+            ActiveBlockMode.STRICT -> HomeProtectionMode.DEFAULT
+            ActiveBlockMode.LIMIT -> HomeProtectionMode.MINDFUL
+        },
+        accessibilityGranted = permissionState.accessibilityGranted,
+        overlayEnabled = false,
+        mindfulCountEnabled = dashboardState.dailyReelLimit > 0,
+        mindfulTimeEnabled = dashboardState.dailyTimeLimitMinutes > 0,
+        mindfulReelsLimit = dashboardState.dailyReelLimit.coerceAtLeast(1),
+        mindfulTimeLimitMinutes = dashboardState.dailyTimeLimitMinutes.coerceAtLeast(5),
+        mindfulResetPeriod = MindfulResetPeriod.HOUR,
+        reelsClosedToday = dashboardState.reelsCount,
+        timeBackTodayMinutes = dashboardState.timeSpentMinutes,
+        mindfulRemainingCount = 0,
+        mindfulRemainingMinutes = 0
+    )
+
     // Check permissions every time Dashboard opens (initial UX nudging)
     LaunchedEffect(Unit) {
         delay(600L)
@@ -168,79 +188,68 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 contentPadding = PaddingValues(bottom = 120.dp)
             ) {
+
+
                 item {
-                    SectionTitle(
-                        title = "Protection Modes",
-                        subtitle = "Choose how ReelBreak helps you avoid short-video distractions.",
-                        modifier = Modifier.padding(horizontal = 2.dp)
+                    ReelBreakHomeSection(
+                        state = homeUiState,
+                        onProtectionToggle = {
+                            if (!permissionState.accessibilityGranted) {
+                                permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
+                                return@ReelBreakHomeSection
+                            }
+
+                            when (dashboardState.activeMode) {
+                                ActiveBlockMode.STRICT -> dashboardViewModel.onBlockModeCardClicked(
+                                    BlockMode.BLOCK_NOW
+                                )
+
+                                ActiveBlockMode.LIMIT -> dashboardViewModel.onBlockModeCardClicked(
+                                    BlockMode.LIMIT_BASED
+                                )
+                            }
+                        },
+                        onModeSelected = { mode ->
+                            when (mode) {
+                                HomeProtectionMode.DEFAULT -> {
+                                    dashboardViewModel.onExpandToggle(BlockMode.BLOCK_NOW)
+                                    dashboardViewModel.onBlockModeCardClicked(BlockMode.BLOCK_NOW)
+                                }
+
+                                HomeProtectionMode.PAUSED -> {
+                                    // add later when you introduce pause state
+                                }
+
+                                HomeProtectionMode.MINDFUL -> {
+                                    dashboardViewModel.onExpandToggle(BlockMode.LIMIT_BASED)
+                                    dashboardViewModel.onBlockModeCardClicked(BlockMode.LIMIT_BASED)
+                                }
+                            }
+                        },
+                        onOverlayToggle = { enabled ->
+                            // connect later to prefs / VM
+                        },
+                        onMindfulCountToggle = { enabled ->
+                            // connect later
+                        },
+                        onMindfulTimeToggle = { enabled ->
+                            // connect later
+                        },
+                        onMindfulReelsLimitChange = { value ->
+                            if (value > 0) dashboardViewModel.setDailyReelLimit(value)
+                        },
+                        onMindfulTimeLimitChange = { value ->
+                            if (value > 0) dashboardViewModel.setDailyTimeLimit(value)
+                        },
+                        onMindfulPeriodChange = { period ->
+                            // connect later
+                        },
+                        onPermissionClick = {
+                            permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
+                        }
                     )
                 }
 
-
-                // Block Mode Cards
-                blockModeOptions.forEach { option ->
-                    item {
-
-                        val isOn = when (option.mode) {
-                            BlockMode.BLOCK_NOW    -> dashboardState.activeMode == ActiveBlockMode.STRICT &&
-                                    permissionState.accessibilityGranted
-                            BlockMode.LIMIT_BASED  -> dashboardState.activeMode == ActiveBlockMode.LIMIT
-                        }
-
-                        BlockModeCard(
-                            option = option,
-                            isSelected = dashboardState.activeMode == when (option.mode) {
-                                BlockMode.BLOCK_NOW    -> ActiveBlockMode.STRICT
-                                BlockMode.LIMIT_BASED  -> ActiveBlockMode.LIMIT
-                            },
-                            isExpanded = dashboardState.expandedMode == option.mode,
-                            isOn = isOn,
-
-                            // ── Turns mode On/Off — permission checked ──
-                            onClick = {
-                                if (!permissionState.accessibilityGranted) {
-                                    permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
-                                } else {
-                                    dashboardViewModel.onBlockModeCardClicked(option.mode)
-                                }
-                            },
-
-                            // ── Expands details — NO permission check at all ──
-                            onExpandToggle = {
-                                dashboardViewModel.onExpandToggle(option.mode)
-                            },
-
-                            detailContent = {
-                                when (option.mode) {
-                                    BlockMode.BLOCK_NOW   -> StrictDetails()
-
-                                    BlockMode.LIMIT_BASED -> LimitSettingsContent(
-                                        dailyTimeLimitMinutes = dashboardState.dailyTimeLimitMinutes,
-                                        dailyReelLimit = dashboardState.dailyReelLimit,
-                                        onTimeDecrement = {
-                                            dashboardViewModel.decrementDailyTimeLimit()
-                                        },
-                                        onTimeIncrement = {
-                                            dashboardViewModel.incrementDailyTimeLimit()
-                                        },
-                                        onReelDecrement = {
-                                            dashboardViewModel.decrementDailyReelLimit()
-                                        },
-                                        onReelIncrement = {
-                                            dashboardViewModel.incrementDailyReelLimit()
-                                        }
-                                    )
-                                }
-                            }
-                        )
-
-                        Spacer(Modifier.height(12.dp))
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
             }
         }
     }

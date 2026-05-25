@@ -129,5 +129,13 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun setDailyReelLimit(value: Int) {
+        _uiState.update { it.copy(dailyReelLimit = value.coerceAtLeast(0)) }
+    }
+
+    fun setDailyTimeLimit(value: Int) {
+        _uiState.update { it.copy(dailyTimeLimitMinutes = value.coerceAtLeast(0)) }
+    }
+
     }
 

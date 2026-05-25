@@ -21,7 +21,7 @@ class ReelsDetectionManager(
 ) {
     val isOnReelsScreen: Boolean get() = session.reelsMode
 
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val session = ReelsSession()
 
     // Minimum milliseconds between two reel counts (prevents multi-count per swipe)
@@ -60,6 +60,7 @@ class ReelsDetectionManager(
                     if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
                         lastCountedMs = now
                         hasCheckedBlockThisReel = false
+                        Log.d("DETECT_MANAGER", "SCROLL detected → triggerReelAction (will COUNT)")
                         triggerReelAction(packageName)
                     }
                 }
@@ -67,6 +68,7 @@ class ReelsDetectionManager(
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> {
                     if (!hasCheckedBlockThisReel) {
                         hasCheckedBlockThisReel = true
+                        Log.d("DETECT_MANAGER", "WINDOW_STATE entry → checkBlockOnly (NO count)")
                         val now = System.currentTimeMillis()
                         if (now - lastCountedMs >= MIN_MS_BETWEEN_COUNTS) {
                             lastCountedMs = now
