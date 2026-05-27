@@ -4,13 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.ActiveBlockMode
+import com.practice.reelbreak.domain.model.LimitResetPeriod
 import com.practice.reelbreak.ui.dashboard.BlockMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import com.practice.reelbreak.ui.dashboard.DashboardState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import jakarta.inject.Inject
+import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -21,6 +22,39 @@ class DashboardViewModel @Inject constructor(
     val uiState: StateFlow<DashboardState> = _uiState
 
     init {
+
+        // daily reel limit
+        viewModelScope.launch {
+            userPreferencesRepository.dailyReelLimit.collect { limit ->
+                _uiState.update { it.copy(dailyReelLimit = limit) }
+                refreshMindfulRemaining()
+            }
+        }
+
+        // daily time limit minutes
+        viewModelScope.launch {
+            userPreferencesRepository.dailyTimeLimitMinutes.collect { minutes ->
+                _uiState.update { it.copy(dailyTimeLimitMinutes = minutes) }
+                refreshMindfulRemaining()
+            }
+        }
+
+        // reels watched today
+        viewModelScope.launch {
+            userPreferencesRepository.reelsWatchedToday.collect { count ->
+                _uiState.update { it.copy(reelsCount = count) }
+                refreshMindfulRemaining()
+            }
+        }
+
+        // time spent today minutes
+        viewModelScope.launch {
+            userPreferencesRepository.timeSpentTodayMinutes.collect { minutes ->
+                _uiState.update { it.copy(timeSpentMinutes = minutes) }
+                refreshMindfulRemaining()
+            }
+        }
+
         viewModelScope.launch {
             userPreferencesRepository.isStrictMode.collectLatest { isStrict ->
                 _uiState.update { it.copy(isStrictMode = isStrict) }
@@ -42,6 +76,18 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.dailyTimeLimitMinutes.collectLatest { minutes ->
                 _uiState.update { it.copy(dailyTimeLimitMinutes = minutes) }
+            }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository.limitResetPeriod.collect { period ->
+                _uiState.update { it.copy(limitResetPeriod = period) }
+            }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository.isOverlayReminderEnabled.collectLatest { enabled ->
+                _uiState.update { it.copy(overlayEnabled = enabled) }
             }
         }
 
@@ -130,12 +176,58 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun setDailyReelLimit(value: Int) {
-        _uiState.update { it.copy(dailyReelLimit = value.coerceAtLeast(0)) }
+        viewModelScope.launch {
+            userPreferencesRepository.setDailyReelLimit(value.coerceAtLeast(0))
+        }
     }
 
     fun setDailyTimeLimit(value: Int) {
-        _uiState.update { it.copy(dailyTimeLimitMinutes = value.coerceAtLeast(0)) }
+        viewModelScope.launch {
+            userPreferencesRepository.setDailyTimeLimitMinutes(value.coerceAtLeast(0))
+        }
     }
 
+
+    fun setMindfulCountEnabled(enabled: Boolean) = viewModelScope.launch {
+        if (!enabled) {
+            userPreferencesRepository.setDailyReelLimit(0)
+        } else if (uiState.value.dailyReelLimit == 0) {
+            userPreferencesRepository.setDailyReelLimit(10)
+        }
+    }
+
+    fun setMindfulTimeEnabled(enabled: Boolean) = viewModelScope.launch {
+        if (!enabled) {
+            userPreferencesRepository.setDailyTimeLimitMinutes(0)
+        } else if (uiState.value.dailyTimeLimitMinutes == 0) {
+            userPreferencesRepository.setDailyTimeLimitMinutes(20)
+        }
+    }
+
+    private fun refreshMindfulRemaining() {
+        val state = uiState.value
+        val remainingCount = (state.dailyReelLimit - state.reelsCount).coerceAtLeast(0)
+        val remainingMinutes = (state.dailyTimeLimitMinutes - state.timeSpentMinutes).coerceAtLeast(0)
+
+        _uiState.update {
+            it.copy(
+                mindfulRemainingCount = remainingCount,
+                mindfulRemainingMinutes = remainingMinutes
+            )
+        }
+    }
+
+
+    fun setLimitResetPeriod(period: LimitResetPeriod) = viewModelScope.launch {
+        userPreferencesRepository.setLimitResetPeriod(period)
+    }
+
+
+
+    fun onOverlayReminderToggle(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.setOverlayReminderEnabled(enabled)
+        }
+    }
     }
 

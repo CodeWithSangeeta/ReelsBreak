@@ -1,6 +1,7 @@
 package com.practice.reelbreak.ui.dashboard
 
 import com.practice.reelbreak.domain.model.ActiveBlockMode
+import com.practice.reelbreak.domain.model.LimitResetPeriod
 
 data class DashboardState(
     val userName: String = "Sangeeta",
@@ -18,4 +19,8 @@ data class DashboardState(
     val dailyReelLimit: Int = 0,
     val dailyTimeLimitMinutes: Int = 0,
 
+    val mindfulRemainingCount: Int = 0,
+    val mindfulRemainingMinutes: Int = 0,
+    val limitResetPeriod: LimitResetPeriod = LimitResetPeriod.DAY,
+    val overlayEnabled: Boolean = false
 )

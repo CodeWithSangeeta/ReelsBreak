@@ -34,6 +34,7 @@ import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 import androidx.compose.ui.graphics.Color
+import com.practice.reelbreak.domain.model.LimitResetPeriod
 import kotlinx.coroutines.delay
 
 
@@ -89,6 +90,26 @@ fun DashboardScreen(
     }
 
 
+//    val homeUiState = DashboardHomeUiState(
+//        isProtectionEnabled = permissionState.accessibilityGranted,
+//        selectedMode = when (dashboardState.activeMode) {
+//            ActiveBlockMode.STRICT -> HomeProtectionMode.DEFAULT
+//            ActiveBlockMode.LIMIT -> HomeProtectionMode.MINDFUL
+//        },
+//        accessibilityGranted = permissionState.accessibilityGranted,
+//        overlayEnabled = false,
+//        mindfulCountEnabled = dashboardState.dailyReelLimit > 0,
+//        mindfulTimeEnabled = dashboardState.dailyTimeLimitMinutes > 0,
+//        mindfulReelsLimit = dashboardState.dailyReelLimit.coerceAtLeast(1),
+//        mindfulTimeLimitMinutes = dashboardState.dailyTimeLimitMinutes.coerceAtLeast(5),
+//        mindfulResetPeriod = MindfulResetPeriod.HOUR,
+//        reelsClosedToday = dashboardState.reelsCount,
+//        timeBackTodayMinutes = dashboardState.timeSpentMinutes,
+//        mindfulRemainingCount = 0,
+//        mindfulRemainingMinutes = 0
+//    )
+
+
     val homeUiState = DashboardHomeUiState(
         isProtectionEnabled = permissionState.accessibilityGranted,
         selectedMode = when (dashboardState.activeMode) {
@@ -96,16 +117,19 @@ fun DashboardScreen(
             ActiveBlockMode.LIMIT -> HomeProtectionMode.MINDFUL
         },
         accessibilityGranted = permissionState.accessibilityGranted,
-        overlayEnabled = false,
+        overlayEnabled = dashboardState.overlayEnabled,
         mindfulCountEnabled = dashboardState.dailyReelLimit > 0,
         mindfulTimeEnabled = dashboardState.dailyTimeLimitMinutes > 0,
         mindfulReelsLimit = dashboardState.dailyReelLimit.coerceAtLeast(1),
         mindfulTimeLimitMinutes = dashboardState.dailyTimeLimitMinutes.coerceAtLeast(5),
-        mindfulResetPeriod = MindfulResetPeriod.HOUR,
+        mindfulResetPeriod = when (dashboardState.limitResetPeriod) {
+            LimitResetPeriod.HOUR -> MindfulResetPeriod.HOUR
+            LimitResetPeriod.DAY -> MindfulResetPeriod.DAY
+        },
         reelsClosedToday = dashboardState.reelsCount,
         timeBackTodayMinutes = dashboardState.timeSpentMinutes,
-        mindfulRemainingCount = 0,
-        mindfulRemainingMinutes = 0
+        mindfulRemainingCount = dashboardState.mindfulRemainingCount,
+        mindfulRemainingMinutes = dashboardState.mindfulRemainingMinutes
     )
 
     // Check permissions every time Dashboard opens (initial UX nudging)
@@ -227,13 +251,13 @@ fun DashboardScreen(
                             }
                         },
                         onOverlayToggle = { enabled ->
-                            // connect later to prefs / VM
+                            dashboardViewModel.onOverlayReminderToggle(enabled)
                         },
                         onMindfulCountToggle = { enabled ->
-                            // connect later
+                            dashboardViewModel.setMindfulCountEnabled(enabled)
                         },
                         onMindfulTimeToggle = { enabled ->
-                            // connect later
+                            dashboardViewModel.setMindfulTimeEnabled(enabled)
                         },
                         onMindfulReelsLimitChange = { value ->
                             if (value > 0) dashboardViewModel.setDailyReelLimit(value)
@@ -242,7 +266,12 @@ fun DashboardScreen(
                             if (value > 0) dashboardViewModel.setDailyTimeLimit(value)
                         },
                         onMindfulPeriodChange = { period ->
-                            // connect later
+                            dashboardViewModel.setLimitResetPeriod(
+                                when (period) {
+                                    MindfulResetPeriod.HOUR -> LimitResetPeriod.HOUR
+                                    MindfulResetPeriod.DAY -> LimitResetPeriod.DAY
+                                }
+                            )
                         },
                         onPermissionClick = {
                             permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
