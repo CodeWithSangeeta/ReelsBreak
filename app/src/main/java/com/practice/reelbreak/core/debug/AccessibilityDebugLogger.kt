@@ -14,7 +14,7 @@ object AccessibilityDebugLogger {
         "com.facebook.katana",
         "com.facebook.lite",
         "com.snapchat.android",
-        "com.zhiliaoapp.musically" // TikTok
+        "com.zhiliaoapp.musically"
     )
 
     fun shouldLog(packageName: String?): Boolean {

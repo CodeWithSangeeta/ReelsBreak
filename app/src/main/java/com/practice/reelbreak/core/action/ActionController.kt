@@ -6,7 +6,11 @@ class ActionController(
     private val service: AccessibilityService
 ) {
     private val blockController = BlockController(service)
-    fun triggerBlock(packageName: String? = null) {
-        blockController.closeCurrentApp()
-        }
+    fun triggerReelsBlock(packageName: String? = null) {
+        blockController.goBackInsideApp()
+    }
+
+    fun triggerFullAppBlock(packageName: String? = null) {
+        blockController.goHome()
+    }
     }

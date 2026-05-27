@@ -21,7 +21,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import android.os.PowerManager
-
+//import com.practice.reelbreak.core.detection.BlockableSurface
+//import com.practice.reelbreak.core.detection.matchesDetection
+import kotlinx.coroutines.launch
 
 
 //
@@ -265,7 +267,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private lateinit var actionController: ActionController
     private lateinit var detectionManager: ReelsDetectionManager
 
-    private var prefsCacheScope: CoroutineScope? = null
+//    private var prefsCacheScope: CoroutineScope? = null
     private val powerManager by lazy { getSystemService(POWER_SERVICE) as PowerManager }
 
 
@@ -277,8 +279,17 @@ class ReelsAccessibilityService : AccessibilityService() {
         // 🔒 Set your target isolation array
         info.packageNames = arrayOf(
             "com.google.android.youtube",
+            "com.google.android.apps.youtube.kids",
+            "app.revanced.android.youtube",
             "com.instagram.android",
-            "com.snapchat.android"
+            "com.instagram.lite",
+            "com.snapchat.android",
+            "com.facebook.katana",
+            "com.facebook.lite",
+            "com.zhiliaoapp.musically",
+            "com.ss.android.ugc.trill",
+            "com.ss.android.ugc.aweme",
+            "com.zhiliaoapp.musically.go"
         )
         info.flags = info.flags or
                 AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
@@ -292,33 +303,49 @@ class ReelsAccessibilityService : AccessibilityService() {
         engine = BlockingDecisionEngine(app.repository)
         actionController = ActionController(this)
         detectionManager = ReelsDetectionManager(actionController, engine)
+        Log.i("RB_CFG", "Service connected. packages=${serviceInfo?.packageNames?.joinToString()}")
+
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         if (event == null) return
         Log.d("RB_EVT", "pkg=${event?.packageName} type=${AccessibilityEvent.eventTypeToString(event?.eventType ?: -1)}")
-        val packageName = event.packageName?.toString() ?: ""
         if (!powerManager.isInteractive) return
-
+        val packageName = event.packageName?.toString() ?: ""
         val isTargetApp = ReelsDetectionRegistry.isDetectionSupported(packageName)
         val isFocusBlocked = FocusStateHolder.isFocusActive && FocusStateHolder.blockedPackages.contains(packageName)
 
         if (!isTargetApp && !isFocusBlocked) return
 
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
 
-            // Log service info right before processing to check if packageNames has dynamically become null
-            logCurrentServiceInfo("Pre-Processing State ($packageName)")
-
-            // Focus Mode Interceptor
-            if (FocusStateHolder.isFocusActive && isFocusBlocked) {
-                if (FocusStateHolder.getRemainingMillis() > 0L) {
-                    performGlobalAction(GLOBAL_ACTION_HOME)
-                } else {
-                    FocusStateHolder.isFocusActive = false
-                }
-                return
+        // Focus mode: block full app on window change
+        if (isFocusBlocked && event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+            if (FocusStateHolder.getRemainingMillis() > 0L) {
+                actionController.triggerFullAppBlock(packageName)
+            } else {
+                FocusStateHolder.isFocusActive = false
             }
+            return
+        }
+
+        // Reels detection: only for target apps, only on inspectable events
+        if (!isTargetApp) return
+
+
+//        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+//
+//            // Log service info right before processing to check if packageNames has dynamically become null
+//            logCurrentServiceInfo("Pre-Processing State ($packageName)")
+//
+//            // Focus Mode Interceptor
+//            if (FocusStateHolder.isFocusActive && isFocusBlocked) {
+//                if (FocusStateHolder.getRemainingMillis() > 0L) {
+//                    performGlobalAction(GLOBAL_ACTION_HOME)
+//                } else {
+//                    FocusStateHolder.isFocusActive = false
+//                }
+//                return
+//            }
 
             val shouldInspectTree = when (event.eventType) {
                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
@@ -329,18 +356,26 @@ class ReelsAccessibilityService : AccessibilityService() {
             Log.d("RB_DEBUG", "pkg=${event.packageName} type=${AccessibilityEvent.eventTypeToString(event.eventType)}")
             val rootNode: AccessibilityNodeInfo? = if (shouldInspectTree) rootInActiveWindow else null
             Log.d("RB_DEBUG", "rootNode=${rootNode != null} childCount=${rootNode?.childCount}")
+//            if (::detectionManager.isInitialized) {
+//                detectionManager.processEvent(event, rootNode)
+//            }
+//            rootNode?.recycle()  // ✅ Always free the node
+//
+//        }
+
+        try {
             if (::detectionManager.isInitialized) {
                 detectionManager.processEvent(event, rootNode)
             }
-            rootNode?.recycle()  // ✅ Always free the node
-
+        } finally {
+            rootNode?.recycle()
         }
     }
 
-    private fun logCurrentServiceInfo(stage: String) {
-        val info = serviceInfo
-        if (info == null) return
-    }
+//    private fun logCurrentServiceInfo(stage: String) {
+//        val info = serviceInfo
+//        if (info == null) return
+//    }
 
     override fun onInterrupt() {
         AppDetectorRouter.resetAll()
@@ -348,8 +383,122 @@ class ReelsAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        prefsCacheScope?.cancel()
-        prefsCacheScope = null
-        if (::detectionManager.isInitialized) detectionManager.cancel()
+//        prefsCacheScope?.cancel()
+//        prefsCacheScope = null
+//        if (::detectionManager.isInitialized) detectionManager.cancel()
+        if (::detectionManager.isInitialized) {
+            detectionManager.cancel()
+        }
     }
 }
+
+
+
+//class ReelsAccessibilityService : AccessibilityService() {
+//
+//    private lateinit var engine: BlockingDecisionEngine
+//    private lateinit var actionController: ActionController
+//    private val powerManager by lazy { getSystemService(POWER_SERVICE) as PowerManager }
+//
+//    override fun onServiceConnected() {
+//        super.onServiceConnected()
+//
+//        val info = serviceInfo ?: return
+//        info.packageNames = arrayOf(
+//            "com.google.android.youtube",
+//            "com.instagram.android",
+//            "com.snapchat.android"
+//        )
+//        info.flags = info.flags or
+//                AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
+//                AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+//        serviceInfo = info
+//
+//        Log.i("RB_CFG", "eventTypes=${serviceInfo?.eventTypes}")
+//        Log.i("RB_CFG", "flags=${serviceInfo?.flags}")
+//
+//        val app = applicationContext as ReelBreakApplication
+//        engine = BlockingDecisionEngine(app.repository)
+//        actionController = ActionController(this)
+//    }
+//
+//    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+//        if (event == null) return
+//        if (!powerManager.isInteractive) return
+//
+//        val packageName = event.packageName?.toString() ?: return
+//        Log.d("RB_EVT", "pkg=$packageName type=${AccessibilityEvent.eventTypeToString(event.eventType)}")
+//
+//        val isFocusBlocked =
+//            FocusStateHolder.isFocusActive && FocusStateHolder.blockedPackages.contains(packageName)
+//
+//        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && isFocusBlocked) {
+//            if (FocusStateHolder.getRemainingMillis() > 0L) {
+//                performGlobalAction(GLOBAL_ACTION_HOME)
+//            } else {
+//                FocusStateHolder.isFocusActive = false
+//            }
+//            return
+//        }
+//
+//        val surface = resolveSurface(packageName) ?: return
+//        if (!shouldInspectTree(event.eventType)) return
+//
+//        val rootNode = rootInActiveWindow ?: return
+//        val isBlockedSurface = try {
+//            rootNode.matchesDetection(surface.getDetectionMethod(), packageName)
+//        } finally {
+//            rootNode.recycle()
+//        }
+//
+//        Log.d("RB_DETECT", "pkg=$packageName matched=$isBlockedSurface")
+//
+//        if (!isBlockedSurface) return
+//
+//        handleBlockedSurface(packageName, event.eventType)
+//    }
+//
+//    private fun resolveSurface(packageName: String): BlockableSurface? {
+//        return BlockableSurface.entries.firstOrNull { it.matchesPackage(packageName) }
+//    }
+//
+//    private fun shouldInspectTree(eventType: Int): Boolean {
+//        return when (eventType) {
+//            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+//            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+//            AccessibilityEvent.TYPE_VIEW_SCROLLED -> true
+//            else -> false
+//        }
+//    }
+//
+//    private fun handleBlockedSurface(packageName: String, eventType: Int) {
+//        CoroutineScope(Dispatchers.Main).launch {
+//            when (eventType) {
+//                AccessibilityEvent.TYPE_VIEW_SCROLLED -> {
+//                    when (engine.decide()) {
+//                        BlockingDecisionEngine.Decision.BLOCK -> actionController.triggerReelsBlock(packageName)
+//                        BlockingDecisionEngine.Decision.ALLOW -> engine.onReelAllowed()
+//                        BlockingDecisionEngine.Decision.SKIP_REEL -> Unit
+//                    }
+//                }
+//
+//                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
+//                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> {
+//                    when (engine.decide()) {
+//                        BlockingDecisionEngine.Decision.BLOCK -> actionController.triggerReelsBlock(packageName)
+//                        BlockingDecisionEngine.Decision.ALLOW -> Unit
+//                        BlockingDecisionEngine.Decision.SKIP_REEL -> Unit
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    override fun onInterrupt() {
+//        // no-op for now
+//    }
+//
+//    override fun onDestroy() {
+//        super.onDestroy()
+//    }
+//}
