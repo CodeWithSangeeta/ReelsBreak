@@ -1,120 +1,3 @@
-//package com.practice.reelbreak.core.detection
-//
-//
-//import android.graphics.Rect
-//import android.view.accessibility.AccessibilityNodeInfo
-//
-///**
-// * Config-driven map of each supported app to its detection method.
-// * View IDs verified from Scrolless open-source project (production-stable).
-// *
-// * How it works:
-// *  - YouTube Shorts  → "reel_player_page_container"   present only inside Shorts player
-// *  - Instagram Reels → "clips_viewer_view_pager"       present only when Reels video is loaded
-// *  - Snapchat        → "spotlight_container"           present only inside Spotlight feed
-// */
-//object BlockableAppConfig {
-//
-//    private val DETECTION_MAP: Map<String, DetectionMethod> = mapOf(
-//        "com.google.android.youtube"  to DetectionMethod.ViewId("reel_player_page_container"),
-//        "com.instagram.android"       to DetectionMethod.ViewId("clips_viewer_view_pager"),
-//        "com.snapchat.android"        to DetectionMethod.ViewId("spotlight_container"),
-//        // Instagram Lite — same Reels view as main Instagram
-//        "com.instagram.lite"          to DetectionMethod.ViewId("clips_viewer_view_pager"),
-//
-//        // Facebook Lite — simple video player view
-//        "com.facebook.lite"           to DetectionMethod.ViewId("videoview"),
-//
-//        // TikTok — main feed player
-//        "com.zhiliaoapp.musically"    to DetectionMethod.ViewId("playerView"),
-//
-//        // TikTok alternate package variants (same detection)
-//        "com.ss.android.ugc.trill"    to DetectionMethod.ViewId("playerView"),
-//        "com.ss.android.ugc.aweme"    to DetectionMethod.ViewId("playerView"),
-//
-//        // Facebook — needs AnyOf because Reels can be opened two ways:
-//        // 1. From main feed (has Sticker/GIF content descriptions in composer)
-//        // 2. From Reels tab (nav label starts with "Reels, tab")
-//        "com.facebook.katana"         to DetectionMethod.AnyOf(
-//            listOf(
-//                DetectionMethod.ContentDescriptions(
-//                    setOf(
-//                        "FbShortsComposerAttachmentComponentSpec:STICKER",
-//                        "FbShortsComposerAttachmentComponentSpec:GIF"
-//                    )
-//                ),
-//                DetectionMethod.ContentDescriptions(
-//                    setOf("Reels, tab")
-//                )
-//            )
-//        )
-//    )
-//
-//    /**
-//     * Returns true if the rootNode contains the blocked content view for the given package.
-//     * Returns false immediately if rootNode is null or package is not in our config.
-//     */
-//    fun isBlockedContentVisible(packageName: String, rootNode: AccessibilityNodeInfo?): Boolean {
-//        if (rootNode == null) return false
-//        val method = DETECTION_MAP[packageName] ?: return false
-//        return rootNode.matchesDetectionMethod(packageName, method)
-//    }
-//
-//    private fun AccessibilityNodeInfo.matchesDetectionMethod(
-//        packageName: String,
-//        method: DetectionMethod
-//    ): Boolean = when (method) {
-//        is DetectionMethod.ViewId -> {
-//            val fullId = "$packageName:id/${method.viewId}"
-//            val nodes = findAccessibilityNodeInfosByViewId(fullId)
-//            val found = nodes.any { isNodeVisibleToUser(it) }
-//            nodes.forEach { it.recycle() }   // always recycle to prevent memory leaks
-//            found
-//        }
-//        is DetectionMethod.ContentDescriptions -> {
-//            hasVisibleNodeMatching { node ->
-//                node.contentDescription?.toString() in method.contentDescriptions
-//            }
-//        }
-//        is DetectionMethod.AnyOf -> {
-//            method.detectionMethods.any { matchesDetectionMethod(packageName, it) }
-//        }
-//    }
-//
-//    /**
-//     * Walks the visible accessibility tree and returns true
-//     * as soon as a node satisfies the predicate.
-//     */
-//    private fun AccessibilityNodeInfo.hasVisibleNodeMatching(
-//        predicate: (AccessibilityNodeInfo) -> Boolean
-//    ): Boolean {
-//        val queue = ArrayDeque<AccessibilityNodeInfo>()
-//        queue.add(this)
-//        while (queue.isNotEmpty()) {
-//            val node = queue.removeFirst()
-//            if (isNodeVisibleToUser(node) && predicate(node)) return true
-//            for (i in 0 until node.childCount) {
-//                node.getChild(i)?.let { queue.addLast(it) }
-//            }
-//        }
-//        return false
-//    }
-//
-//    /**
-//     * A node counts as visible only if Android marks it visible
-//     * AND it has non-zero bounds on screen (rules out off-screen layout passes).
-//     */
-//    private fun isNodeVisibleToUser(node: AccessibilityNodeInfo): Boolean {
-//        if (!node.isVisibleToUser) return false
-//        val rect = Rect()
-//        node.getBoundsInScreen(rect)
-//        return rect.width() > 0 && rect.height() > 0
-//    }
-//}
-
-
-
-
 package com.practice.reelbreak.core.detection
 
 import android.graphics.Rect
@@ -125,23 +8,16 @@ object BlockableAppConfig {
     private val DETECTION_MAP: Map<String, DetectionMethod> = mapOf(
         // YouTube Shorts
         "com.google.android.youtube" to DetectionMethod.ViewId("reel_player_page_container"),
-        "com.google.android.apps.youtube.kids" to DetectionMethod.ViewId("reel_player_page_container"),
-        "app.revanced.android.youtube" to DetectionMethod.ViewId("reel_player_page_container"),
 
         // Instagram Reels
         "com.instagram.android" to DetectionMethod.ViewId("clips_viewer_view_pager"),
 
         // Instagram Lite
-      //  "com.instagram.lite" to DetectionMethod.ViewId("clips_viewer_view_pager"),
         "com.instagram.lite" to DetectionMethod.ViewId("horizontalProgressV2"),
         // Snapchat Spotlight
         "com.snapchat.android" to DetectionMethod.ViewId("spotlight_container"),
-
         // TikTok
         "com.zhiliaoapp.musically" to DetectionMethod.ViewId("playerView"),
-        "com.ss.android.ugc.trill" to DetectionMethod.ViewId("playerView"),
-        "com.ss.android.ugc.aweme" to DetectionMethod.ViewId("playerView"),
-        "com.zhiliaoapp.musically.go" to DetectionMethod.ViewId("playerView"),
 
         // Facebook
         "com.facebook.katana" to DetectionMethod.AnyOf(
@@ -160,8 +36,6 @@ object BlockableAppConfig {
             )
         ),
 
-        // Facebook Lite
-      //  "com.facebook.lite" to DetectionMethod.ViewId("videoview")
 
         "com.facebook.lite" to DetectionMethod.ContentDescriptionPrefix(
             prefixes = setOf("reels"),

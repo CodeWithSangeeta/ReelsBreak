@@ -102,108 +102,16 @@ data class DashboardHomeUiState(
     val selectedMode: HomeProtectionMode = HomeProtectionMode.DEFAULT,
     val accessibilityGranted: Boolean = true,
     val overlayEnabled: Boolean = false,
-
     val mindfulCountEnabled: Boolean = true,
     val mindfulTimeEnabled: Boolean = true,
     val mindfulReelsLimit: Int = 10,
     val mindfulTimeLimitMinutes: Int = 20,
     val mindfulResetPeriod: MindfulResetPeriod = MindfulResetPeriod.HOUR,
-
     val reelsClosedToday: Int = 0,
     val timeBackTodayMinutes: Int = 0,
     val mindfulRemainingCount: Int = 7,
     val mindfulRemainingMinutes: Int = 12,
 )
-
-//@Composable
-//fun ReelBreakHomeSection(
-//    state: DashboardHomeUiState,
-//    onProtectionToggle: () -> Unit,
-//    onModeSelected: (HomeProtectionMode) -> Unit,
-//    onOverlayToggle: (Boolean) -> Unit,
-//    onMindfulCountToggle: (Boolean) -> Unit,
-//    onMindfulTimeToggle: (Boolean) -> Unit,
-//    onMindfulReelsLimitChange: (Int) -> Unit,
-//    onMindfulTimeLimitChange: (Int) -> Unit,
-//    onMindfulPeriodChange: (MindfulResetPeriod) -> Unit,
-//    onPermissionClick: () -> Unit,
-//    modifier: Modifier = Modifier
-//) {
-//    val colors = LocalAppColors.current
-//
-//    LazyColumn(
-//        modifier = modifier.fillMaxWidth(),
-//        verticalArrangement = Arrangement.spacedBy(14.dp),
-//        contentPadding = PaddingValues(bottom = 120.dp)
-//    ) {
-//        item {
-//            ProtectionHeroCard(
-//                state = state,
-//                onToggle = onProtectionToggle
-//            )
-//        }
-//
-//        item {
-//            ModeSelectionRow(
-//                selectedMode = state.selectedMode,
-//                isProtectionEnabled = state.isProtectionEnabled,
-//                onModeSelected = onModeSelected
-//            )
-//        }
-//
-//        if (!state.accessibilityGranted) {
-//            item {
-//                PermissionInfoCard(
-//                    onClick = onPermissionClick
-//                )
-//            }
-//        }
-//
-//        item {
-//            Crossfade(
-//                targetState = state.selectedMode,
-//                animationSpec = tween(durationMillis = 280, easing = FastOutSlowInEasing),
-//                label = "modeCardCrossfade"
-//            ) { mode ->
-//                when (mode) {
-//                    HomeProtectionMode.DEFAULT -> {
-//                        DefaultModeDetailsCard(
-//                            isActuallyActive = state.isProtectionEnabled && state.selectedMode == HomeProtectionMode.DEFAULT
-//                        )
-//                    }
-//                    HomeProtectionMode.PAUSED -> {
-//                        PauseModeDetailsCard(
-//                            isProtectionEnabled = state.isProtectionEnabled
-//                        )
-//                    }
-//                    HomeProtectionMode.MINDFUL -> {
-//                        MindfulModeDetailsCard(
-//                            state = state,
-//                            onCountToggle = onMindfulCountToggle,
-//                            onTimeToggle = onMindfulTimeToggle,
-//                            onReelsLimitChange = onMindfulReelsLimitChange,
-//                            onTimeLimitChange = onMindfulTimeLimitChange,
-//                            onPeriodChange = onMindfulPeriodChange
-//                        )
-//                    }
-//                }
-//            }
-//        }
-//
-//        item {
-//            OverlayReminderCard(
-//                enabled = state.overlayEnabled,
-//                onToggle = onOverlayToggle
-//            )
-//        }
-//
-//        item {
-//            TodayInsightCard(
-//                state = state
-//            )
-//        }
-//    }
-//}
 
 
 @Composable

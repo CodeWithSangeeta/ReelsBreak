@@ -22,7 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val mainViewModel: MainViewModel by viewModels()
-
     private val permissionsViewModel: PermissionsViewModel by viewModels()
     private var initialTab: Int = 0
 
@@ -43,7 +42,6 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             mainViewModel.preloadOnboardingStatus(this@MainActivity)
         }
-        // Make your layout draw behind the status bar
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContent {
@@ -59,7 +57,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // Force status bar icons to be WHITE (light icons = false)
         WindowInsetsControllerCompat(window, window.decorView).apply {
             isAppearanceLightStatusBars = false
         }

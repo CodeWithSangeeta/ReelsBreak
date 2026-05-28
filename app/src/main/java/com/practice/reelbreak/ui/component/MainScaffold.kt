@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.dashboard.FloatingButtonGroup
 
 @Composable
 fun MainScaffold(
@@ -30,7 +29,6 @@ fun MainScaffold(
         FloatingButtonGroup(
             selectedRoute = selectedRoute,
             onItemSelected = { route ->
-                // Map route string → Int index for the existing callers
                 val index = when (route) {
                     "home" -> 0
                     "focus"     -> 1

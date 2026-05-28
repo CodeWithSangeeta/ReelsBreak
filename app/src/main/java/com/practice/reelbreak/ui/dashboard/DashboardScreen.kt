@@ -68,8 +68,6 @@ fun DashboardScreen(
     val permissionState = permissionUiState.permissionState
 
 
-
-    // Base list of all possible permission cards
     val basePermissionPagerItems = listOf(
         PermissionPagerItem(
             type = PermissionSheetType.ACCESSIBILITY,
@@ -82,33 +80,11 @@ fun DashboardScreen(
 
     )
 
-    // Only keep cards for permissions that are NOT granted
     val missingPermissionItems = basePermissionPagerItems.filter { item ->
         when (item.type) {
             PermissionSheetType.ACCESSIBILITY -> !permissionState.accessibilityGranted
         }
     }
-
-
-//    val homeUiState = DashboardHomeUiState(
-//        isProtectionEnabled = permissionState.accessibilityGranted,
-//        selectedMode = when (dashboardState.activeMode) {
-//            ActiveBlockMode.STRICT -> HomeProtectionMode.DEFAULT
-//            ActiveBlockMode.LIMIT -> HomeProtectionMode.MINDFUL
-//        },
-//        accessibilityGranted = permissionState.accessibilityGranted,
-//        overlayEnabled = false,
-//        mindfulCountEnabled = dashboardState.dailyReelLimit > 0,
-//        mindfulTimeEnabled = dashboardState.dailyTimeLimitMinutes > 0,
-//        mindfulReelsLimit = dashboardState.dailyReelLimit.coerceAtLeast(1),
-//        mindfulTimeLimitMinutes = dashboardState.dailyTimeLimitMinutes.coerceAtLeast(5),
-//        mindfulResetPeriod = MindfulResetPeriod.HOUR,
-//        reelsClosedToday = dashboardState.reelsCount,
-//        timeBackTodayMinutes = dashboardState.timeSpentMinutes,
-//        mindfulRemainingCount = 0,
-//        mindfulRemainingMinutes = 0
-//    )
-
 
     val homeUiState = DashboardHomeUiState(
         isProtectionEnabled = permissionState.accessibilityGranted,
@@ -132,13 +108,11 @@ fun DashboardScreen(
         mindfulRemainingMinutes = dashboardState.mindfulRemainingMinutes
     )
 
-    // Check permissions every time Dashboard opens (initial UX nudging)
     LaunchedEffect(Unit) {
         delay(600L)
         permissionsViewModel.checkAndShowSheetIfNeeded(context)
     }
 
-    // Show bottom sheet when triggered
     if (sheetState.isVisible && sheetState.type != null) {
         PermissionBottomSheet(
             type = sheetState.type!!,
@@ -162,7 +136,6 @@ fun DashboardScreen(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // ── Permission pager: only for missing permissions
             val shouldShowPermissionPager = missingPermissionItems.isNotEmpty()
 
             if (shouldShowPermissionPager) {

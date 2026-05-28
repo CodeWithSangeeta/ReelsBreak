@@ -5,14 +5,11 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// ── CompositionLocal — access anywhere via LocalAppColors.current ──
 val LocalAppColors = staticCompositionLocalOf { darkAppColors() }
 
-// ── Material3 schemes (for MaterialTheme.colorScheme.xxx fallback) ─
 private fun darkMaterial() = darkColorScheme(
     background       = Color(0xFF0F0425),
     surface          = Color(0xFF1D0E42),
@@ -37,10 +34,7 @@ private fun lightMaterial() = lightColorScheme(
     onSurfaceVariant = Color(0xFF5A5070)
 )
 
-/**
- * ReelBreakTheme — THE ONLY theme wrapper for the entire app.
- * Used once in MainActivity. Replaces Theme.kt and DashboardTheme.kt.
- */
+
 @Composable
 fun ReelBreakTheme(
     isDarkMode: Boolean,

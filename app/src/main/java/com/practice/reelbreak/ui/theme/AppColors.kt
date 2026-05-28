@@ -6,15 +6,12 @@ import androidx.compose.ui.graphics.Color
 
 data class AppColors(
     val isDark: Boolean,
-    // ── Text
     val textPrimary: Color,
     val textSecondary: Color,
     val textMuted: Color,
-    // ── Surfaces
     val background: Brush,
     val cardSurface: Brush,
     val glassSurface: Brush,
-    // ── Brand
     val purplePrimary: Color,
     val purpleDeep: Color,
     val purpleSoft: Color,
@@ -22,17 +19,13 @@ data class AppColors(
     val successGreen: Color,
     val warningOrange: Color,
     val errorRed: Color,
-    // ── Buttons
     val button: Brush,
     val buttonDanger: Brush,
     val buttonSuccess: Brush,
-    // ── Nav
     val navSelected: Brush,
-    // ── Mode cards
     val modeBlock: Brush,
     val modeLimit: Brush,
     val modeSmart: Brush,
-    // ── Borders & glows
     val borderSubtle: Color,
     val borderPurple: Color,
     val borderActive: Color,
@@ -40,23 +33,13 @@ data class AppColors(
     val glowBlue: Color,
     val glowTeal: Color,
     val glowRed: Color,
-
-    // ── Header & Nav (one shared border gradient — both use same colors)
     val appColor: Brush,
-    val borderColor: Brush,   // reused for nav border too, no navBorderGradient needed
-
-    // ── Blocked screen background
+    val borderColor: Brush,
     val screenBlockedBg: Brush,
-
-    // ── Timer (track + arc only — text/muted reuse textPrimary/textSecondary)
     val timerTrack: Color,
     val timerArc: Color,
-
-    // ── Switch
     val switchTrackOn: Color,
     val switchTrackOff: Color,
-
-    // ── Sheet
     val sheetBg: Color,
     val sheetDragHandle: Color,
 )
@@ -110,15 +93,12 @@ fun darkAppColors() = AppColors(
 
     appColor       = Brush.verticalGradient(listOf(Color(0xFF7C3AED), Color(0xFF4C1D95))),
     borderColor = Brush.verticalGradient(listOf(Color(0xFFA78BFA), Color(0xFF6D28D9))),
-
     screenBlockedBg = Brush.verticalGradient(listOf(Color(0xFF0D0818), Color(0xFF130D26), Color(0xFF0A0515))),
 
     timerTrack    = Color(0xFF2D1B4E),
     timerArc      = Color(0xFF9333EA),
-
     switchTrackOn  = Color(0xFF7C3AED),
     switchTrackOff = Color(0xFF2A1F40),
-
     sheetBg         = Color.Transparent,
     sheetDragHandle = Color(0x40FFFFFF),
 )
@@ -151,7 +131,6 @@ fun lightAppColors() = AppColors(
     buttonDanger    = Brush.linearGradient(listOf(Color(0xFFCC1A1A), Color(0xFF800000))),
     buttonSuccess   = Brush.linearGradient(listOf(Color(0xFF1A8048), Color(0xFF0E5030))),
     navSelected     = Brush.verticalGradient(listOf(Color(0xFF9B3DFF), Color(0xFF5A0EA8))),
-
     modeBlock       = Brush.linearGradient(listOf(Color(0xFF7B1FDC), Color(0xFF4A0088)), start = Offset(0f, 0f), end = Offset(300f, 300f)),
     modeLimit       = Brush.linearGradient(listOf(Color(0xFF3848CF), Color(0xFF2214A0)), start = Offset(0f, 0f), end = Offset(300f, 300f)),
     modeSmart       = Brush.linearGradient(listOf(Color(0xFF0F8B90), Color(0xFF183260)), start = Offset(0f, 0f), end = Offset(300f, 300f)),
@@ -166,18 +145,12 @@ fun lightAppColors() = AppColors(
 
     appColor       = Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070))),
     borderColor = Brush.verticalGradient(listOf(Color(0xFFB39DDB), Color(0xFF9C78D4))),
-
-
     screenBlockedBg = Brush.verticalGradient(listOf(Color(0xFF0D0818), Color(0xFF130D26), Color(0xFF0A0515))),
 
     timerTrack      = Color(0xFFEDE8FF),
     timerArc        = Color(0xFF6B3FA0),
-    // timerText  → use colors.textPrimary directly
-    // timerMuted → use colors.textSecondary directly
-
     switchTrackOn   = Color(0xFF6B3FA0),
     switchTrackOff  = Color(0xFFEDE8FF),
-
     sheetBg         = Color.Transparent,
     sheetDragHandle = Color(0x40FFFFFF),
 )

@@ -132,7 +132,6 @@ fun PermissionBottomSheet(
 
             Spacer(Modifier.height(16.dp))
 
-            // Title + small badge on the same line
             TitleWithBadge(
                 title = content.title,
                 badgeLabel = content.badgeLabel,
