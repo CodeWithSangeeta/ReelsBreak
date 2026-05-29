@@ -29,6 +29,9 @@ import android.graphics.PixelFormat
 import com.practice.reelbreak.core.overlay.ReelBreakOverlayCard
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.LimitResetPeriod
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
@@ -46,25 +49,24 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var overlayScope: CoroutineScope? = null
     private var isOverlayReminderEnabled = false
 
+    private var currentOverlayUi: OverlayUiModel? = null
+    private var liveTimerJob: Job? = null
+    private var reelsScreenEnteredAt: Long? = null
+    private var persistedBaseTimeMillis: Long = 0L
+
     override fun onServiceConnected() {
         super.onServiceConnected()
 
         val info = serviceInfo ?: return
 
-        // 🔒 Set your target isolation array
         info.packageNames = arrayOf(
             "com.google.android.youtube",
-            "com.google.android.apps.youtube.kids",
-            "app.revanced.android.youtube",
             "com.instagram.android",
             "com.instagram.lite",
             "com.snapchat.android",
             "com.facebook.katana",
             "com.facebook.lite",
-            "com.zhiliaoapp.musically",
-            "com.ss.android.ugc.trill",
-            "com.ss.android.ugc.aweme",
-            "com.zhiliaoapp.musically.go"
+            "com.zhiliaoapp.musically"
         )
         info.flags = info.flags or
                 AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
@@ -127,9 +129,31 @@ class ReelsAccessibilityService : AccessibilityService() {
             val rootNode: AccessibilityNodeInfo? = if (shouldInspectTree) rootInActiveWindow else null
             Log.d("RB_DEBUG", "rootNode=${rootNode != null} childCount=${rootNode?.childCount}")
 
+//        try {
+//            if (::detectionManager.isInitialized) {
+//                detectionManager.processEvent(event, rootNode)
+//            }
+//        } finally {
+//            rootNode?.recycle()
+//        }
+
+
         try {
             if (::detectionManager.isInitialized) {
                 detectionManager.processEvent(event, rootNode)
+
+                if (!detectionManager.isOnReelsScreen) {
+                    reelsScreenEnteredAt = null
+                    liveTimerJob?.cancel()
+                    liveTimerJob = null
+                    hideOverlay()
+                } else if (reelsScreenEnteredAt == null) {
+                    reelsScreenEnteredAt = System.currentTimeMillis()
+                    currentOverlayUi?.let { ui ->
+                        persistedBaseTimeMillis = ui.timeSpentMillis
+                    }
+                    startLiveOverlayTimer()
+                }
             }
         } finally {
             rootNode?.recycle()
@@ -158,6 +182,84 @@ class ReelsAccessibilityService : AccessibilityService() {
     }
 
 
+//    private fun startOverlayUpdates(repository: UserPreferencesRepository) {
+//        overlayScope?.cancel()
+//        overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+//
+//        overlayScope?.launch {
+//            combine(
+//                repository.isOverlayReminderEnabled,
+//                combine(
+//                    repository.activeMode,
+//                    repository.dailyReelLimit,
+//                    repository.dailyTimeLimitMinutes
+//                ) { activeMode, reelLimit, timeLimitMinutes ->
+//                    Triple(activeMode, reelLimit, timeLimitMinutes)
+//                },
+//                combine(
+//                    repository.reelsWatchedToday,
+//                    repository.timeSpentTodayMillis,
+//                    repository.limitResetPeriod
+//                ) { reelsWatched, timeSpentMillis, resetPeriod ->
+//                    Triple(reelsWatched, timeSpentMillis, resetPeriod)
+//                }
+//            ) { overlayEnabled, left, right ->
+//                Triple(
+//                    overlayEnabled,
+//                    OverlayUiModel(
+//                        activeMode = left.first,
+//                        reelLimit = left.second,
+//                        timeLimitMinutes = left.third,
+//                        reelsWatched = right.first,
+//                        timeSpentMillis = right.second,
+//                        resetPeriod = right.third
+//                    ),
+//                    Unit
+//                )
+//            }.collect { (overlayEnabled, ui, _) ->
+//                Log.d(
+//                    "RB_OVERLAY",
+//                    "enabled=$overlayEnabled, mode=${ui.activeMode}, reelLimit=${ui.reelLimit}, timeLimit=${ui.timeLimitMinutes}, reelsWatched=${ui.reelsWatched}, timeSpent=${ui.timeSpentMillis}, reset=${ui.resetPeriod}"
+//                )
+//
+//                val shouldShow = overlayEnabled &&
+//                        ui.activeMode == ActiveBlockMode.LIMIT &&
+//                        detectionManager.isOnReelsScreen &&
+//                        (ui.reelLimit > 0 || ui.timeLimitMinutes > 0)
+//
+//                if (!shouldShow) {
+//                    Log.d("RB_OVERLAY", "Overlay hidden: shouldShow=false")
+//                    hideOverlay()
+//                    return@collect
+//                }
+//
+//                Log.d("RB_OVERLAY", "Overlay should show now")
+//                showOverlayIfNeeded()
+//
+//                overlayView?.setContent {
+//                    ReelBreakOverlayCard(
+//                        appLabel = "ReelBreak",
+//                        reelsText = if (ui.reelLimit > 0) {
+//                            "${ui.reelsWatched} / ${ui.reelLimit} reels"
+//                        } else null,
+//                        timeText = if (ui.timeLimitMinutes > 0) {
+//                            val totalSeconds = ui.timeSpentMillis / 1000L
+//                            val spentMinutes = totalSeconds / 60
+//                            val spentSeconds = totalSeconds % 60
+//                            String.format("%02d:%02d / %02d:00", spentMinutes, spentSeconds, ui.timeLimitMinutes)
+//                        } else null,
+//                        periodLabel = when (ui.resetPeriod) {
+//                            LimitResetPeriod.HOUR -> "This hour"
+//                            LimitResetPeriod.DAY -> "Today"
+//                        }
+//                    )
+//                }
+//            }
+//        }
+//    }
+
+
+
     private fun startOverlayUpdates(repository: UserPreferencesRepository) {
         overlayScope?.cancel()
         overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -180,87 +282,95 @@ class ReelsAccessibilityService : AccessibilityService() {
                     Triple(reelsWatched, timeSpentMillis, resetPeriod)
                 }
             ) { overlayEnabled, left, right ->
-                Triple(
-                    overlayEnabled,
-                    OverlayUiModel(
-                        activeMode = left.first,
-                        reelLimit = left.second,
-                        timeLimitMinutes = left.third,
-                        reelsWatched = right.first,
-                        timeSpentMillis = right.second,
-                        resetPeriod = right.third
-                    ),
-                    Unit
+                overlayEnabled to OverlayUiModel(
+                    activeMode = left.first,
+                    reelLimit = left.second,
+                    timeLimitMinutes = left.third,
+                    reelsWatched = right.first,
+                    timeSpentMillis = right.second,
+                    resetPeriod = right.third
                 )
-            }.collect { (overlayEnabled, ui, _) ->
-                Log.d(
-                    "RB_OVERLAY",
-                    "enabled=$overlayEnabled, mode=${ui.activeMode}, reelLimit=${ui.reelLimit}, timeLimit=${ui.timeLimitMinutes}, reelsWatched=${ui.reelsWatched}, timeSpent=${ui.timeSpentMillis}, reset=${ui.resetPeriod}"
-                )
+            }.collect { (overlayEnabled, ui) ->
+                currentOverlayUi = ui
+                persistedBaseTimeMillis = ui.timeSpentMillis
 
                 val shouldShow = overlayEnabled &&
                         ui.activeMode == ActiveBlockMode.LIMIT &&
+                        detectionManager.isOnReelsScreen &&
                         (ui.reelLimit > 0 || ui.timeLimitMinutes > 0)
 
                 if (!shouldShow) {
-                    Log.d("RB_OVERLAY", "Overlay hidden: shouldShow=false")
+                    liveTimerJob?.cancel()
+                    liveTimerJob = null
+                    reelsScreenEnteredAt = null
                     hideOverlay()
                     return@collect
                 }
 
-                Log.d("RB_OVERLAY", "Overlay should show now")
                 showOverlayIfNeeded()
 
-                overlayView?.setContent {
-                    ReelBreakOverlayCard(
-                        appLabel = "ReelBreak",
-                        reelsText = if (ui.reelLimit > 0) {
-                            "${ui.reelsWatched} / ${ui.reelLimit} reels"
-                        } else null,
-                        timeText = if (ui.timeLimitMinutes > 0) {
-                            val totalSeconds = ui.timeSpentMillis / 1000L
-                            val spentMinutes = totalSeconds / 60
-                            val spentSeconds = totalSeconds % 60
-                            String.format("%02d:%02d / %02d:00", spentMinutes, spentSeconds, ui.timeLimitMinutes)
-                        } else null,
-                        periodLabel = when (ui.resetPeriod) {
-                            LimitResetPeriod.HOUR -> "This hour"
-                            LimitResetPeriod.DAY -> "Today"
-                        }
-                    )
+                if (reelsScreenEnteredAt == null) {
+                    reelsScreenEnteredAt = System.currentTimeMillis()
                 }
+
+                startLiveOverlayTimer()
             }
         }
     }
 
-    private fun showOverlayIfNeeded() {
-        if (overlayView != null) {
-            Log.d("RB_OVERLAY", "Overlay already attached")
-            return
+//    private fun showOverlayIfNeeded() {
+//        if (overlayView != null) {
+//            Log.d("RB_OVERLAY", "Overlay already attached")
+//            return
+//
+//        }
+//
+//        val params = WindowManager.LayoutParams(
+//            WindowManager.LayoutParams.WRAP_CONTENT,
+//            WindowManager.LayoutParams.WRAP_CONTENT,
+//            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+//            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+//                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+//            PixelFormat.TRANSLUCENT
+//        ).apply {
+//            gravity = Gravity.TOP or Gravity.END
+//            x = 24
+//            y = 120
+//        }
+//
+//        overlayView = ComposeView(this).apply {
+//            setViewTreeLifecycleOwner(overlayLifecycleOwner)
+//            setViewTreeSavedStateRegistryOwner(overlayLifecycleOwner)
+//        }
+//
+//        windowManager.addView(overlayView, params)
+//    }
 
+        private fun showOverlayIfNeeded() {
+            if (overlayView != null) return
+
+            val params = WindowManager.LayoutParams(
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
+                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
+                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                PixelFormat.TRANSLUCENT
+            ).apply {
+                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL  // ← center top
+                x = 0
+                y = 56   // distance from top of screen in pixels (adjust as needed)
+            }
+
+            overlayView = ComposeView(this).apply {
+                setViewTreeLifecycleOwner(overlayLifecycleOwner)
+                setViewTreeSavedStateRegistryOwner(overlayLifecycleOwner)
+            }
+
+            windowManager.addView(overlayView, params)
         }
-
-        val params = WindowManager.LayoutParams(
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.WRAP_CONTENT,
-            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.END
-            x = 24
-            y = 120
-        }
-
-        overlayView = ComposeView(this).apply {
-            setViewTreeLifecycleOwner(overlayLifecycleOwner)
-            setViewTreeSavedStateRegistryOwner(overlayLifecycleOwner)
-        }
-
-        windowManager.addView(overlayView, params)
-    }
 
     private fun hideOverlay() {
         overlayView?.let {
@@ -274,6 +384,59 @@ class ReelsAccessibilityService : AccessibilityService() {
             repository.isOverlayReminderEnabled.collect { enabled ->
                 isOverlayReminderEnabled = enabled
                 if (!enabled) hideOverlay()
+            }
+        }
+    }
+
+
+    private fun startLiveOverlayTimer() {
+        if (liveTimerJob?.isActive == true) return
+
+        liveTimerJob = overlayScope?.launch {
+            while (isActive) {
+                val ui = currentOverlayUi
+                val enteredAt = reelsScreenEnteredAt
+
+                if (ui == null || enteredAt == null || !detectionManager.isOnReelsScreen) {
+                    hideOverlay()
+                    break
+                }
+
+                val liveTimeSpent = persistedBaseTimeMillis + (System.currentTimeMillis() - enteredAt)
+
+//                overlayView?.setContent {
+//                    ReelBreakOverlayCard(
+//                        appLabel = "ReelBreak",
+//                        reelsText = if (ui.reelLimit > 0) {
+//                            "${ui.reelsWatched} / ${ui.reelLimit} reels"
+//                        } else null,
+//                        timeText = if (ui.timeLimitMinutes > 0) {
+//                            val totalSeconds = liveTimeSpent / 1000L
+//                            val spentMinutes = totalSeconds / 60
+//                            val spentSeconds = totalSeconds % 60
+//                            String.format("%02d:%02d / %02d:00", spentMinutes, spentSeconds, ui.timeLimitMinutes)
+//                        } else null,
+//                        periodLabel = when (ui.resetPeriod) {
+//                            LimitResetPeriod.HOUR -> "This hour"
+//                            LimitResetPeriod.DAY -> "Today"
+//                        }
+//                    )
+//                }
+
+                overlayView?.setContent {
+                    ReelBreakOverlayCard(
+                        reelsWatched = ui.reelsWatched,
+                        reelLimit = ui.reelLimit,
+                        timeDisplay = run {
+                            val totalSeconds = liveTimeSpent / 1000L
+                            String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+                        },
+                        showReels = ui.reelLimit > 0,
+                        showTimer = ui.timeLimitMinutes > 0
+                    )
+                }
+
+                delay(1000)
             }
         }
     }

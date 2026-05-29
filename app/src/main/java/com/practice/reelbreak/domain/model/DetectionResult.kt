@@ -5,3 +5,10 @@ enum class DetectionResult {
     NORMAL_SCREEN,
     UNKNOWN
 }
+
+
+enum class ProtectionMode {
+    PAUSED,
+    DEFAULT,
+    MINDFUL
+}
