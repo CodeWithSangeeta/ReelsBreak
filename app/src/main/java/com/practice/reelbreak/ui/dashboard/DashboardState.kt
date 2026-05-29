@@ -2,6 +2,7 @@ package com.practice.reelbreak.ui.dashboard
 
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.domain.model.LimitResetPeriod
+import com.practice.reelbreak.domain.model.ProtectionMode
 
 enum class BlockMode { BLOCK_NOW, LIMIT_BASED }
 data class DashboardState(
@@ -21,5 +22,6 @@ data class DashboardState(
     val mindfulRemainingCount: Int = 0,
     val mindfulRemainingMinutes: Int = 0,
     val limitResetPeriod: LimitResetPeriod = LimitResetPeriod.DAY,
-    val overlayEnabled: Boolean = false
+    val overlayEnabled: Boolean = false,
+    val protectionMode: ProtectionMode = ProtectionMode.DEFAULT
 )

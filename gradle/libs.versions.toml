@@ -30,6 +30,7 @@ kotlinSerialization = "2.3.10"
 kotlinxSerialization = "1.7.3"
 foundationVersion = "1.11.1"
 foundationLayoutVersion = "1.11.1"
+material3 = "1.4.0"
 
 
 [libraries]
@@ -68,6 +69,7 @@ androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundationVersion" }
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 
 

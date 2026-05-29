@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.foundation.layout)
+    implementation(libs.androidx.compose.material3)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     //Compose UI
@@ -121,6 +122,9 @@ dependencies {
     // Material Icons
     implementation("androidx.compose.material:material-icons-extended")
 
+    //lottie animation
+    implementation("com.airbnb.android:lottie-compose:6.4.0")
+
     // hilt
     implementation(libs.androidx.hilt.android)
     ksp(libs.androidx.hilt.compiler)
@@ -130,4 +134,6 @@ dependencies {
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.kotlinx.serialization)
+
+
 }

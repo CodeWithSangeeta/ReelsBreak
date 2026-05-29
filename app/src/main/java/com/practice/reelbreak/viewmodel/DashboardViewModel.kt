@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.domain.model.LimitResetPeriod
+import com.practice.reelbreak.domain.model.ProtectionMode
 import com.practice.reelbreak.ui.dashboard.BlockMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import com.practice.reelbreak.ui.dashboard.DashboardState
+import com.practice.reelbreak.ui.dashboard.HomeProtectionMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collectLatest
@@ -88,6 +90,12 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.isOverlayReminderEnabled.collectLatest { enabled ->
                 _uiState.update { it.copy(overlayEnabled = enabled) }
+            }
+        }
+
+        viewModelScope.launch {
+            userPreferencesRepository.protectionMode.collectLatest { mode ->
+                _uiState.update { it.copy(protectionMode = mode) }
             }
         }
 
@@ -227,6 +235,26 @@ class DashboardViewModel @Inject constructor(
     fun onOverlayReminderToggle(enabled: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.setOverlayReminderEnabled(enabled)
+        }
+    }
+
+    fun onModeSelected(mode: HomeProtectionMode) {
+        viewModelScope.launch {
+            when (mode) {
+                HomeProtectionMode.PAUSED -> {
+                    userPreferencesRepository.setProtectionMode(ProtectionMode.PAUSED)
+                    // collapse any expanded card
+                    _uiState.update { it.copy(expandedMode = null) }
+                }
+                HomeProtectionMode.DEFAULT -> {
+                    userPreferencesRepository.setProtectionMode(ProtectionMode.DEFAULT)
+                    _uiState.update { it.copy(expandedMode = null) }
+                }
+                HomeProtectionMode.MINDFUL -> {
+                    userPreferencesRepository.setProtectionMode(ProtectionMode.MINDFUL)
+                    _uiState.update { it.copy(expandedMode = BlockMode.LIMIT_BASED) }
+                }
+            }
         }
     }
     }

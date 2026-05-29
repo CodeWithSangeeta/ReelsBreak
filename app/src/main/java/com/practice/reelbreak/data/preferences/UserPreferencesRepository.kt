@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.practice.reelbreak.data.preferences.UserPreferences.DAILY_TIME_LIMIT_MINUTES
 import com.practice.reelbreak.domain.model.ActiveBlockMode
 import com.practice.reelbreak.domain.model.LimitResetPeriod
+import com.practice.reelbreak.domain.model.ProtectionMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -320,6 +321,28 @@ class UserPreferencesRepository(private val context: Context) {
     suspend fun setOverlayReminderEnabled(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[UserPreferences.IS_OVERLAY_REMINDER_ENABLED] = enabled
+        }
+    }
+
+
+    val protectionMode: Flow<ProtectionMode> =
+        context.dataStore.data.map { prefs ->
+            when (prefs[UserPreferences.PROTECTION_MODE]) {
+                "PAUSED"  -> ProtectionMode.PAUSED
+                "MINDFUL" -> ProtectionMode.MINDFUL
+                else      -> ProtectionMode.DEFAULT
+            }
+        }
+
+    suspend fun setProtectionMode(mode: ProtectionMode) {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.PROTECTION_MODE] = mode.name
+            prefs[UserPreferences.ACTIVE_MODE] = when (mode) {
+                ProtectionMode.DEFAULT -> ActiveBlockMode.STRICT.value
+                ProtectionMode.MINDFUL -> ActiveBlockMode.LIMIT.value
+                ProtectionMode.PAUSED  -> ActiveBlockMode.LIMIT.value
+            }
+            prefs[UserPreferences.IS_STRICT_MODE] = (mode == ProtectionMode.DEFAULT)
         }
     }
 }

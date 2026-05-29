@@ -33,6 +33,7 @@ import com.practice.reelbreak.viewmodel.DashboardViewModel
 import com.practice.reelbreak.viewmodel.PermissionsViewModel
 import androidx.compose.ui.graphics.Color
 import com.practice.reelbreak.domain.model.LimitResetPeriod
+import com.practice.reelbreak.domain.model.ProtectionMode
 import kotlinx.coroutines.delay
 
 
@@ -76,6 +77,7 @@ fun DashboardScreen(
         ),
 
     )
+    val showOverlayToggle = dashboardState.protectionMode != ProtectionMode.DEFAULT
 
     val missingPermissionItems = basePermissionPagerItems.filter { item ->
         when (item.type) {
@@ -85,10 +87,15 @@ fun DashboardScreen(
 
     val homeUiState = DashboardHomeUiState(
         isProtectionEnabled = permissionState.accessibilityGranted,
-        selectedMode = when (dashboardState.activeMode) {
-            ActiveBlockMode.STRICT -> HomeProtectionMode.DEFAULT
-            ActiveBlockMode.LIMIT -> HomeProtectionMode.MINDFUL
-        },
+//        selectedMode = when (dashboardState.activeMode) {
+//            ActiveBlockMode.STRICT -> HomeProtectionMode.DEFAULT
+//            ActiveBlockMode.LIMIT -> HomeProtectionMode.MINDFUL
+//        },
+        selectedMode = when (dashboardState.protectionMode) {
+        ProtectionMode.PAUSED   -> HomeProtectionMode.PAUSED
+        ProtectionMode.DEFAULT  -> HomeProtectionMode.DEFAULT
+        ProtectionMode.MINDFUL  -> HomeProtectionMode.MINDFUL
+    },
         accessibilityGranted = permissionState.accessibilityGranted,
         overlayEnabled = dashboardState.overlayEnabled,
         mindfulCountEnabled = dashboardState.dailyReelLimit > 0,
@@ -203,24 +210,43 @@ fun DashboardScreen(
                                 )
                             }
                         },
+//                        onModeSelected = { mode ->
+//                            when (mode) {
+//                                HomeProtectionMode.DEFAULT -> {
+//                                    dashboardViewModel.onExpandToggle(BlockMode.BLOCK_NOW)
+//                                    dashboardViewModel.onBlockModeCardClicked(BlockMode.BLOCK_NOW)
+//                                }
+//
+//                                HomeProtectionMode.PAUSED -> {
+//                                    // add later when you introduce pause state
+//                                }
+//
+//                                HomeProtectionMode.MINDFUL -> {
+//                                    dashboardViewModel.onExpandToggle(BlockMode.LIMIT_BASED)
+//                                    dashboardViewModel.onBlockModeCardClicked(BlockMode.LIMIT_BASED)
+//                                }
+//                            }
+//                        },
                         onModeSelected = { mode ->
+                            // Permission gate — if not granted, show sheet for ANY mode tap
+                            if (!permissionState.accessibilityGranted) {
+                                permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
+                                return@ReelBreakHomeSection
+                            }
                             when (mode) {
-                                HomeProtectionMode.DEFAULT -> {
-                                    dashboardViewModel.onExpandToggle(BlockMode.BLOCK_NOW)
-                                    dashboardViewModel.onBlockModeCardClicked(BlockMode.BLOCK_NOW)
-                                }
-
-                                HomeProtectionMode.PAUSED -> {
-                                    // add later when you introduce pause state
-                                }
-
-                                HomeProtectionMode.MINDFUL -> {
-                                    dashboardViewModel.onExpandToggle(BlockMode.LIMIT_BASED)
-                                    dashboardViewModel.onBlockModeCardClicked(BlockMode.LIMIT_BASED)
-                                }
+                                HomeProtectionMode.DEFAULT -> dashboardViewModel.onModeSelected(HomeProtectionMode.DEFAULT)
+                                HomeProtectionMode.MINDFUL -> dashboardViewModel.onModeSelected(HomeProtectionMode.MINDFUL)
+                                HomeProtectionMode.PAUSED  -> dashboardViewModel.onModeSelected(HomeProtectionMode.PAUSED)
                             }
                         },
+//                        onOverlayToggle = { enabled ->
+//                            dashboardViewModel.onOverlayReminderToggle(enabled)
+//                        },
                         onOverlayToggle = { enabled ->
+                            if (!permissionState.accessibilityGranted) {
+                                permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
+                                return@ReelBreakHomeSection
+                            }
                             dashboardViewModel.onOverlayReminderToggle(enabled)
                         },
                         onMindfulCountToggle = { enabled ->

@@ -58,8 +58,11 @@ import androidx.compose.material.icons.outlined.WatchLater
 import androidx.compose.material.icons.outlined.Bolt
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.SelfImprovement
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -79,15 +82,51 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.room.util.TableInfo
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.LottieDynamicProperties
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieDynamicProperties
+import com.airbnb.lottie.compose.rememberLottieDynamicProperty
+import com.practice.reelbreak.R
 import com.practice.reelbreak.ui.theme.LocalAppColors
 import kotlin.math.roundToInt
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.airbnb.lottie.compose.rememberLottieDynamicProperties
+import com.airbnb.lottie.compose.rememberLottieDynamicProperty
 enum class HomeProtectionMode {
     DEFAULT, PAUSED, MINDFUL
 }
@@ -113,6 +152,33 @@ data class DashboardHomeUiState(
     val mindfulRemainingMinutes: Int = 12,
 )
 
+private data class PowerButtonPalette(
+    val outerRing: Color,
+    val midRing: Color,
+    val innerFill: Color,
+    val iconColor: Color
+)
+
+private val defaultPalette = PowerButtonPalette(
+    outerRing  = Color(0xFF14532D),
+    midRing    = Color(0xFF22C55E),
+    innerFill  = Color(0xFF86EFAC),
+    iconColor  = Color(0xFF0F172A)
+)
+
+private val pausedPalette = PowerButtonPalette(
+    outerRing  = Color(0xFF854D0E),
+    midRing    = Color(0xFFEAB308),
+    innerFill  = Color(0xFFFEF08A),
+    iconColor  = Color(0xFF292524)
+)
+
+private val mindfulPalette = PowerButtonPalette(
+    outerRing  = Color(0xFF1E3A8A),
+    midRing    = Color(0xFF3B82F6),
+    innerFill  = Color(0xFF93C5FD),
+    iconColor  = Color(0xFF0F172A)
+)
 
 @Composable
 fun ReelBreakHomeSection(
@@ -128,6 +194,8 @@ fun ReelBreakHomeSection(
     onPermissionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -195,53 +263,333 @@ fun ReelBreakHomeSection(
     }
 }
 
+//@Composable
+//private fun ProtectionHeroCard(
+//    state: DashboardHomeUiState,
+//    onToggle: () -> Unit
+//) {
+//    val colors = LocalAppColors.current
+//    val accent = when {
+//        !state.isProtectionEnabled -> colors.textMuted
+//        state.selectedMode == HomeProtectionMode.DEFAULT -> colors.successGreen
+//        state.selectedMode == HomeProtectionMode.MINDFUL -> colors.blueAccent
+//        else -> colors.warningOrange
+//    }
+//
+//    val title = if (state.isProtectionEnabled) "PROTECTION ON" else "PROTECTION OFF"
+//    val statusText = rememberStatusText(state)
+//
+//    SurfaceCard(
+//        modifier = Modifier.fillMaxWidth(),
+//        innerPadding = PaddingValues(horizontal = 18.dp, vertical = 18.dp)
+//    ) {
+//        Column(
+//            horizontalAlignment = Alignment.CenterHorizontally,
+//            verticalArrangement = Arrangement.spacedBy(14.dp),
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            AnimatedProtectionButton(
+//                isOn = state.isProtectionEnabled,
+//                accent = accent,
+//                mode = state.selectedMode,
+//                onClick = onToggle
+//            )
+//
+//            Text(
+//                text = title,
+//                color = colors.textPrimary,
+//                fontSize = 15.sp,
+//                fontWeight = FontWeight.Bold,
+//                letterSpacing = 1.2.sp
+//            )
+//
+//            LiveStatusPill(
+//                text = statusText,
+//                color = accent,
+//                isEnabled = state.isProtectionEnabled
+//            )
+//        }
+//    }
+//}
+
+
 @Composable
 private fun ProtectionHeroCard(
     state: DashboardHomeUiState,
     onToggle: () -> Unit
 ) {
     val colors = LocalAppColors.current
+
     val accent = when {
-        !state.isProtectionEnabled -> colors.textMuted
-        state.selectedMode == HomeProtectionMode.DEFAULT -> colors.successGreen
-        state.selectedMode == HomeProtectionMode.MINDFUL -> colors.blueAccent
-        else -> colors.warningOrange
+        !state.isProtectionEnabled         -> colors.textMuted
+        state.selectedMode == HomeProtectionMode.DEFAULT  -> colors.successGreen
+        state.selectedMode == HomeProtectionMode.MINDFUL  -> colors.blueAccent
+        else                               -> colors.warningOrange
     }
 
-    val title = if (state.isProtectionEnabled) "PROTECTION ON" else "PROTECTION OFF"
-    val statusText = rememberStatusText(state)
+    val title = when {
+        !state.isProtectionEnabled -> "Protection Off"
+        state.selectedMode == HomeProtectionMode.PAUSED  -> "Paused"
+        state.selectedMode == HomeProtectionMode.DEFAULT -> "Protected"
+        else -> "Mindful"
+    }
 
+    val subtitle = when {
+        !state.isProtectionEnabled -> "Tap to enable protection."
+        state.selectedMode == HomeProtectionMode.DEFAULT -> "Reels are blocked instantly."
+        state.selectedMode == HomeProtectionMode.PAUSED  -> "Tracking on, blocking off."
+        else -> "Watching with self-set limits."
+    }
+
+    // ── Palette per mode ────────────────────────────────────────
+    val palette = when (state.selectedMode) {
+        HomeProtectionMode.DEFAULT -> defaultPalette
+        HomeProtectionMode.PAUSED  -> pausedPalette
+        HomeProtectionMode.MINDFUL -> mindfulPalette
+    }
+
+    // ── Lottie composition ──────────────────────────────────────
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.protection_animation)
+    )
+
+    val isPaused = state.selectedMode == HomeProtectionMode.PAUSED
+
+    val animProgress by animateLottieCompositionAsState(
+        composition = composition,
+        isPlaying   = state.isProtectionEnabled && !isPaused,
+        iterations  = LottieConstants.IterateForever,
+        speed = when (state.selectedMode) {
+            HomeProtectionMode.DEFAULT -> 1.0f
+            HomeProtectionMode.MINDFUL -> 0.70f
+            HomeProtectionMode.PAUSED  -> 0f
+        }
+    )
+
+    // Freeze paused at 90% frame so rings look fully expanded
+    val finalProgress = if (isPaused) 0.90f else animProgress
+
+    val dynamicProperties = rememberPowerButtonDynamicProperties(palette)
+
+    // ── UI ──────────────────────────────────────────────────────
     SurfaceCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier     = Modifier.fillMaxWidth(),
         innerPadding = PaddingValues(horizontal = 18.dp, vertical = 18.dp)
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier.fillMaxWidth()
+            modifier              = Modifier.fillMaxWidth(),
+            horizontalAlignment   = Alignment.CenterHorizontally,
+            verticalArrangement   = Arrangement.spacedBy(12.dp)
         ) {
-            AnimatedProtectionButton(
-                isOn = state.isProtectionEnabled,
-                accent = accent,
-                mode = state.selectedMode,
-                onClick = onToggle
-            )
 
-            Text(
-                text = title,
-                color = colors.textPrimary,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.2.sp
-            )
+            // Lottie button
+            Box(
+                modifier = Modifier
+                    .size(172.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                accent.copy(alpha = 0.14f),
+                                accent.copy(alpha = 0.05f),
+                                Color.Transparent
+                            )
+                        )
+                    )
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication        = null,
+                        onClick           = onToggle
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                if (composition != null) {
+                    LottieAnimation(
+                        composition       = composition,
+                        progress          = { finalProgress },
+                        dynamicProperties = dynamicProperties,
+                        modifier          = Modifier
+                            .size(124.dp)
+                            .alpha(if (isPaused) 0.80f else 1f)
+                    )
+                } else {
+                    // Fallback if Lottie not loaded yet
+                    Icon(
+                        imageVector = Icons.Outlined.Shield,
+                        contentDescription = null,
+                        tint = accent,
+                        modifier = Modifier.size(44.dp)
+                    )
+                }
+            }
 
+            // Title + subtitle
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(5.dp)
+            ) {
+                Text(
+                    text       = title,
+                    color      = colors.textPrimary,
+                    fontSize   = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.5.sp
+                )
+                Text(
+                    text      = subtitle,
+                    color     = colors.textSecondary,
+                    fontSize  = 13.sp,
+                    lineHeight = 18.sp,
+                    textAlign  = TextAlign.Center
+                )
+            }
+
+            // Status pill
             LiveStatusPill(
-                text = statusText,
-                color = accent,
+                text      = rememberStatusText(state),
+                color     = accent,
                 isEnabled = state.isProtectionEnabled
             )
+
+            // Mindful extra info
+            AnimatedVisibility(
+                visible = state.selectedMode == HomeProtectionMode.MINDFUL
+                        && state.isProtectionEnabled
+            ) {
+                Column(
+                    modifier            = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HorizontalDivider(
+                        color     = colors.borderSubtle.copy(alpha = 0.7f),
+                        thickness = 1.dp
+                    )
+                    Row(
+                        modifier            = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        HeroInfoChip(
+                            modifier = Modifier.weight(1f),
+                            title    = "Reels left",
+                            value    = "${state.mindfulRemainingCount}",
+                            accent   = colors.successGreen
+                        )
+                        HeroInfoChip(
+                            modifier = Modifier.weight(1f),
+                            title    = "Time left",
+                            value    = "${state.mindfulRemainingMinutes}m",
+                            accent   = colors.blueAccent
+                        )
+                    }
+                }
+            }
         }
     }
+}
+
+
+
+@Composable
+private fun HeroInfoChip(
+    title: String,
+    value: String,
+    accent: Color,
+    modifier: Modifier = Modifier
+) {
+    val colors = LocalAppColors.current
+
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(18.dp))
+            .background(
+                if (colors.isDark) Color.White.copy(alpha = 0.04f)
+                else accent.copy(alpha = 0.06f)
+            )
+            .border(
+                width = 1.dp,
+                color = accent.copy(alpha = 0.20f),
+                shape = RoundedCornerShape(18.dp)
+            )
+            .padding(horizontal = 14.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = value,
+            color = colors.textPrimary,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text(
+            text = title,
+            color = colors.textMuted,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+
+
+@Composable
+private fun rememberPowerButtonDynamicProperties(
+    palette: PowerButtonPalette
+): LottieDynamicProperties {
+    return rememberLottieDynamicProperties(
+
+        // Center power icon fill
+        rememberLottieDynamicProperty(
+            property = LottieProperty.COLOR,
+            value    = palette.iconColor.toArgb(),
+            keyPath  = arrayOf("Layer 7 Outlines", "Group 1", "Fill 1")
+        ),
+
+        // Outer rings (Shape Layer 1 and 2)
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value    = palette.outerRing.toArgb(),
+            keyPath  = arrayOf("Shape Layer 1", "Ellipse 1", "Stroke 1")
+        ),
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value    = palette.outerRing.toArgb(),
+            keyPath  = arrayOf("Shape Layer 2", "Ellipse 1", "Stroke 1")
+        ),
+
+        // Mid rings (Shape Layer 3 and 4)
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value    = palette.midRing.toArgb(),
+            keyPath  = arrayOf("Shape Layer 3", "Ellipse 1", "Stroke 1")
+        ),
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value    = palette.midRing.toArgb(),
+            keyPath  = arrayOf("Shape Layer 4", "Ellipse 1", "Stroke 1")
+        ),
+
+        // Inner stroke ring (Shape Layer 5)
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value    = palette.midRing.toArgb(),
+            keyPath  = arrayOf("Shape Layer 5", "Ellipse 1", "Stroke 1")
+        ),
+
+        // Innermost ring stroke (Shape Layer 6)
+        rememberLottieDynamicProperty(
+            property = LottieProperty.STROKE_COLOR,
+            value    = palette.outerRing.toArgb(),
+            keyPath  = arrayOf("Shape Layer 6", "Ellipse 1", "Stroke 1")
+        ),
+
+        // Inner circle fill (Shape Layer 6 Fill)
+        rememberLottieDynamicProperty(
+            property = LottieProperty.COLOR,
+            value    = palette.innerFill.toArgb(),
+            keyPath  = arrayOf("Shape Layer 6", "Ellipse 1", "Fill 1")
+        ),
+    )
 }
 
 @Composable

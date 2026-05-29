@@ -29,6 +29,7 @@ import android.graphics.PixelFormat
 import com.practice.reelbreak.core.overlay.ReelBreakOverlayCard
 import com.practice.reelbreak.data.preferences.UserPreferencesRepository
 import com.practice.reelbreak.domain.model.LimitResetPeriod
+import com.practice.reelbreak.domain.model.ProtectionMode
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -49,6 +50,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var overlayScope: CoroutineScope? = null
     private var isOverlayReminderEnabled = false
 
+    private var currentProtectionMode: ProtectionMode = ProtectionMode.DEFAULT
     private var currentOverlayUi: OverlayUiModel? = null
     private var liveTimerJob: Job? = null
     private var reelsScreenEnteredAt: Long? = null
@@ -260,6 +262,71 @@ class ReelsAccessibilityService : AccessibilityService() {
 
 
 
+//    private fun startOverlayUpdates(repository: UserPreferencesRepository) {
+//        overlayScope?.cancel()
+//        overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+//
+//        overlayScope?.launch {
+//            combine(
+//                repository.isOverlayReminderEnabled,
+//                combine(
+//                    repository.activeMode,
+//                    repository.dailyReelLimit,
+//                    repository.dailyTimeLimitMinutes
+//                ) { activeMode, reelLimit, timeLimitMinutes ->
+//                    Triple(activeMode, reelLimit, timeLimitMinutes)
+//                },
+//                combine(
+//                    repository.reelsWatchedToday,
+//                    repository.timeSpentTodayMillis,
+//                    repository.limitResetPeriod
+//                ) { reelsWatched, timeSpentMillis, resetPeriod ->
+//                    Triple(reelsWatched, timeSpentMillis, resetPeriod)
+//                }
+//            ) { overlayEnabled, left, right ->
+//                overlayEnabled to OverlayUiModel(
+//                    activeMode = left.first,
+//                    reelLimit = left.second,
+//                    timeLimitMinutes = left.third,
+//                    reelsWatched = right.first,
+//                    timeSpentMillis = right.second,
+//                    resetPeriod = right.third
+//                )
+//            }.collect { (overlayEnabled, ui) ->
+//                currentOverlayUi = ui
+//                persistedBaseTimeMillis = ui.timeSpentMillis
+//
+////                val shouldShow = overlayEnabled &&
+////                        ui.activeMode == ActiveBlockMode.LIMIT &&
+////                        detectionManager.isOnReelsScreen &&
+////                        (ui.reelLimit > 0 || ui.timeLimitMinutes > 0)
+//
+//                val shouldShow = detectionManager.isOnReelsScreen && when (currentProtectionMode) {
+//                    ProtectionMode.PAUSED   -> isOverlayReminderEnabled                 // user-controlled toggle
+//                    ProtectionMode.MINDFUL  -> true                                      // always show when on reels
+//                    ProtectionMode.DEFAULT  -> false                                     // never in default
+//                }
+//
+//                if (!shouldShow) {
+//                    liveTimerJob?.cancel()
+//                    liveTimerJob = null
+//                    reelsScreenEnteredAt = null
+//                    hideOverlay()
+//                    return@collect
+//                }
+//
+//                showOverlayIfNeeded()
+//
+//                if (reelsScreenEnteredAt == null) {
+//                    reelsScreenEnteredAt = System.currentTimeMillis()
+//                }
+//
+//                startLiveOverlayTimer()
+//            }
+//        }
+//    }
+
+
     private fun startOverlayUpdates(repository: UserPreferencesRepository) {
         overlayScope?.cancel()
         overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
@@ -268,11 +335,11 @@ class ReelsAccessibilityService : AccessibilityService() {
             combine(
                 repository.isOverlayReminderEnabled,
                 combine(
-                    repository.activeMode,
+                    repository.protectionMode,
                     repository.dailyReelLimit,
                     repository.dailyTimeLimitMinutes
-                ) { activeMode, reelLimit, timeLimitMinutes ->
-                    Triple(activeMode, reelLimit, timeLimitMinutes)
+                ) { protectionMode, reelLimit, timeLimitMinutes ->
+                    Triple(protectionMode, reelLimit, timeLimitMinutes)
                 },
                 combine(
                     repository.reelsWatchedToday,
@@ -283,7 +350,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 }
             ) { overlayEnabled, left, right ->
                 overlayEnabled to OverlayUiModel(
-                    activeMode = left.first,
+                    protectionMode = left.first,
                     reelLimit = left.second,
                     timeLimitMinutes = left.third,
                     reelsWatched = right.first,
@@ -294,10 +361,11 @@ class ReelsAccessibilityService : AccessibilityService() {
                 currentOverlayUi = ui
                 persistedBaseTimeMillis = ui.timeSpentMillis
 
-                val shouldShow = overlayEnabled &&
-                        ui.activeMode == ActiveBlockMode.LIMIT &&
-                        detectionManager.isOnReelsScreen &&
-                        (ui.reelLimit > 0 || ui.timeLimitMinutes > 0)
+                val shouldShow = detectionManager.isOnReelsScreen && when (ui.protectionMode) {
+                    ProtectionMode.PAUSED -> overlayEnabled
+                    ProtectionMode.MINDFUL -> true
+                    ProtectionMode.DEFAULT -> false
+                }
 
                 if (!shouldShow) {
                     liveTimerJob?.cancel()
@@ -308,11 +376,9 @@ class ReelsAccessibilityService : AccessibilityService() {
                 }
 
                 showOverlayIfNeeded()
-
                 if (reelsScreenEnteredAt == null) {
                     reelsScreenEnteredAt = System.currentTimeMillis()
                 }
-
                 startLiveOverlayTimer()
             }
         }
@@ -379,6 +445,15 @@ class ReelsAccessibilityService : AccessibilityService() {
         }
     }
 
+//    private fun startOverlayPreferenceCollection(repository: UserPreferencesRepository) {
+//        overlayScope?.launch {
+//            repository.isOverlayReminderEnabled.collect { enabled ->
+//                isOverlayReminderEnabled = enabled
+//                if (!enabled) hideOverlay()
+//            }
+//        }
+//    }
+
     private fun startOverlayPreferenceCollection(repository: UserPreferencesRepository) {
         overlayScope?.launch {
             repository.isOverlayReminderEnabled.collect { enabled ->
@@ -386,7 +461,68 @@ class ReelsAccessibilityService : AccessibilityService() {
                 if (!enabled) hideOverlay()
             }
         }
+        // ADD THIS
+        overlayScope?.launch {
+            repository.protectionMode.collect { mode ->
+                currentProtectionMode = mode
+                // When switching to DEFAULT, always hide overlay
+                if (mode == ProtectionMode.DEFAULT) hideOverlay()
+            }
+        }
     }
+
+
+//    private fun startLiveOverlayTimer() {
+//        if (liveTimerJob?.isActive == true) return
+//
+//        liveTimerJob = overlayScope?.launch {
+//            while (isActive) {
+//                val ui = currentOverlayUi
+//                val enteredAt = reelsScreenEnteredAt
+//
+//                if (ui == null || enteredAt == null || !detectionManager.isOnReelsScreen) {
+//                    hideOverlay()
+//                    break
+//                }
+//
+//                val liveTimeSpent = persistedBaseTimeMillis + (System.currentTimeMillis() - enteredAt)
+//
+////                overlayView?.setContent {
+////                    ReelBreakOverlayCard(
+////                        appLabel = "ReelBreak",
+////                        reelsText = if (ui.reelLimit > 0) {
+////                            "${ui.reelsWatched} / ${ui.reelLimit} reels"
+////                        } else null,
+////                        timeText = if (ui.timeLimitMinutes > 0) {
+////                            val totalSeconds = liveTimeSpent / 1000L
+////                            val spentMinutes = totalSeconds / 60
+////                            val spentSeconds = totalSeconds % 60
+////                            String.format("%02d:%02d / %02d:00", spentMinutes, spentSeconds, ui.timeLimitMinutes)
+////                        } else null,
+////                        periodLabel = when (ui.resetPeriod) {
+////                            LimitResetPeriod.HOUR -> "This hour"
+////                            LimitResetPeriod.DAY -> "Today"
+////                        }
+////                    )
+////                }
+//
+//                overlayView?.setContent {
+//                    ReelBreakOverlayCard(
+//                        reelsWatched = ui.reelsWatched,
+//                        reelLimit = ui.reelLimit,
+//                        timeDisplay = run {
+//                            val totalSeconds = liveTimeSpent / 1000L
+//                            String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
+//                        },
+//                        showReels = ui.reelLimit > 0,
+//                        showTimer = ui.timeLimitMinutes > 0
+//                    )
+//                }
+//
+//                delay(1000)
+//            }
+//        }
+//    }
 
 
     private fun startLiveOverlayTimer() {
@@ -404,24 +540,17 @@ class ReelsAccessibilityService : AccessibilityService() {
 
                 val liveTimeSpent = persistedBaseTimeMillis + (System.currentTimeMillis() - enteredAt)
 
-//                overlayView?.setContent {
-//                    ReelBreakOverlayCard(
-//                        appLabel = "ReelBreak",
-//                        reelsText = if (ui.reelLimit > 0) {
-//                            "${ui.reelsWatched} / ${ui.reelLimit} reels"
-//                        } else null,
-//                        timeText = if (ui.timeLimitMinutes > 0) {
-//                            val totalSeconds = liveTimeSpent / 1000L
-//                            val spentMinutes = totalSeconds / 60
-//                            val spentSeconds = totalSeconds % 60
-//                            String.format("%02d:%02d / %02d:00", spentMinutes, spentSeconds, ui.timeLimitMinutes)
-//                        } else null,
-//                        periodLabel = when (ui.resetPeriod) {
-//                            LimitResetPeriod.HOUR -> "This hour"
-//                            LimitResetPeriod.DAY -> "Today"
-//                        }
-//                    )
-//                }
+                val showReels = when (ui.protectionMode) {
+                    ProtectionMode.PAUSED -> true
+                    ProtectionMode.MINDFUL -> ui.reelLimit > 0
+                    ProtectionMode.DEFAULT -> false
+                }
+
+                val showTimer = when (ui.protectionMode) {
+                    ProtectionMode.PAUSED -> true
+                    ProtectionMode.MINDFUL -> ui.timeLimitMinutes > 0
+                    ProtectionMode.DEFAULT -> false
+                }
 
                 overlayView?.setContent {
                     ReelBreakOverlayCard(
@@ -431,8 +560,8 @@ class ReelsAccessibilityService : AccessibilityService() {
                             val totalSeconds = liveTimeSpent / 1000L
                             String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
                         },
-                        showReels = ui.reelLimit > 0,
-                        showTimer = ui.timeLimitMinutes > 0
+                        showReels = showReels,
+                        showTimer = showTimer
                     )
                 }
 
@@ -446,7 +575,7 @@ class ReelsAccessibilityService : AccessibilityService() {
 
 
 private data class OverlayUiModel(
-    val activeMode: ActiveBlockMode,
+    val protectionMode: ProtectionMode,
     val reelLimit: Int,
     val timeLimitMinutes: Int,
     val reelsWatched: Int,
