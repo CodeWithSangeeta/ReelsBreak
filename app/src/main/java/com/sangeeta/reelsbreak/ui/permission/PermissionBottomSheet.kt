@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.permission
+package com.sangeeta.reelsbreak.ui.permission
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,8 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.theme.AppColors
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.theme.AppColors
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 sealed class PermissionSheetType {
     object ACCESSIBILITY : PermissionSheetType()

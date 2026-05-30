@@ -1,7 +1,7 @@
-package com.practice.reelbreak.core.registry
+package com.sangeeta.reelsbreak.core.registry
 
 import androidx.annotation.DrawableRes
-import com.practice.reelbreak.R
+import com.sangeeta.reelsbreak.R
 
 data class ReelsSupportAppInfo(
     val packageName: String,

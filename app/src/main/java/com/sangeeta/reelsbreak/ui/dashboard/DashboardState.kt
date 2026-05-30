@@ -1,12 +1,12 @@
-package com.practice.reelbreak.ui.dashboard
+package com.sangeeta.reelsbreak.ui.dashboard
 
-import com.practice.reelbreak.domain.model.ActiveBlockMode
-import com.practice.reelbreak.domain.model.LimitResetPeriod
-import com.practice.reelbreak.domain.model.ProtectionMode
+import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
+import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
+import com.sangeeta.reelsbreak.domain.model.ProtectionMode
 
 enum class BlockMode { BLOCK_NOW, LIMIT_BASED }
 data class DashboardState(
-    val userName: String = "Sangeeta",
+    val userName: String = "sangeeta",
     val isDarkMode: Boolean = true,
     val reelsCount: Int = 0,
     val percentageIncrease: Int = 0,

@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.onboarding
+package com.sangeeta.reelsbreak.ui.onboarding
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
@@ -26,8 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.practice.reelbreak.R
-import com.practice.reelbreak.viewmodel.MainViewModel
+import com.sangeeta.reelsbreak.ui.onboarding.BlendedImage
+import com.sangeeta.reelsbreak.viewmodel.MainViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,7 +151,7 @@ fun OnboardingScreen(
 private fun WelcomePage(isCompact: Boolean) {
     PageLayout(isCompact = isCompact) {
         BlendedImage(
-            imageRes = R.drawable.gemini_generated_image_quxe1oquxe1oquxe,
+            imageRes = com.sangeeta.reelsbreak.R.drawable.gemini_generated_image_quxe1oquxe1oquxe ,
             contentDescription = "Welcome illustration",
             isCompact = isCompact
         )
@@ -192,7 +192,7 @@ private fun WelcomePage(isCompact: Boolean) {
 private fun HowItWorksPage(isCompact: Boolean) {
     PageLayout(isCompact = isCompact) {
         BlendedImage(
-            imageRes = R.drawable.gemini_generated_image_uhy2ueuhy2ueuhy2__1_,
+            imageRes =  com.sangeeta.reelsbreak.R.drawable.gemini_generated_image_uhy2ueuhy2ueuhy2__1_,
             contentDescription = "How it works illustration",
             isCompact = isCompact
         )
@@ -230,7 +230,7 @@ private fun HowItWorksPage(isCompact: Boolean) {
 private fun LimitsSetupPage(isCompact: Boolean) {
     PageLayout(isCompact = isCompact) {
         BlendedImage(
-            imageRes = R.drawable.gemini_generated_image_bp6w86bp6w86bp6w,
+            imageRes =  com.sangeeta.reelsbreak.R.drawable.gemini_generated_image_bp6w86bp6w86bp6w,
             contentDescription = "Limits illustration",
             isCompact = isCompact
         )
@@ -268,7 +268,7 @@ private fun LimitsSetupPage(isCompact: Boolean) {
 private fun AllSetPage(isCompact: Boolean) {
     PageLayout(isCompact = isCompact) {
         BlendedImage(
-            imageRes = R.drawable.gemini_generated_image_3flk23flk23flk23,
+            imageRes =  com.sangeeta.reelsbreak.R.drawable.gemini_generated_image_3flk23flk23flk23,
             contentDescription = "All set illustration",
             isCompact = isCompact
         )

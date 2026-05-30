@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.focused_mode
+package com.sangeeta.reelsbreak.ui.focused_mode
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -36,7 +36,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 @Composable
  fun TimerCard(

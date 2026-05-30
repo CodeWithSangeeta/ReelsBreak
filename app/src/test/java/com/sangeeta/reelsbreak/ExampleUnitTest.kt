@@ -1,4 +1,4 @@
-package com.practice.reelbreak
+package com.sangeeta.reelsbreak
 
 import org.junit.Test
 

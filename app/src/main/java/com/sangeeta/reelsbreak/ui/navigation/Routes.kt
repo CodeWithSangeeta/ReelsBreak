@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.navigation
+package com.sangeeta.reelsbreak.ui.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable

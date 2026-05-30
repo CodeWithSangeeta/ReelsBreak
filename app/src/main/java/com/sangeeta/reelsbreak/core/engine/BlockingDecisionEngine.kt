@@ -72,12 +72,11 @@
 
 
 
-package com.practice.reelbreak.core.engine
+package com.sangeeta.reelsbreak.core.engine
 
-import android.util.Log
-import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-import com.practice.reelbreak.domain.model.ActiveBlockMode
-import com.practice.reelbreak.domain.model.ProtectionMode
+import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
+import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
+import com.sangeeta.reelsbreak.domain.model.ProtectionMode
 import kotlinx.coroutines.flow.first
 
 class BlockingDecisionEngine(

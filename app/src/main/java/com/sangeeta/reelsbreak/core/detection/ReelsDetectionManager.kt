@@ -1,11 +1,11 @@
-package com.practice.reelbreak.core.detection
+package com.sangeeta.reelsbreak.core.detection
 
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import com.practice.reelbreak.core.action.ActionController
-import com.practice.reelbreak.core.engine.BlockingDecisionEngine
-import com.practice.reelbreak.core.registry.ReelsDetectionRegistry
-import com.practice.reelbreak.domain.model.ReelsSession
+import com.sangeeta.reelsbreak.core.action.ActionController
+import com.sangeeta.reelsbreak.core.engine.BlockingDecisionEngine
+import com.sangeeta.reelsbreak.core.registry.ReelsDetectionRegistry
+import com.sangeeta.reelsbreak.domain.model.ReelsSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

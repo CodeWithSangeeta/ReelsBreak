@@ -1,10 +1,10 @@
-package com.practice.reelbreak.core.permission
+package com.sangeeta.reelsbreak.core.permission
 
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import com.practice.reelbreak.core.accessibility.ReelsAccessibilityService
+import com.sangeeta.reelsbreak.core.accessibility.ReelsAccessibilityService
 
 object AccessibilityPermissionChecker {
 

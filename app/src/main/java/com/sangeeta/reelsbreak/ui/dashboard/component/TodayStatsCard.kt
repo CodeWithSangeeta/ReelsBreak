@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.dashboard.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -20,9 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.dashboard.DashboardHomeUiState
-import com.practice.reelbreak.ui.dashboard.HomeProtectionMode
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
+import com.sangeeta.reelsbreak.ui.dashboard.HomeProtectionMode
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 @Composable
 fun TodayStatsCard(

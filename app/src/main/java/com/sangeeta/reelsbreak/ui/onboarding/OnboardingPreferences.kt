@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.onboarding
+package com.sangeeta.reelsbreak.ui.onboarding
 
 import android.content.Context
 import androidx.datastore.core.DataStore

@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.settings
+package com.sangeeta.reelsbreak.ui.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,10 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.practice.reelbreak.ui.dashboard.component.AppScreenHeader
-import com.practice.reelbreak.ui.dashboard.component.MainScaffold
-import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.viewmodel.SettingsViewModel
+import com.sangeeta.reelsbreak.ui.dashboard.component.AppScreenHeader
+import com.sangeeta.reelsbreak.ui.dashboard.component.MainScaffold
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.viewmodel.SettingsViewModel
 
 data class SettingsState(
     val isNotificationsEnabled: Boolean = false,

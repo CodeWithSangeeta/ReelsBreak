@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.focused_mode
+package com.sangeeta.reelsbreak.ui.focused_mode
 
 import android.content.ComponentName
 import android.provider.Settings
@@ -36,14 +36,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.practice.reelbreak.core.accessibility.ReelsAccessibilityService
-import com.practice.reelbreak.ui.dashboard.component.AppScreenHeader
-import com.practice.reelbreak.ui.dashboard.component.MainScaffold
-import com.practice.reelbreak.ui.permission.PermissionBottomSheet
-import com.practice.reelbreak.ui.permission.PermissionSheetType
-import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.viewmodel.FocusViewModel
-import com.practice.reelbreak.viewmodel.PermissionsViewModel
+import com.sangeeta.reelsbreak.core.accessibility.ReelsAccessibilityService
+import com.sangeeta.reelsbreak.ui.dashboard.component.AppScreenHeader
+import com.sangeeta.reelsbreak.ui.dashboard.component.MainScaffold
+import com.sangeeta.reelsbreak.ui.permission.PermissionBottomSheet
+import com.sangeeta.reelsbreak.ui.permission.PermissionSheetType
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.viewmodel.FocusViewModel
+import com.sangeeta.reelsbreak.viewmodel.PermissionsViewModel
 import kotlinx.coroutines.delay
 
 fun isAccessibilityServiceEnabled(context: android.content.Context): Boolean {

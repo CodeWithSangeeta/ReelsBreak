@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.dashboard.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 
 @Composable

@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard
+package com.sangeeta.reelsbreak.ui.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
@@ -13,7 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 @Composable
 fun PermissionPagerIndicator(
     currentPage: Int,

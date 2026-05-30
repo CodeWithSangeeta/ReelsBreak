@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.focused_mode
+package com.sangeeta.reelsbreak.ui.focused_mode
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,12 +35,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SelectedAppsPreview(
-    selectedApps: List<com.practice.reelbreak.core.registry.FocusModeSupportAppInfo>,
+    selectedApps: List<com.sangeeta.reelsbreak.core.registry.FocusModeSupportAppInfo>,
     isEnabled: Boolean,
     onRemove: (String) -> Unit
 ) {

@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.dashboard.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

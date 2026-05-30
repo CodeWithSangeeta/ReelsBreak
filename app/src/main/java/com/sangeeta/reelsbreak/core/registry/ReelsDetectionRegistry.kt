@@ -1,4 +1,4 @@
-package com.practice.reelbreak.core.registry
+package com.sangeeta.reelsbreak.core.registry
 
 object ReelsDetectionRegistry {
     const val YOUTUBE = "com.google.android.youtube"

@@ -1,4 +1,4 @@
-package com.practice.reelbreak.domain.model
+package com.sangeeta.reelsbreak.domain.model
 
 data class ReelsSession(
     var currentApp: String? = null,

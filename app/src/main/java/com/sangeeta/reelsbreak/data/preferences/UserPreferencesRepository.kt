@@ -349,16 +349,16 @@
 
 
 
-package com.practice.reelbreak.data.preferences
+package com.sangeeta.reelsbreak.data.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import com.practice.reelbreak.domain.model.ActiveBlockMode
-import com.practice.reelbreak.domain.model.LimitResetPeriod
-import com.practice.reelbreak.domain.model.ProtectionMode
+import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
+import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
+import com.sangeeta.reelsbreak.domain.model.ProtectionMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map

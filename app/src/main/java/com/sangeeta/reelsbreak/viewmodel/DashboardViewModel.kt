@@ -264,17 +264,17 @@
 
 
 
-package com.practice.reelbreak.viewmodel
+package com.sangeeta.reelsbreak.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-import com.practice.reelbreak.domain.model.ActiveBlockMode
-import com.practice.reelbreak.domain.model.LimitResetPeriod
-import com.practice.reelbreak.domain.model.ProtectionMode
-import com.practice.reelbreak.ui.dashboard.BlockMode
-import com.practice.reelbreak.ui.dashboard.DashboardState
-import com.practice.reelbreak.ui.dashboard.HomeProtectionMode
+import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
+import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
+import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
+import com.sangeeta.reelsbreak.domain.model.ProtectionMode
+import com.sangeeta.reelsbreak.ui.dashboard.BlockMode
+import com.sangeeta.reelsbreak.ui.dashboard.DashboardState
+import com.sangeeta.reelsbreak.ui.dashboard.HomeProtectionMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -13,7 +13,7 @@
 //}
 
 
-package com.practice.reelbreak.domain.model
+package com.sangeeta.reelsbreak.domain.model
 
 enum class ActiveBlockMode(val value: Int) {
     STRICT(0),

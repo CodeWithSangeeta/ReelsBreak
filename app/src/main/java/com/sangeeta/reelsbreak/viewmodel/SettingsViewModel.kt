@@ -1,4 +1,4 @@
-package com.practice.reelbreak.viewmodel
+package com.sangeeta.reelsbreak.viewmodel
 
 import android.app.Application
 import android.content.ActivityNotFoundException
@@ -8,8 +8,8 @@ import android.net.Uri
 import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-import com.practice.reelbreak.ui.settings.SettingsState
+import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
+import com.sangeeta.reelsbreak.ui.settings.SettingsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

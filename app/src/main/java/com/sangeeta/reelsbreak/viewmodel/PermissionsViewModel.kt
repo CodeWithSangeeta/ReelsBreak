@@ -1,16 +1,16 @@
-package com.practice.reelbreak.viewmodel
+package com.sangeeta.reelsbreak.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.practice.reelbreak.core.permission.AccessibilityPermissionChecker
-import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-import com.practice.reelbreak.domain.model.PermissionState
-import com.practice.reelbreak.ui.focused_mode.isAccessibilityServiceEnabled
-import com.practice.reelbreak.ui.permission.PermissionSheetType
+import com.sangeeta.reelsbreak.core.permission.AccessibilityPermissionChecker
+import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
+import com.sangeeta.reelsbreak.domain.model.PermissionState
+import com.sangeeta.reelsbreak.ui.focused_mode.isAccessibilityServiceEnabled
+import com.sangeeta.reelsbreak.ui.permission.PermissionSheetType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import com.practice.reelbreak.ui.permission.PermissionUiState
+import com.sangeeta.reelsbreak.ui.permission.PermissionUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

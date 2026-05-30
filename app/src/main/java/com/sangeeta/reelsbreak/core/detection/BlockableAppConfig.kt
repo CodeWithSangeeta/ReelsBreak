@@ -185,7 +185,7 @@
 
 
 
-package com.practice.reelbreak.core.detection
+package com.sangeeta.reelsbreak.core.detection
 
 import android.graphics.Rect
 import android.view.accessibility.AccessibilityNodeInfo

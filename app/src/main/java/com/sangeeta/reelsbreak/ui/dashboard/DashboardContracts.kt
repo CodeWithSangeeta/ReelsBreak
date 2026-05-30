@@ -1,9 +1,9 @@
-package com.practice.reelbreak.ui.dashboard
+package com.sangeeta.reelsbreak.ui.dashboard
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.practice.reelbreak.ui.permission.PermissionSheetType
+import com.sangeeta.reelsbreak.ui.permission.PermissionSheetType
 
 enum class HomeProtectionMode {
     DEFAULT, PAUSED, MINDFUL

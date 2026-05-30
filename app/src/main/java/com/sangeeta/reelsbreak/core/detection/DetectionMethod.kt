@@ -1,4 +1,4 @@
-package com.practice.reelbreak.core.detection
+package com.sangeeta.reelsbreak.core.detection
 
 sealed class DetectionMethod {
     data class ViewId(val viewId: String) : DetectionMethod()

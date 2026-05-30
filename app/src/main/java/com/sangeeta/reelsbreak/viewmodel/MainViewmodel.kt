@@ -1,10 +1,10 @@
-package com.practice.reelbreak.viewmodel
+package com.sangeeta.reelsbreak.viewmodel
 
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.practice.reelbreak.ui.onboarding.OnboardingPreferences
+import com.sangeeta.reelsbreak.ui.onboarding.OnboardingPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

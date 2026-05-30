@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.navigation
+package com.sangeeta.reelsbreak.ui.navigation
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -19,14 +19,14 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import com.practice.reelbreak.ui.dashboard.DashboardScreen
-import com.practice.reelbreak.ui.focused_mode.FocusScreen
-import com.practice.reelbreak.ui.onboarding.OnboardingScreen
-import com.practice.reelbreak.ui.settings.SettingsScreen
-import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.viewmodel.DashboardViewModel
-import com.practice.reelbreak.viewmodel.MainViewModel
-import com.practice.reelbreak.viewmodel.PermissionsViewModel
+import com.sangeeta.reelsbreak.ui.dashboard.DashboardScreen
+import com.sangeeta.reelsbreak.ui.focused_mode.FocusScreen
+import com.sangeeta.reelsbreak.ui.onboarding.OnboardingScreen
+import com.sangeeta.reelsbreak.ui.settings.SettingsScreen
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.viewmodel.DashboardViewModel
+import com.sangeeta.reelsbreak.viewmodel.MainViewModel
+import com.sangeeta.reelsbreak.viewmodel.PermissionsViewModel
 
 @Composable
 fun AppNavigation(

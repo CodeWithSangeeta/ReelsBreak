@@ -1,4 +1,4 @@
-package com.practice.reelbreak
+package com.sangeeta.reelsbreak
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,12 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.practice.reelbreak.ui.navigation.AppNavigation
-import com.practice.reelbreak.ui.navigation.DashboardKey
-import com.practice.reelbreak.ui.navigation.OnboardingKey
-import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.viewmodel.DashboardViewModel
-import com.practice.reelbreak.viewmodel.MainViewModel
+import com.sangeeta.reelsbreak.ui.navigation.AppNavigation
+import com.sangeeta.reelsbreak.ui.navigation.DashboardKey
+import com.sangeeta.reelsbreak.ui.navigation.OnboardingKey
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.viewmodel.DashboardViewModel
+import com.sangeeta.reelsbreak.viewmodel.MainViewModel
 
 @Composable
 fun ReelsBreakApp(

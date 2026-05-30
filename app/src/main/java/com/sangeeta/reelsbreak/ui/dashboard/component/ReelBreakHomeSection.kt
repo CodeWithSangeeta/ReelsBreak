@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.dashboard.component
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.dashboard.DashboardHomeUiState
-import com.practice.reelbreak.ui.dashboard.HomeProtectionMode
-import com.practice.reelbreak.ui.dashboard.MindfulResetPeriod
+import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
+import com.sangeeta.reelsbreak.ui.dashboard.HomeProtectionMode
+import com.sangeeta.reelsbreak.ui.dashboard.MindfulResetPeriod
 
 @Composable
 fun ReelBreakHomeSection(

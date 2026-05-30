@@ -1,8 +1,8 @@
-package com.practice.reelbreak.ui.permission
+package com.sangeeta.reelsbreak.ui.permission
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.practice.reelbreak.domain.model.PermissionState
+import com.sangeeta.reelsbreak.domain.model.PermissionState
 
 data class PermissionUiModel(
     val title: String,

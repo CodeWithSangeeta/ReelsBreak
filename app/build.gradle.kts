@@ -12,11 +12,11 @@ plugins {
 }
 
 android {
-    namespace = "com.practice.reelbreak"
+    namespace = "com.sangeeta.reelsbreak"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.reelbreak.app"
+        applicationId = "com.sangeeta.reelsbreak"
         minSdk = 27
         targetSdk = 36
         versionCode = 1

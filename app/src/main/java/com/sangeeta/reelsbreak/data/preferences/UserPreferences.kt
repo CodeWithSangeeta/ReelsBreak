@@ -1,4 +1,4 @@
-package com.practice.reelbreak.data.preferences
+package com.sangeeta.reelsbreak.data.preferences
 
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey

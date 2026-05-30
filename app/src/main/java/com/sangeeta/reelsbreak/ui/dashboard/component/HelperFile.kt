@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.dashboard.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,8 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.dashboard.DashboardHomeUiState
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 
 @Composable

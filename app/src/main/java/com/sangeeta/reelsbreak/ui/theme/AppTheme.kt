@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.theme
+package com.sangeeta.reelsbreak.ui.theme
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme

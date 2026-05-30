@@ -1,4 +1,4 @@
-package com.practice.reelbreak.core.debug
+package com.sangeeta.reelsbreak.core.debug
 
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent

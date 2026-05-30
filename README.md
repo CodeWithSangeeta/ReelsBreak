@@ -168,7 +168,7 @@ ReelBreak requires **Accessibility permission** to detect short-form video scree
 
 ## Author
 
-**Sangeeta Yadav**
+**sangeeta Yadav**
 
 Android Developer focused on Jetpack Compose, accessibility-first design, and productivity apps.
 

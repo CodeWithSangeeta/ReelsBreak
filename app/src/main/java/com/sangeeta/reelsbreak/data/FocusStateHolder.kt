@@ -1,4 +1,4 @@
-package com.practice.reelbreak.data
+package com.sangeeta.reelsbreak.data
 
 
 object FocusStateHolder {

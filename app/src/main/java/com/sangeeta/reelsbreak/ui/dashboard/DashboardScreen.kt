@@ -251,7 +251,7 @@
 
 
 
-package com.practice.reelbreak.ui.dashboard
+package com.sangeeta.reelsbreak.ui.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -276,17 +276,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.practice.reelbreak.domain.model.ActiveBlockMode
-import com.practice.reelbreak.ui.dashboard.component.MainScaffold
-import com.practice.reelbreak.ui.permission.PermissionBottomSheet
-import com.practice.reelbreak.ui.permission.PermissionSheetType
-import com.practice.reelbreak.ui.theme.LocalAppColors
-import com.practice.reelbreak.viewmodel.DashboardViewModel
-import com.practice.reelbreak.viewmodel.PermissionsViewModel
-import com.practice.reelbreak.domain.model.LimitResetPeriod
-import com.practice.reelbreak.domain.model.ProtectionMode
-import com.practice.reelbreak.ui.dashboard.component.DashboardHeader
-import com.practice.reelbreak.ui.dashboard.component.ReelBreakHomeSection
+import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
+import com.sangeeta.reelsbreak.ui.dashboard.component.MainScaffold
+import com.sangeeta.reelsbreak.ui.permission.PermissionBottomSheet
+import com.sangeeta.reelsbreak.ui.permission.PermissionSheetType
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.viewmodel.DashboardViewModel
+import com.sangeeta.reelsbreak.viewmodel.PermissionsViewModel
+import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
+import com.sangeeta.reelsbreak.domain.model.ProtectionMode
+import com.sangeeta.reelsbreak.ui.dashboard.component.DashboardHeader
+import com.sangeeta.reelsbreak.ui.dashboard.component.ReelBreakHomeSection
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -1,7 +1,7 @@
-package com.practice.reelbreak
+package com.sangeeta.reelsbreak
 
 import android.content.Context
-import com.practice.reelbreak.data.preferences.UserPreferencesRepository
+import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

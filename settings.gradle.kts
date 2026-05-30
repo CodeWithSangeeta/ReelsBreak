@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ReelBreak"
+rootProject.name = "ReelsBreak"
 include(":app")
  

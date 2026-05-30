@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.focused_mode
+package com.sangeeta.reelsbreak.ui.focused_mode
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -24,8 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.practice.reelbreak.core.registry.FocusModeSupportedAppsCatalog
-import com.practice.reelbreak.ui.theme.LocalAppColors
+import com.sangeeta.reelsbreak.core.registry.FocusModeSupportedAppsCatalog
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 @Composable
 fun SupportedAppsCard(
