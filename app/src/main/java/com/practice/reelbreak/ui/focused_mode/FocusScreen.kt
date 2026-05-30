@@ -23,7 +23,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
@@ -38,8 +37,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.practice.reelbreak.core.accessibility.ReelsAccessibilityService
-import com.practice.reelbreak.ui.component.AppScreenHeader
-import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.dashboard.component.AppScreenHeader
+import com.practice.reelbreak.ui.dashboard.component.MainScaffold
 import com.practice.reelbreak.ui.permission.PermissionBottomSheet
 import com.practice.reelbreak.ui.permission.PermissionSheetType
 import com.practice.reelbreak.ui.theme.LocalAppColors

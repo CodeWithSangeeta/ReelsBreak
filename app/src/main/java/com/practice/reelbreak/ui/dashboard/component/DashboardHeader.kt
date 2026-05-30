@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.dashboard
+package com.practice.reelbreak.ui.dashboard.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +16,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.practice.reelbreak.ui.component.AppScreenHeader
 
 @Composable
 fun DashboardHeader(

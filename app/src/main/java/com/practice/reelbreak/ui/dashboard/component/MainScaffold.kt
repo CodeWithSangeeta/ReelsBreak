@@ -1,4 +1,4 @@
-package com.practice.reelbreak.ui.component
+package com.practice.reelbreak.ui.dashboard.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues

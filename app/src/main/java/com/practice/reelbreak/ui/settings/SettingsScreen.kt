@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.practice.reelbreak.ui.component.AppScreenHeader
-import com.practice.reelbreak.ui.component.MainScaffold
+import com.practice.reelbreak.ui.dashboard.component.AppScreenHeader
+import com.practice.reelbreak.ui.dashboard.component.MainScaffold
 import com.practice.reelbreak.ui.theme.LocalAppColors
 import com.practice.reelbreak.viewmodel.SettingsViewModel
 
