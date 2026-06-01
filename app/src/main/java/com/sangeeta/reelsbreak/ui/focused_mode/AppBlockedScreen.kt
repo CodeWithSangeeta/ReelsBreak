@@ -756,7 +756,7 @@ fun AppBlockedScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.reelsbreak_logo),
+                                painter = painterResource(id = R.drawable.applogo),
                                 contentDescription = "ReelBreak",
                                 modifier = Modifier.size(14.dp)
                             )

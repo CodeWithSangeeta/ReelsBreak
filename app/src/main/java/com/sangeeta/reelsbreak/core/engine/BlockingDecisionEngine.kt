@@ -35,7 +35,7 @@
 //        // DEFAULT: instant block always
 //        if (activeMode == ActiveBlockMode.STRICT && isStrictMode) return Decision.BLOCK
 //
-//        // MINDFUL: limit-based
+//        // CURIOUS: limit-based
 //        if (activeMode == ActiveBlockMode.LIMIT) {
 //            val isLimitExceeded = repository.isLimitExceededNow.first()
 //            if (isLimitExceeded) return Decision.BLOCK
@@ -59,7 +59,7 @@
 //
 //    suspend fun onReelAllowed() {
 //        val protectionMode = repository.protectionMode.first()
-//        // Count reels in PAUSED and MINDFUL, not in DEFAULT (DEFAULT blocks instantly anyway)
+//        // Count reels in PAUSED and CURIOUS, not in DEFAULT (DEFAULT blocks instantly anyway)
 //        if (protectionMode == ProtectionMode.DEFAULT) return
 //
 //        val activeMode = repository.activeMode.first()
@@ -107,14 +107,14 @@ class BlockingDecisionEngine(
         }
 
         // DEFAULT Protection Mode: Instant, un-timed block on all short-form content targets.
-        if (protectionMode == ProtectionMode.DEFAULT) {
+        if (protectionMode == ProtectionMode.FLOW) {
             if (activeMode == ActiveBlockMode.STRICT && isStrictMode) {
                 return Decision.BLOCK
             }
         }
 
-        // MINDFUL Protection Mode: Enforces specific count or time duration thresholds.
-        if (protectionMode == ProtectionMode.MINDFUL && activeMode == ActiveBlockMode.LIMIT) {
+        // CURIOUS Protection Mode: Enforces specific count or time duration thresholds.
+        if (protectionMode == ProtectionMode.CURIOUS && activeMode == ActiveBlockMode.LIMIT) {
             val isLimitExceeded = repository.isLimitExceededNow.first()
             if (isLimitExceeded) {
                 return Decision.BLOCK
@@ -158,7 +158,7 @@ class BlockingDecisionEngine(
         val protectionMode = repository.protectionMode.first()
 
         // Do not register increments if user is on absolute default system block mode
-        if (protectionMode == ProtectionMode.DEFAULT) return
+        if (protectionMode == ProtectionMode.FLOW) return
 
         val activeMode = repository.activeMode.first()
         if (activeMode != ActiveBlockMode.LIMIT) return

@@ -42,6 +42,8 @@ data class AppColors(
     val switchTrackOff: Color,
     val sheetBg: Color,
     val sheetDragHandle: Color,
+    val pausedAccent: Color,
+    val pausedAccentSoft: Color,
 )
 
 
@@ -72,6 +74,8 @@ fun darkAppColors() = AppColors(
     blueAccent    = Color(0xFF60A5FA),
     successGreen  = Color(0xFF34D399),
     warningOrange = Color(0xFFFBBF24),
+    pausedAccent = Color(0xFF9AA3B2),
+    pausedAccentSoft = Color(0xFF596173),
     errorRed      = Color(0xFFF87171),
 
     button        = Brush.linearGradient(listOf(Color(0xFF7C3AED), Color(0xFF4C1D95))),
@@ -125,6 +129,8 @@ fun lightAppColors() = AppColors(
     blueAccent      = Color(0xFF2A4BD0),
     successGreen    = Color(0xFF1A8048),
     warningOrange   = Color(0xFFD07000),
+    pausedAccent = Color(0xFF6B7280),
+    pausedAccentSoft = Color(0xFFD7DCE5),
     errorRed        = Color(0xFFCC1A1A),
 
     button          = Brush.linearGradient(listOf(Color(0xFF9B3DFF), Color(0xFF5A0EA8), Color(0xFF3A4FD0))),

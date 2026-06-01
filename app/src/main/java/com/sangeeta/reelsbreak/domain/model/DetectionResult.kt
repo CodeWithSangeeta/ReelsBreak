@@ -1,14 +1,7 @@
 package com.sangeeta.reelsbreak.domain.model
 
-enum class DetectionResult {
-    REELS_SCREEN,
-    NORMAL_SCREEN,
-    UNKNOWN
-}
-
-
 enum class ProtectionMode {
     PAUSED,
-    DEFAULT,
-    MINDFUL
+    FLOW,
+   CURIOUS
 }

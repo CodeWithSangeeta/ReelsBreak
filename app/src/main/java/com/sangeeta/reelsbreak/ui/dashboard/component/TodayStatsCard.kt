@@ -29,7 +29,7 @@ fun TodayStatsCard(
     state: DashboardHomeUiState
 ) {
     val colors = LocalAppColors.current
-    val showMindfulColumn = state.selectedMode == HomeProtectionMode.MINDFUL && state.isProtectionEnabled
+    val showMindfulColumn = state.selectedMode == HomeProtectionMode.CURIOUS && state.isProtectionEnabled
     val isEmpty = !state.isProtectionEnabled && state.reelsClosedToday == 0 && state.timeBackTodayMinutes == 0
 
     SurfaceCard(

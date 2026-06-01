@@ -78,52 +78,6 @@ import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
     )
 }
 
-//@Composable
-//fun ToggleRow(
-//    icon: ImageVector,
-//    iconBg: Color,
-//    iconTint: Color,
-//    title: String,
-//    subtitle: String,
-//    isEnabled: Boolean,
-//    onToggle: (Boolean) -> Unit
-//) {
-//    val colors = LocalAppColors.current
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .padding(vertical = 12.dp),
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.spacedBy(12.dp)
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                .size(40.dp)
-//                .clip(CircleShape)
-//                .background(if (colors.isDark) colors.switchTrackOff else iconBg),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Icon(imageVector = icon, contentDescription = null, tint = if (colors.isDark) colors.purpleSoft else iconTint, modifier = Modifier.size(20.dp))
-//        }
-//        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-//            Text(text = title, color =colors.textPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
-//            Text(text = subtitle, color =colors.textSecondary, fontSize = 12.sp)
-//        }
-//        Switch(
-//            checked = isEnabled,
-//            onCheckedChange = onToggle,
-//            colors = SwitchDefaults.colors(
-//                checkedThumbColor = Color.White,
-//                checkedTrackColor = colors.switchTrackOn,
-//                uncheckedThumbColor = colors.textMuted,
-//                uncheckedTrackColor = colors.switchTrackOff,
-//                uncheckedBorderColor = colors.borderSubtle
-//            )
-//        )
-//    }
-//}
-
-
 
 @Composable
 fun ToggleRow(

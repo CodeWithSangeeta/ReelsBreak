@@ -19,7 +19,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
 import kotlinx.coroutines.flow.combine
 import android.graphics.PixelFormat
-import com.sangeeta.reelsbreak.core.overlay.ReelBreakOverlayCard
+import com.sangeeta.reelsbreak.ui.dashboard.ReelBreakOverlayCard
 import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
 import com.sangeeta.reelsbreak.domain.model.ProtectionMode
@@ -190,7 +190,7 @@ import javax.inject.Inject
 //
 //                val shouldShow = detectionManager.isOnReelsScreen && when (ui.protectionMode) {
 //                    ProtectionMode.PAUSED -> overlayEnabled
-//                    ProtectionMode.MINDFUL -> true
+//                    ProtectionMode.CURIOUS -> true
 //                    ProtectionMode.DEFAULT -> false
 //                }
 //
@@ -285,13 +285,13 @@ import javax.inject.Inject
 //
 //                val showReels = when (ui.protectionMode) {
 //                    ProtectionMode.PAUSED -> true
-//                    ProtectionMode.MINDFUL -> ui.reelLimit > 0
+//                    ProtectionMode.CURIOUS -> ui.reelLimit > 0
 //                    ProtectionMode.DEFAULT -> false
 //                }
 //
 //                val showTimer = when (ui.protectionMode) {
 //                    ProtectionMode.PAUSED -> true
-//                    ProtectionMode.MINDFUL -> ui.timeLimitMinutes > 0
+//                    ProtectionMode.CURIOUS -> ui.timeLimitMinutes > 0
 //                    ProtectionMode.DEFAULT -> false
 //                }
 //
@@ -341,7 +341,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var overlayScope: CoroutineScope? = null
     private var isOverlayReminderEnabled = false
 
-    private var currentProtectionMode: ProtectionMode = ProtectionMode.DEFAULT
+    private var currentProtectionMode: ProtectionMode = ProtectionMode.FLOW
     private var currentOverlayUi: OverlayUiModel? = null
     private var liveTimerJob: Job? = null
     private var reelsScreenEnteredAt: Long? = null
@@ -488,8 +488,8 @@ class ReelsAccessibilityService : AccessibilityService() {
 
                 val shouldShow = detectionManager.isOnReelsScreen && when (ui.protectionMode) {
                     ProtectionMode.PAUSED -> overlayEnabled
-                    ProtectionMode.MINDFUL -> true
-                    ProtectionMode.DEFAULT -> false
+                    ProtectionMode.CURIOUS -> true
+                    ProtectionMode.FLOW -> false
                 }
 
                 if (!shouldShow) {
@@ -561,7 +561,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         overlayScope?.launch {
             repository.protectionMode.collect { mode ->
                 currentProtectionMode = mode
-                if (mode == ProtectionMode.DEFAULT) hideOverlay()
+                if (mode == ProtectionMode.FLOW) hideOverlay()
             }
         }
     }
@@ -583,14 +583,14 @@ class ReelsAccessibilityService : AccessibilityService() {
 
                 val showReels = when (ui.protectionMode) {
                     ProtectionMode.PAUSED -> true
-                    ProtectionMode.MINDFUL -> ui.reelLimit > 0
-                    ProtectionMode.DEFAULT -> false
+                    ProtectionMode.CURIOUS -> ui.reelLimit > 0
+                    ProtectionMode.FLOW -> false
                 }
 
                 val showTimer = when (ui.protectionMode) {
                     ProtectionMode.PAUSED -> true
-                    ProtectionMode.MINDFUL -> ui.timeLimitMinutes > 0
-                    ProtectionMode.DEFAULT -> false
+                    ProtectionMode.CURIOUS -> ui.timeLimitMinutes > 0
+                    ProtectionMode.FLOW -> false
                 }
 
                 overlayView?.setContent {

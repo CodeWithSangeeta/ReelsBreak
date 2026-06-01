@@ -59,8 +59,8 @@ fun VerticalDivider() {
 
 fun mindfulRemainingShort(state: DashboardHomeUiState): String {
     val pieces = buildList {
-        if (state.mindfulCountEnabled) add("${state.mindfulRemainingCount} reels")
-        if (state.mindfulTimeEnabled) add("${state.mindfulRemainingMinutes}m")
+        if (state.curiousCountEnabled) add("${state.curiousRemainingCount} reels")
+        if (state.curiousTimeEnabled) add("${state.curiousRemainingMinutes}m")
     }
     return pieces.ifEmpty { listOf("—") }.joinToString(" • ")
 }

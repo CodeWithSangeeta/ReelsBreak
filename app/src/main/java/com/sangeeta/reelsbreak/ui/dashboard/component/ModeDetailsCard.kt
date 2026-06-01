@@ -39,12 +39,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
-import com.sangeeta.reelsbreak.ui.dashboard.MindfulResetPeriod
+import com.sangeeta.reelsbreak.ui.dashboard.CuriousResetPeriod
 import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 import kotlin.math.roundToInt
 
 @Composable
-fun DefaultModeDetailsCard(
+fun FlowModeDetailsCard(
     isActuallyActive: Boolean
 ) {
     val colors = LocalAppColors.current
@@ -132,7 +132,7 @@ fun DefaultModeDetailsCard(
                 text = if (isProtectionEnabled) {
                     "Protection is on, but currently paused. Use this when you want a short break without changing your saved setup."
                 } else {
-                    "Protection is currently off. You can switch back to Default or Mindful any time."
+                    "Protection is currently off. You can switch back to Default or Curious any time."
                 },
                 color = colors.textSecondary,
                 fontSize = 13.sp,
@@ -144,26 +144,26 @@ fun DefaultModeDetailsCard(
             FeatureRow(
                 icon = Icons.Outlined.Pause,
                 title = "Temporarily relaxes protection",
-                tint = colors.warningOrange
+                tint = colors.pausedAccent
             )
 
             FeatureRow(
                 icon = Icons.Outlined.TipsAndUpdates,
                 title = "Keeps your settings ready for later",
-                tint = colors.warningOrange
+                tint = colors.pausedAccent
             )
         }
     }
 }
 
 @Composable
-fun MindfulModeDetailsCard(
+fun CuriousModeDetailsCard(
     state: DashboardHomeUiState,
     onCountToggle: (Boolean) -> Unit,
     onTimeToggle: (Boolean) -> Unit,
     onReelsLimitChange: (Int) -> Unit,
     onTimeLimitChange: (Int) -> Unit,
-    onPeriodChange: (MindfulResetPeriod) -> Unit
+    onPeriodChange: (CuriousResetPeriod) -> Unit
 ) {
     val colors = LocalAppColors.current
 
@@ -175,7 +175,7 @@ fun MindfulModeDetailsCard(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
-                text = "Mindful Mode",
+                text = "Curious Mode",
                 color = colors.textPrimary,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Bold
@@ -189,24 +189,24 @@ fun MindfulModeDetailsCard(
 
             HorizontalDivider(color = colors.borderSubtle.copy(alpha = 0.8f), thickness = 1.dp)
 
-            MindfulToggleSliderBlock(
+            CuriousToggleSliderBlock(
                 title = "Limit by reels count",
-                valueLabel = "${state.mindfulReelsLimit} reels",
-                enabled = state.mindfulCountEnabled,
+                valueLabel = "${state.curiousReelsLimit} reels",
+                enabled = state.curiousCountEnabled,
                 accent = colors.successGreen,
-                sliderValue = state.mindfulReelsLimit.toFloat(),
+                sliderValue = state.curiousReelsLimit.toFloat(),
                 valueRange = 1f..100f,
                 steps = 98,
                 onToggle = onCountToggle,
                 onValueChange = { onReelsLimitChange(it.roundToInt()) }
             )
 
-            MindfulToggleSliderBlock(
+            CuriousToggleSliderBlock(
                 title = "Limit by watch time",
-                valueLabel = "${state.mindfulTimeLimitMinutes} min",
-                enabled = state.mindfulTimeEnabled,
+                valueLabel = "${state.curiousTimeLimitMinutes} min",
+                enabled = state.curiousTimeEnabled,
                 accent = colors.blueAccent,
-                sliderValue = state.mindfulTimeLimitMinutes.toFloat(),
+                sliderValue = state.curiousTimeLimitMinutes.toFloat(),
                 valueRange = 5f..180f,
                 steps = 34,
                 onToggle = onTimeToggle,
@@ -228,15 +228,15 @@ fun MindfulModeDetailsCard(
                 ) {
                     PeriodChip(
                         text = "Per hour",
-                        selected = state.mindfulResetPeriod == MindfulResetPeriod.HOUR,
+                        selected = state.curiousResetPeriod == CuriousResetPeriod.HOUR,
                         accent = colors.successGreen,
-                        onClick = { onPeriodChange(MindfulResetPeriod.HOUR) }
+                        onClick = { onPeriodChange(CuriousResetPeriod.HOUR) }
                     )
                     PeriodChip(
                         text = "Per day",
-                        selected = state.mindfulResetPeriod == MindfulResetPeriod.DAY,
+                        selected = state.curiousResetPeriod == CuriousResetPeriod.DAY,
                         accent = colors.blueAccent,
-                        onClick = { onPeriodChange(MindfulResetPeriod.DAY) }
+                        onClick = { onPeriodChange(CuriousResetPeriod.DAY) }
                     )
                 }
             }
@@ -254,7 +254,7 @@ fun MindfulModeDetailsCard(
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
-                    text = buildMindfulSummary(state),
+                    text = buildCuriousSummary(state),
                     color = colors.textSecondary,
                     fontSize = 12.sp,
                     lineHeight = 18.sp
@@ -354,7 +354,7 @@ private fun SmallBadge(
 
 
 @Composable
-private fun MindfulToggleSliderBlock(
+private fun CuriousToggleSliderBlock(
     title: String,
     valueLabel: String,
     enabled: Boolean,
@@ -425,13 +425,13 @@ private fun MindfulToggleSliderBlock(
 }
 
 
-private fun buildMindfulSummary(state: DashboardHomeUiState): String {
+private fun buildCuriousSummary(state: DashboardHomeUiState): String {
     val parts = buildList {
-        if (state.mindfulCountEnabled) add("${state.mindfulReelsLimit} reels")
-        if (state.mindfulTimeEnabled) add("${state.mindfulTimeLimitMinutes} min")
+        if (state.curiousCountEnabled) add("${state.curiousReelsLimit} reels")
+        if (state.curiousTimeEnabled) add("${state.curiousTimeLimitMinutes} min")
     }
 
     val base = if (parts.isEmpty()) "No limit selected" else parts.joinToString(" and ")
-    val period = if (state.mindfulResetPeriod == MindfulResetPeriod.HOUR) "per hour" else "per day"
+    val period = if (state.curiousResetPeriod == CuriousResetPeriod.HOUR) "per hour" else "per day"
     return "Limit: $base $period"
 }

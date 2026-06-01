@@ -29,7 +29,7 @@ fun AppScreenHeader(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(132.dp)
+            .height(100.dp)
             .clip(RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp))
             .background(
                 colors.appColor
@@ -48,7 +48,7 @@ fun AppScreenHeader(
             )
 
             .padding(horizontal = 20.dp)
-            .padding(top = 42.dp, bottom = 20.dp)
+            .padding(top = 26.dp, bottom = 16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()

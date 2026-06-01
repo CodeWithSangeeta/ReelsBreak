@@ -1,4 +1,4 @@
-package com.sangeeta.reelsbreak.core.overlay
+package com.sangeeta.reelsbreak.ui.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,63 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
-//@Composable
-//fun ReelBreakOverlayCard(
-//    appLabel: String,
-//    reelsText: String?,
-//    timeText: String?,
-//    periodLabel: String
-//) {
-//    Column(
-//        verticalArrangement = Arrangement.spacedBy(4.dp),
-//        modifier = Modifier
-//            .background(
-//                color = Color(0xCC111827),
-//                shape = RoundedCornerShape(14.dp)
-//            )
-//            .padding(horizontal = 12.dp, vertical = 10.dp)
-//    ) {
-//        Text(
-//            text = appLabel,
-//            style = MaterialTheme.typography.labelLarge,
-//            color = Color.White
-//        )
-//
-//        reelsText?.let {
-//            Text(
-//                text = it,
-//                style = MaterialTheme.typography.bodySmall,
-//                color = Color(0xFFD1FAE5)
-//            )
-//        }
-//
-//        timeText?.let {
-//            Text(
-//                text = it,
-//                style = MaterialTheme.typography.bodySmall,
-//                color = Color(0xFFBFDBFE)
-//            )
-//        }
-//
-//        Text(
-//            text = periodLabel,
-//            style = MaterialTheme.typography.labelSmall,
-//            color = Color(0xFF9CA3AF)
-//        )
-//    }
-//}
-
-
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.outlined.Slideshow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -80,13 +32,15 @@ fun ReelBreakOverlayCard(
     showReels: Boolean,
     showTimer: Boolean
 ) {
+   val  appColor = Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(50.dp))
-            .background(Color(0xF00D0D0D))
+            .background(appColor)
             .border(
                 width = 1.dp,
-                color = Color.White.copy(alpha = 0.15f),
+              //  color = Color.White.copy(alpha = 0.15f),
+                color = Color.White,
                 shape = RoundedCornerShape(50.dp)
             )
             .padding(horizontal = 20.dp, vertical = 12.dp),
@@ -94,15 +48,13 @@ fun ReelBreakOverlayCard(
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
 
-        // ── App Logo ──────────────────────────────────────
         Icon(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.applogo),
             contentDescription = "ReelBreak",
             tint = Color.Unspecified,
             modifier = Modifier.size(36.dp)
         )
 
-        // ── Reel Counter ──────────────────────────────────
         if (showReels) {
             Box(
                 modifier = Modifier
@@ -115,24 +67,23 @@ fun ReelBreakOverlayCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Circular ring icon around slideshow
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .border(
-                            width = 2.dp,
-                            color = Color.White.copy(alpha = 0.35f),
-                            shape = RoundedCornerShape(50.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Slideshow,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .size(36.dp)
+//                        .border(
+//                            width = 2.dp,
+//                            color = Color.White.copy(alpha = 0.35f),
+//                            shape = RoundedCornerShape(50.dp)
+//                        ),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Outlined.Slideshow,
+//                        contentDescription = null,
+//                        tint = Color.White,
+//                        modifier = Modifier.size(20.dp)
+//                    )
+//                }
 
                 Column(horizontalAlignment = Alignment.Start) {
                     Text(
@@ -154,7 +105,6 @@ fun ReelBreakOverlayCard(
             }
         }
 
-        // ── Timer ─────────────────────────────────────────
         if (showTimer) {
             Box(
                 modifier = Modifier
@@ -167,35 +117,34 @@ fun ReelBreakOverlayCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Circular ring around stopwatch icon
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .border(
-                            width = 2.dp,
-                            color = Color.White.copy(alpha = 0.35f),
-                            shape = RoundedCornerShape(50.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Timer,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .size(36.dp)
+//                        .border(
+//                            width = 2.dp,
+//                            color = Color.White.copy(alpha = 0.35f),
+//                            shape = RoundedCornerShape(50.dp)
+//                        ),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Outlined.Timer,
+//                        contentDescription = null,
+//                        tint = Color.White,
+//                        modifier = Modifier.size(20.dp)
+//                    )
+//                }
 
                 Column(horizontalAlignment = Alignment.Start) {
                     Text(
-                        text = timeDisplay,          // "MM:SS"
+                        text = timeDisplay,
                         color = Color.White,
                         fontSize = 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         lineHeight = 22.sp
                     )
                     Text(
-                        text = "TIME LEFT",
+                        text = "TIMER",
                         color = Color.White.copy(alpha = 0.50f),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,

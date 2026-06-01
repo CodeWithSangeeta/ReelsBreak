@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.sangeeta.reelsbreak.ui.dashboard.CuriousResetPeriod
 import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
 import com.sangeeta.reelsbreak.ui.dashboard.HomeProtectionMode
-import com.sangeeta.reelsbreak.ui.dashboard.MindfulResetPeriod
 
 @Composable
 fun ReelBreakHomeSection(
@@ -19,11 +19,11 @@ fun ReelBreakHomeSection(
     onProtectionToggle: () -> Unit,
     onModeSelected: (HomeProtectionMode) -> Unit,
     onOverlayToggle: (Boolean) -> Unit,
-    onMindfulCountToggle: (Boolean) -> Unit,
-    onMindfulTimeToggle: (Boolean) -> Unit,
-    onMindfulReelsLimitChange: (Int) -> Unit,
-    onMindfulTimeLimitChange: (Int) -> Unit,
-    onMindfulPeriodChange: (MindfulResetPeriod) -> Unit,
+    onCuriousCountToggle: (Boolean) -> Unit,
+    onCuriousTimeToggle: (Boolean) -> Unit,
+    onCuriousReelsLimitChange: (Int) -> Unit,
+    onCuriousTimeLimitChange: (Int) -> Unit,
+    onCuriousPeriodChange: (CuriousResetPeriod) -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -33,12 +33,7 @@ fun ReelBreakHomeSection(
     ) {
         ProtectionCard(
             state = state,
-            onToggle = onProtectionToggle
-        )
-
-        ModeSelection(
-            selectedMode = state.selectedMode,
-            isProtectionEnabled = state.isProtectionEnabled,
+            onToggle = onProtectionToggle,
             onModeSelected = onModeSelected
         )
 
@@ -51,10 +46,10 @@ fun ReelBreakHomeSection(
             label = "modeCardCrossfade"
         ) { mode ->
             when (mode) {
-                HomeProtectionMode.DEFAULT -> {
-                    DefaultModeDetailsCard(
+                HomeProtectionMode.FLOW -> {
+                    FlowModeDetailsCard(
                         isActuallyActive = state.isProtectionEnabled &&
-                                state.selectedMode == HomeProtectionMode.DEFAULT
+                                state.selectedMode == HomeProtectionMode.FLOW
                     )
                 }
 
@@ -64,14 +59,14 @@ fun ReelBreakHomeSection(
                     )
                 }
 
-                HomeProtectionMode.MINDFUL -> {
-                    MindfulModeDetailsCard(
+                HomeProtectionMode.CURIOUS -> {
+                    CuriousModeDetailsCard(
                         state = state,
-                        onCountToggle = onMindfulCountToggle,
-                        onTimeToggle = onMindfulTimeToggle,
-                        onReelsLimitChange = onMindfulReelsLimitChange,
-                        onTimeLimitChange = onMindfulTimeLimitChange,
-                        onPeriodChange = onMindfulPeriodChange
+                        onCountToggle = onCuriousCountToggle,
+                        onTimeToggle = onCuriousTimeToggle,
+                        onReelsLimitChange = onCuriousReelsLimitChange,
+                        onTimeLimitChange = onCuriousTimeLimitChange,
+                        onPeriodChange = onCuriousPeriodChange
                     )
                 }
             }

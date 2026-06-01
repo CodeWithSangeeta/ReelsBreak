@@ -170,7 +170,7 @@ fun PermissionBottomSheet(
 }
 
 @Composable
-private fun PermissionIconSection(
+fun PermissionIconSection(
     icon: ImageVector,
     iconTint: Color,
     glowColor: Color,
@@ -208,7 +208,7 @@ private fun PermissionIconSection(
 }
 
 @Composable
-private fun TitleWithBadge(
+fun TitleWithBadge(
     title: String,
     badgeLabel: String,
     isMandatory: Boolean
