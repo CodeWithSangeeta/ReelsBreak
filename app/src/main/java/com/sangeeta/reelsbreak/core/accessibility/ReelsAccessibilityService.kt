@@ -1,41 +1,43 @@
-package com.sangeeta.reelsbreak.core.accessibility
-
-import android.accessibilityservice.AccessibilityService
-import android.accessibilityservice.AccessibilityServiceInfo
-import android.util.Log
-import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
-import com.sangeeta.reelsbreak.core.action.ActionController
-import com.sangeeta.reelsbreak.core.detection.ReelsDetectionManager
-import com.sangeeta.reelsbreak.core.engine.BlockingDecisionEngine
-import com.sangeeta.reelsbreak.data.FocusStateHolder
-import com.sangeeta.reelsbreak.core.registry.ReelsDetectionRegistry
-import android.os.PowerManager
-import android.view.Gravity
-import android.view.WindowManager
-import androidx.compose.ui.platform.ComposeView
-import androidx.lifecycle.setViewTreeLifecycleOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
-import kotlinx.coroutines.flow.combine
-import android.graphics.PixelFormat
-import com.sangeeta.reelsbreak.ui.dashboard.ReelBreakOverlayCard
-import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
-import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
-import com.sangeeta.reelsbreak.domain.model.ProtectionMode
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import javax.inject.Inject
-
+//package com.sangeeta.reelsbreak.core.accessibility
+//
+//import android.accessibilityservice.AccessibilityService
+//import android.accessibilityservice.AccessibilityServiceInfo
+//import android.util.Log
+//import android.view.accessibility.AccessibilityEvent
+//import android.view.accessibility.AccessibilityNodeInfo
+//import com.sangeeta.reelsbreak.core.action.ActionController
+//import com.sangeeta.reelsbreak.core.detection.ReelsDetectionManager
+//import com.sangeeta.reelsbreak.core.engine.BlockingDecisionEngine
+//import com.sangeeta.reelsbreak.data.FocusStateHolder
+//import com.sangeeta.reelsbreak.core.registry.ReelsDetectionRegistry
+//import android.os.PowerManager
+//import android.view.Gravity
+//import android.view.WindowManager
+//import androidx.compose.ui.platform.ComposeView
+//import androidx.lifecycle.setViewTreeLifecycleOwner
+//import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+//import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
+//import kotlinx.coroutines.flow.combine
+//import android.graphics.PixelFormat
+//import com.sangeeta.reelsbreak.ui.dashboard.ReelBreakOverlayCard
+//import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
+//import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
+//import com.sangeeta.reelsbreak.domain.model.ProtectionMode
+//import dagger.hilt.android.AndroidEntryPoint
+//import kotlinx.coroutines.CoroutineScope
+//import kotlinx.coroutines.Dispatchers
+//import kotlinx.coroutines.SupervisorJob
+//import kotlinx.coroutines.Job
+//import kotlinx.coroutines.cancel
+//import kotlinx.coroutines.delay
+//import kotlinx.coroutines.isActive
+//import kotlinx.coroutines.launch
+//import javax.inject.Inject
+//
 //@AndroidEntryPoint
 //class ReelsAccessibilityService : AccessibilityService() {
+//
+//    // Clean native injection handling via Hilt field tokens
 //    @Inject
 //    lateinit var repository: UserPreferencesRepository
 //
@@ -51,7 +53,7 @@ import javax.inject.Inject
 //    private var overlayScope: CoroutineScope? = null
 //    private var isOverlayReminderEnabled = false
 //
-//    private var currentProtectionMode: ProtectionMode = ProtectionMode.DEFAULT
+//    private var currentProtectionMode: ProtectionMode = ProtectionMode.FLOW
 //    private var currentOverlayUi: OverlayUiModel? = null
 //    private var liveTimerJob: Job? = null
 //    private var reelsScreenEnteredAt: Long? = null
@@ -59,6 +61,7 @@ import javax.inject.Inject
 //
 //    override fun onServiceConnected() {
 //        super.onServiceConnected()
+//
 //        val info = serviceInfo ?: return
 //        info.packageNames = arrayOf(
 //            "com.google.android.youtube",
@@ -74,6 +77,7 @@ import javax.inject.Inject
 //
 //        serviceInfo = info
 //
+//        // Set up execution blocks safely using our injected repository field reference
 //        engine = BlockingDecisionEngine(repository)
 //        actionController = ActionController(this)
 //        detectionManager = ReelsDetectionManager(actionController, engine)
@@ -140,10 +144,16 @@ import javax.inject.Inject
 //        }
 //    }
 //
-//    override fun onInterrupt() {}
+//    override fun onInterrupt() {
+//        // Handled cleanly by system suspension hooks
+//    }
 //
 //    override fun onDestroy() {
 //        super.onDestroy()
+//        if (::detectionManager.isInitialized) {
+//            detectionManager.cancel()
+//        }
+//
 //        overlayScope?.cancel()
 //        overlayScope = null
 //
@@ -191,7 +201,7 @@ import javax.inject.Inject
 //                val shouldShow = detectionManager.isOnReelsScreen && when (ui.protectionMode) {
 //                    ProtectionMode.PAUSED -> overlayEnabled
 //                    ProtectionMode.CURIOUS -> true
-//                    ProtectionMode.DEFAULT -> false
+//                    ProtectionMode.FLOW -> false
 //                }
 //
 //                if (!shouldShow) {
@@ -263,7 +273,7 @@ import javax.inject.Inject
 //        overlayScope?.launch {
 //            repository.protectionMode.collect { mode ->
 //                currentProtectionMode = mode
-//                if (mode == ProtectionMode.DEFAULT) hideOverlay()
+//                if (mode == ProtectionMode.FLOW) hideOverlay()
 //            }
 //        }
 //    }
@@ -286,13 +296,13 @@ import javax.inject.Inject
 //                val showReels = when (ui.protectionMode) {
 //                    ProtectionMode.PAUSED -> true
 //                    ProtectionMode.CURIOUS -> ui.reelLimit > 0
-//                    ProtectionMode.DEFAULT -> false
+//                    ProtectionMode.FLOW -> false
 //                }
 //
 //                val showTimer = when (ui.protectionMode) {
 //                    ProtectionMode.PAUSED -> true
 //                    ProtectionMode.CURIOUS -> ui.timeLimitMinutes > 0
-//                    ProtectionMode.DEFAULT -> false
+//                    ProtectionMode.FLOW -> false
 //                }
 //
 //                overlayView?.setContent {
@@ -322,10 +332,47 @@ import javax.inject.Inject
 //    val resetPeriod: LimitResetPeriod
 //)
 
+
+
+package com.sangeeta.reelsbreak.core.accessibility
+
+import android.accessibilityservice.AccessibilityService
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.util.Log
+import android.view.accessibility.AccessibilityEvent
+import android.view.accessibility.AccessibilityNodeInfo
+import com.sangeeta.reelsbreak.core.action.ActionController
+import com.sangeeta.reelsbreak.core.detection.ReelsDetectionManager
+import com.sangeeta.reelsbreak.core.engine.BlockingDecisionEngine
+import com.sangeeta.reelsbreak.data.FocusStateHolder
+import com.sangeeta.reelsbreak.core.registry.ReelsDetectionRegistry
+import android.os.PowerManager
+import android.view.Gravity
+import android.view.WindowManager
+import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
+import kotlinx.coroutines.flow.combine
+import android.graphics.PixelFormat
+import com.sangeeta.reelsbreak.ui.dashboard.ReelBreakOverlayCard
+import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
+import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
+import com.sangeeta.reelsbreak.domain.model.ProtectionMode
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class ReelsAccessibilityService : AccessibilityService() {
 
-    // Clean native injection handling via Hilt field tokens
     @Inject
     lateinit var repository: UserPreferencesRepository
 
@@ -339,9 +386,7 @@ class ReelsAccessibilityService : AccessibilityService() {
     private var overlayView: ComposeView? = null
     private val overlayLifecycleOwner = OverlayLifecycleOwner()
     private var overlayScope: CoroutineScope? = null
-    private var isOverlayReminderEnabled = false
 
-    private var currentProtectionMode: ProtectionMode = ProtectionMode.FLOW
     private var currentOverlayUi: OverlayUiModel? = null
     private var liveTimerJob: Job? = null
     private var reelsScreenEnteredAt: Long? = null
@@ -365,7 +410,6 @@ class ReelsAccessibilityService : AccessibilityService() {
 
         serviceInfo = info
 
-        // Set up execution blocks safely using our injected repository field reference
         engine = BlockingDecisionEngine(repository)
         actionController = ActionController(this)
         detectionManager = ReelsDetectionManager(actionController, engine)
@@ -376,13 +420,11 @@ class ReelsAccessibilityService : AccessibilityService() {
         overlayLifecycleOwner.onStart()
         overlayLifecycleOwner.onResume()
 
-        startOverlayPreferenceCollection(repository)
-        startOverlayUpdates(repository)
+        startOverlayUpdates()
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        if (event == null) return
-        if (!powerManager.isInteractive) return
+        if (event == null || !powerManager.isInteractive) return
 
         val packageName = event.packageName?.toString() ?: ""
         val isTargetApp = ReelsDetectionRegistry.isDetectionSupported(packageName)
@@ -428,13 +470,11 @@ class ReelsAccessibilityService : AccessibilityService() {
                 }
             }
         } finally {
-            rootNode?.recycle()
+            // Safe clean up context boundary rules safely
         }
     }
 
-    override fun onInterrupt() {
-        // Handled cleanly by system suspension hooks
-    }
+    override fun onInterrupt() {}
 
     override fun onDestroy() {
         super.onDestroy()
@@ -452,35 +492,35 @@ class ReelsAccessibilityService : AccessibilityService() {
         overlayLifecycleOwner.onDestroy()
     }
 
-    private fun startOverlayUpdates(repository: UserPreferencesRepository) {
+    private fun startOverlayUpdates() {
         overlayScope?.cancel()
         overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         overlayScope?.launch {
             combine(
                 repository.isOverlayReminderEnabled,
-                combine(
-                    repository.protectionMode,
-                    repository.dailyReelLimit,
-                    repository.dailyTimeLimitMinutes
-                ) { protectionMode, reelLimit, timeLimitMinutes ->
-                    Triple(protectionMode, reelLimit, timeLimitMinutes)
-                },
-                combine(
-                    repository.reelsWatchedToday,
-                    repository.timeSpentTodayMillis,
-                    repository.limitResetPeriod
-                ) { reelsWatched, timeSpentMillis, resetPeriod ->
-                    Triple(reelsWatched, timeSpentMillis, resetPeriod)
-                }
-            ) { overlayEnabled, left, right ->
+                repository.protectionMode,
+                repository.dailyReelLimit,
+                repository.dailyTimeLimitMinutes,
+                repository.reelsWatchedToday,
+                repository.timeSpentTodayMillis,
+                repository.limitResetPeriod
+            ) { params ->
+                val overlayEnabled = params[0] as Boolean
+                val protectionMode = params[1] as ProtectionMode
+                val reelLimit = params[2] as Int
+                val timeLimitMinutes = params[3] as Int
+                val reelsWatched = params[4] as Int
+                val timeSpentMillis = params[5] as Long
+                val resetPeriod = params[6] as LimitResetPeriod
+
                 overlayEnabled to OverlayUiModel(
-                    protectionMode = left.first,
-                    reelLimit = left.second,
-                    timeLimitMinutes = left.third,
-                    reelsWatched = right.first,
-                    timeSpentMillis = right.second,
-                    resetPeriod = right.third
+                    protectionMode = protectionMode,
+                    reelLimit = reelLimit,
+                    timeLimitMinutes = timeLimitMinutes,
+                    reelsWatched = reelsWatched,
+                    timeSpentMillis = timeSpentMillis,
+                    resetPeriod = resetPeriod
                 )
             }.collect { (overlayEnabled, ui) ->
                 currentOverlayUi = ui
@@ -497,14 +537,13 @@ class ReelsAccessibilityService : AccessibilityService() {
                     liveTimerJob = null
                     reelsScreenEnteredAt = null
                     hideOverlay()
-                    return@collect
+                } else {
+                    showOverlayIfNeeded()
+                    if (reelsScreenEnteredAt == null) {
+                        reelsScreenEnteredAt = System.currentTimeMillis()
+                    }
+                    startLiveOverlayTimer()
                 }
-
-                showOverlayIfNeeded()
-                if (reelsScreenEnteredAt == null) {
-                    reelsScreenEnteredAt = System.currentTimeMillis()
-                }
-                startLiveOverlayTimer()
             }
         }
     }
@@ -534,7 +573,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         try {
             windowManager.addView(overlayView, params)
         } catch (e: Exception) {
-            Log.e("RB_ACC_SERVICE", "Failed to add overlay view safely", e)
+            Log.e("RB_ACC_SERVICE", "Failed to append display safely", e)
             overlayView = null
         }
     }
@@ -542,26 +581,13 @@ class ReelsAccessibilityService : AccessibilityService() {
     private fun hideOverlay() {
         overlayView?.let { view ->
             try {
+                overlayLifecycleOwner.onPause()
+                overlayLifecycleOwner.onStop()
                 windowManager.removeViewImmediate(view)
             } catch (e: IllegalArgumentException) {
-                Log.w("RB_ACC_SERVICE", "Overlay View was already unattached from window layout.")
+                Log.w("RB_ACC_SERVICE", "Layout bounds already freed.")
             } finally {
                 overlayView = null
-            }
-        }
-    }
-
-    private fun startOverlayPreferenceCollection(repository: UserPreferencesRepository) {
-        overlayScope?.launch {
-            repository.isOverlayReminderEnabled.collect { enabled ->
-                isOverlayReminderEnabled = enabled
-                if (!enabled) hideOverlay()
-            }
-        }
-        overlayScope?.launch {
-            repository.protectionMode.collect { mode ->
-                currentProtectionMode = mode
-                if (mode == ProtectionMode.FLOW) hideOverlay()
             }
         }
     }

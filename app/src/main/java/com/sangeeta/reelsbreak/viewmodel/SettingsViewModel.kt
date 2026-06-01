@@ -2,7 +2,6 @@ package com.sangeeta.reelsbreak.viewmodel
 
 import android.app.Application
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -10,6 +9,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 import com.sangeeta.reelsbreak.ui.settings.SettingsState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,10 +18,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class SettingsViewModel @Inject constructor(
+    application: Application,
+    private val repository: UserPreferencesRepository // Clean dependency construction token injected via Hilt
+) : AndroidViewModel(application) {
 
-    private val context: Context get() = getApplication<Application>().applicationContext
-    private val repository = UserPreferencesRepository(context)
+    private val context get() = getApplication<Application>().applicationContext
 
     private val _uiState = MutableStateFlow(SettingsState())
     val uiState: StateFlow<SettingsState> = _uiState.asStateFlow()
@@ -31,7 +35,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 repository.isNotificationsEnabled,
                 repository.isWeekendRelaxEnabled
             ) { notifications, weekend ->
-                Pair(notifications, weekend)
+                notifications to weekend
             }.collect { (notifications, weekend) ->
                 _uiState.update { current ->
                     current.copy(
@@ -41,12 +45,8 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                 }
             }
         }
-
-        // Load app version
         loadAppVersion()
     }
-
-
 
     fun toggleNotifications(enabled: Boolean) {
         viewModelScope.launch {
@@ -59,7 +59,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             repository.setWeekendRelaxEnabled(enabled)
         }
     }
-
 
     fun shareApp() {
         val intent = Intent(Intent.ACTION_SEND).apply {
@@ -75,7 +74,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         })
     }
-
 
     fun rateApp() {
         val packageName = context.packageName
@@ -122,7 +120,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             val versionName = context.packageManager
                 .getPackageInfo(context.packageName, 0).versionName
             _uiState.update { it.copy(appVersion = versionName ?: "1.0.0") }
-        } catch (e: Exception) {
-        }
+        } catch (_: Exception) { }
     }
 }

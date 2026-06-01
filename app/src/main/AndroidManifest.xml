@@ -35,7 +35,9 @@
         <service
             android:name="com.sangeeta.reelsbreak.core.accessibility.ReelsAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:exported="false">
+            android:exported="false"
+            android:label="ReelsBreak"
+            android:description="@string/accessibility_service_description">
 
             <intent-filter>
                 <action android:name="android.accessibilityservice.AccessibilityService" />

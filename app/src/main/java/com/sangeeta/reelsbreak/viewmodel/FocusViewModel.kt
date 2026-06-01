@@ -9,9 +9,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,74 +30,82 @@ class FocusViewModel @Inject constructor(
     private val prefs: UserPreferencesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(FocusModeUiState())
-    val uiState: StateFlow<FocusModeUiState> = _uiState.asStateFlow()
-
+    private val _errorMessage = MutableStateFlow<String?>(null)
     private var timerJob: Job? = null
 
-    init {
-        // Combining reactive preferences inside a clean layout matrix
-        viewModelScope.launch {
-            combine(
-                prefs.isFocusActive,
-                prefs.blockedPackages,
-                prefs.selectedFocusMinutes,
-                prefs.focusEndTimestamp
-            ) { active, packages, minutes, endTs ->
-                FocusStateHolder.isFocusActive = active
-                FocusStateHolder.blockedPackages = packages
-                FocusStateHolder.focusEndTimestamp = endTs
+    val uiState: StateFlow<FocusModeUiState> = combine(
+        prefs.isFocusActive,
+        prefs.blockedPackages,
+        prefs.selectedFocusMinutes,
+        prefs.focusEndTimestamp,
+        _errorMessage
+    ) { active, packages, minutes, endTs, errorMsg ->
 
-                val now = System.currentTimeMillis()
-                if (endTs > 0L && endTs > now) {
-                    startTimerInternal(endTs)
-                } else if (endTs > 0L && endTs <= now) {
-                    handleSessionExpiry()
-                }
+        // Safely synchronize static memory states side-effect free
+        FocusStateHolder.isFocusActive = active
+        FocusStateHolder.blockedPackages = packages
+        FocusStateHolder.focusEndTimestamp = endTs
 
-                _uiState.value.copy(
-                    isFocusActive = active,
-                    selectedApps = packages,
-                    selectedMinutes = minutes
-                )
-            }.collect { state ->
-                _uiState.update { state }
+        val now = System.currentTimeMillis()
+        val remaining = (endTs - now).coerceAtLeast(0L)
+
+        // Evaluate timer task attachments safely outside collection calculation streams
+        manageTimerEngineLifecycle(active, endTs, remaining)
+
+        FocusModeUiState(
+            isFocusActive = active && remaining > 0L,
+            remainingMillis = remaining,
+            selectedApps = packages,
+            selectedMinutes = minutes,
+            sessionDurationMinutes = if (active) minutes else 0,
+            errorMessage = errorMsg
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = FocusModeUiState()
+    )
+
+    private fun manageTimerEngineLifecycle(isActive: Boolean, endTs: Long, remaining: Long) {
+        if (isActive && remaining > 0L) {
+            if (timerJob == null || timerJob?.isActive == false) {
+                startTimerInternal(endTs)
             }
+        } else if (endTs > 0L && remaining <= 0L) {
+            handleSessionExpiry()
         }
     }
 
     fun toggleAppSelection(packageName: String) {
-        _uiState.update { state ->
-            val newSet = state.selectedApps.toMutableSet().apply {
-                if (contains(packageName)) remove(packageName) else add(packageName)
-            }
-            state.copy(selectedApps = newSet)
+        val currentPackages = uiState.value.selectedApps
+        val newSet = currentPackages.toMutableSet().apply {
+            if (contains(packageName)) remove(packageName) else add(packageName)
         }
-        applyActiveSessionChanges()
+        viewModelScope.launch {
+            prefs.setBlockedPackages(newSet)
+            applyActiveSessionChanges(newSet, uiState.value.selectedMinutes)
+        }
     }
 
     fun setSelectedMinutes(minutes: Int) {
-        _uiState.update { it.copy(selectedMinutes = minutes) }
         viewModelScope.launch {
             prefs.setSelectedFocusMinutes(minutes)
+            applyActiveSessionChanges(uiState.value.selectedApps, minutes)
         }
-        applyActiveSessionChanges()
     }
 
     fun startFocusSession() {
-        val state = _uiState.value
+        val state = uiState.value
         if (state.selectedApps.isEmpty()) {
-            _uiState.update { it.copy(errorMessage = "Please select at least one app to block.") }
+            _errorMessage.value = "Please select at least one app to block."
             return
         }
         if (state.selectedMinutes <= 0) {
-            _uiState.update { it.copy(errorMessage = "Please select a session duration.") }
+            _errorMessage.value = "Please select a session duration."
             return
         }
 
         val endTs = System.currentTimeMillis() + (state.selectedMinutes * 60_000L)
-        _uiState.update { it.copy(sessionDurationMinutes = state.selectedMinutes) }
-
         viewModelScope.launch {
             prefs.startFocusSession(endTs)
             prefs.setBlockedPackages(state.selectedApps)
@@ -119,18 +128,15 @@ class FocusViewModel @Inject constructor(
     }
 
     private fun startTimerInternal(endTs: Long) {
-        if (timerJob?.isActive == true) return
+        timerJob?.cancel()
         timerJob = viewModelScope.launch {
             while (true) {
+                delay(1000L)
                 val now = System.currentTimeMillis()
-                val remaining = (endTs - now).coerceAtLeast(0L)
-                _uiState.update { it.copy(remainingMillis = remaining, isFocusActive = remaining > 0) }
-
-                if (remaining <= 0L) {
+                if (now >= endTs) {
                     handleSessionExpiry()
                     break
                 }
-                delay(1000L)
             }
         }
     }
@@ -138,21 +144,18 @@ class FocusViewModel @Inject constructor(
     private fun stopTimerInternal() {
         timerJob?.cancel()
         timerJob = null
-        _uiState.update { it.copy(remainingMillis = 0L, isFocusActive = false) }
     }
 
-    private fun applyActiveSessionChanges() {
-        val state = _uiState.value
-        if (!state.isFocusActive || state.selectedApps.isEmpty() || state.selectedMinutes <= 0) return
-
-        val newEndTs = System.currentTimeMillis() + (state.selectedMinutes * 60_000L)
+    private fun applyActiveSessionChanges(packages: Set<String>, minutes: Int) {
+        if (!uiState.value.isFocusActive || packages.isEmpty() || minutes <= 0) return
+        val newEndTs = System.currentTimeMillis() + (minutes * 60_000L)
         viewModelScope.launch {
             prefs.startFocusSession(newEndTs)
-            prefs.setBlockedPackages(state.selectedApps)
+            prefs.setBlockedPackages(packages)
         }
     }
 
     fun dismissError() {
-        _uiState.update { it.copy(errorMessage = null) }
+        _errorMessage.value = null
     }
 }
