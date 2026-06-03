@@ -170,6 +170,144 @@
 
 
 
+//package com.sangeeta.reelsbreak.core.detection
+//
+//import android.graphics.Rect
+//import android.view.accessibility.AccessibilityNodeInfo
+//
+//object BlockableAppConfig {
+//
+//    private val DETECTION_MAP: Map<String, DetectionMethod> = mapOf(
+//        "com.google.android.youtube" to DetectionMethod.ViewId("reel_player_page_container"),
+//        "com.instagram.android" to DetectionMethod.ViewId("clips_viewer_view_pager"),
+//        "com.instagram.lite" to DetectionMethod.ViewId("horizontalProgressV2"),
+//        "com.snapchat.android" to DetectionMethod.ViewId("spotlight_container"),
+//        "com.facebook.katana" to DetectionMethod.AnyOf(
+//            listOf(
+//                DetectionMethod.ContentDescriptions(
+//                    setOf(
+//                        "FbShortsComposerAttachmentComponentSpec:STICKER",
+//                        "FbShortsComposerAttachmentComponentSpec:GIF"
+//                    )
+//                ),
+//                DetectionMethod.ContentDescriptionPrefix(
+//                    prefixes = setOf("Reels, tab"),
+//                    requireSelected = true,
+//                    maxTopScreenFraction = 0.2f
+//                )
+//            )
+//        ),
+//        "com.facebook.lite" to DetectionMethod.ContentDescriptionPrefix(
+//            prefixes = setOf("reels"),
+//            requireSelected = false,
+//            maxTopScreenFraction = 0.2f
+//        )
+//    )
+//
+//    fun isBlockedContentVisible(packageName: String, rootNode: AccessibilityNodeInfo?): Boolean {
+//        if (rootNode == null) return false
+//        val method = DETECTION_MAP[packageName] ?: return false
+//        return rootNode.matchesDetectionMethod(packageName, method)
+//    }
+//
+//    private fun AccessibilityNodeInfo.matchesDetectionMethod(
+//        packageName: String,
+//        method: DetectionMethod
+//    ): Boolean {
+//        return when (method) {
+//            is DetectionMethod.ViewId -> {
+//                val fullViewId = "$packageName:id/${method.viewId}"
+//                val nodes = findAccessibilityNodeInfosByViewId(fullViewId)
+//                if (nodes.isNullOrEmpty()) return false
+//
+//                var foundVisible = false
+//                for (node in nodes) {
+//                    if (node.isVisibleToUser) {
+//                        val rect = Rect()
+//                        node.getBoundsInScreen(rect)
+//                        if (rect.width() > 0 && rect.height() > 0) {
+//                            foundVisible = true
+//                        }
+//                    }
+//                }
+//                foundVisible
+//            }
+//
+//            is DetectionMethod.ContentDescriptions -> {
+//                hasVisibleNodeMatching { node ->
+//                    node.contentDescription?.toString() in method.contentDescriptions
+//                }
+//            }
+//
+//            is DetectionMethod.ContentDescriptionPrefix -> {
+//                hasVisibleContentDescriptionPrefix(method)
+//            }
+//
+//            is DetectionMethod.AnyOf -> {
+//                method.detectionMethods.any { matchesDetectionMethod(packageName, it) }
+//            }
+//        }
+//    }
+//
+//    private fun AccessibilityNodeInfo.hasVisibleContentDescriptionPrefix(
+//        detectionMethod: DetectionMethod.ContentDescriptionPrefix
+//    ): Boolean {
+//        val rootBounds = Rect()
+//        this.getBoundsInScreen(rootBounds)
+//
+//        val maxTop = detectionMethod.maxTopScreenFraction?.let { fraction ->
+//            val clampedFraction = fraction.coerceIn(0f, 1f)
+//            rootBounds.top + (rootBounds.height() * clampedFraction).toInt()
+//        }
+//
+//        return hasVisibleNodeMatching { node ->
+//            val contentDescription = node.contentDescription?.toString() ?: return@hasVisibleNodeMatching false
+//
+//            val matchesPrefix = detectionMethod.prefixes.any { prefix ->
+//                contentDescription.startsWith(prefix, ignoreCase = true)
+//            }
+//            if (!matchesPrefix) return@hasVisibleNodeMatching false
+//
+//            val nodeBounds = Rect()
+//            node.getBoundsInScreen(nodeBounds)
+//            val matchesSelectedState = !detectionMethod.requireSelected || node.isSelected
+//            val matchesTopConstraint = maxTop == null || nodeBounds.bottom <= maxTop
+//
+//            matchesSelectedState && matchesTopConstraint
+//        }
+//    }
+//
+//    private fun AccessibilityNodeInfo.hasVisibleNodeMatching(
+//        matchesNode: (AccessibilityNodeInfo) -> Boolean
+//    ): Boolean {
+//        val queue = ArrayDeque<AccessibilityNodeInfo>()
+//        queue.add(this)
+//
+//        while (queue.isNotEmpty()) {
+//            val currentNode = queue.removeFirst()
+//
+//            val rect = Rect()
+//            currentNode.getBoundsInScreen(rect)
+//            val isVisible = currentNode.isVisibleToUser && rect.width() > 0 && rect.height() > 0
+//
+//            if (isVisible && matchesNode(currentNode)) {
+//                queue.clear()
+//                return true
+//            }
+//
+//            for (i in 0 until currentNode.childCount) {
+//                val child = currentNode.getChild(i)
+//                if (child != null) {
+//                    queue.addLast(child)
+//                }
+//            }
+//        }
+//        return false
+//    }
+//}
+
+
+
 package com.sangeeta.reelsbreak.core.detection
 
 import android.graphics.Rect
@@ -280,6 +418,7 @@ object BlockableAppConfig {
     private fun AccessibilityNodeInfo.hasVisibleNodeMatching(
         matchesNode: (AccessibilityNodeInfo) -> Boolean
     ): Boolean {
+        // Optimized iterative queue traversal pattern
         val queue = ArrayDeque<AccessibilityNodeInfo>()
         queue.add(this)
 

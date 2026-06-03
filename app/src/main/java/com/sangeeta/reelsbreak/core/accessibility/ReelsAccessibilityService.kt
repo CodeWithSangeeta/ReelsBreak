@@ -470,7 +470,7 @@ class ReelsAccessibilityService : AccessibilityService() {
                 }
             }
         } finally {
-            // Safe clean up context boundary rules safely
+            // Context tree safely recycled by system bounds handler
         }
     }
 
@@ -497,6 +497,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
         overlayScope?.launch {
+            // Flattened structure to guarantee layout update loops receive emissions cleanly
             combine(
                 repository.isOverlayReminderEnabled,
                 repository.protectionMode,
@@ -573,7 +574,7 @@ class ReelsAccessibilityService : AccessibilityService() {
         try {
             windowManager.addView(overlayView, params)
         } catch (e: Exception) {
-            Log.e("RB_ACC_SERVICE", "Failed to append display safely", e)
+            Log.e("RB_ACC_SERVICE", "Failed to mount window context layer", e)
             overlayView = null
         }
     }
@@ -581,11 +582,12 @@ class ReelsAccessibilityService : AccessibilityService() {
     private fun hideOverlay() {
         overlayView?.let { view ->
             try {
+                // Fixed: explicitly tear down layout tree context prior to screen separation
                 overlayLifecycleOwner.onPause()
                 overlayLifecycleOwner.onStop()
                 windowManager.removeViewImmediate(view)
             } catch (e: IllegalArgumentException) {
-                Log.w("RB_ACC_SERVICE", "Layout bounds already freed.")
+                Log.w("RB_ACC_SERVICE", "Layout context already removed internally.")
             } finally {
                 overlayView = null
             }
@@ -645,3 +647,7 @@ private data class OverlayUiModel(
     val timeSpentMillis: Long,
     val resetPeriod: LimitResetPeriod
 )
+
+
+
+

@@ -160,3 +160,113 @@ fun lightAppColors() = AppColors(
     sheetBg         = Color.Transparent,
     sheetDragHandle = Color(0x40FFFFFF),
 )
+
+
+
+//package com.sangeeta.reelsbreak.ui.theme
+//
+//import androidx.compose.ui.geometry.Offset
+//import androidx.compose.ui.graphics.Brush
+//import androidx.compose.ui.graphics.Color
+//
+//data class AppColors(
+//    val isDark: Boolean,
+//    val textPrimary: Color,
+//    val textSecondary: Color,
+//    val textMuted: Color,
+//    val background: Brush,
+//    val cardSurface: Brush,
+//    val glassSurface: Brush,
+//    val purplePrimary: Color,
+//    val purpleDeep: Color,
+//    val purpleSoft: Color,
+//    val blueAccent: Color,
+//    val successGreen: Color,
+//    val warningOrange: Color,
+//    val errorRed: Color,
+//    val button: Brush,
+//    val buttonDanger: Brush,
+//    val buttonSuccess: Brush,
+//    val navSelected: Brush,
+//    val modeBlock: Brush,
+//    val modeLimit: Brush,
+//    val modeSmart: Brush,
+//    val borderSubtle: Color,
+//    val borderPurple: Color,
+//    val borderActive: Color,
+//    val glowPurple: Color,
+//    val glowBlue: Color,
+//    val glowTeal: Color,
+//    val glowRed: Color,
+//    val appColor: Brush,
+//    val borderColor: Brush,
+//    val screenBlockedBg: Brush,
+//    val timerTrack: Color,
+//    val timerArc: Color,
+//    val switchTrackOn: Color,
+//    val switchTrackOff: Color,
+//    val sheetBg: Color,
+//    val sheetDragHandle: Color,
+//    val pausedAccent: Color,
+//    val pausedAccentSoft: Color,
+//)
+//
+//fun darkAppColors() = AppColors(
+//    isDark        = true,
+//    textPrimary   = Color(0xFFF1EFF7),
+//    textSecondary = Color(0xFFA29DBE),
+//    textMuted     = Color(0xFF635F7E),
+//
+//    background    = Brush.linearGradient(
+//        colors = listOf(Color(0xFF07030C), Color(0xFF0D0618), Color(0xFF0A0512)),
+//        start = Offset(0f, 0f), end = Offset(1080f, 2400f)
+//    ) ,
+//    // Frosted premium glass surface layer mix
+//    cardSurface   = Brush.linearGradient(
+//        colors = listOf(Color(0x1F2A1B4E), Color(0x0F140C2A)),
+//        start  = Offset(0f, 0f), end = Offset(400f, 400f)
+//    ),
+//    glassSurface  = Brush.linearGradient(listOf(0x24FF2A85.toColor(), 0x0C8B5CF6.toColor())),
+//
+//    purplePrimary = Color(0xFFD946EF), // Vibrant Magenta-Purple blend anchor
+//    purpleDeep    = Color(0xFF701A75),
+//    purpleSoft    = Color(0xFFF472B6),
+//    blueAccent    = Color(0xFF38BDF8),
+//    successGreen  = Color(0xFF34D399),
+//    warningOrange = Color(0xFFFBBF24),
+//    pausedAccent  = Color(0xFF94A3B8),
+//    pausedAccentSoft = Color(0xFF475569),
+//    errorRed      = Color(0xFFF87171),
+//
+//    button        = Brush.linearGradient(listOf(Color(0xFFEC4899), Color(0xFF8B5CF6))), // Magenta to Purple Gradient matching logo
+//    buttonDanger  = Brush.linearGradient(listOf(Color(0xFFEF4444), Color(0xFF991B1B))),
+//    buttonSuccess = Brush.linearGradient(listOf(Color(0xFF10B981), Color(0xFF065F46))),
+//    navSelected   = Brush.verticalGradient(listOf(Color(0xFFD946EF), Color(0xFF6D28D9))),
+//
+//    modeBlock     = Brush.linearGradient(listOf(Color(0xFF4A044E), Color(0xFF1E0122))),
+//    modeLimit     = Brush.linearGradient(listOf(Color(0xFF0C4A6E), Color(0xFF031E2F))),
+//    modeSmart     = Brush.linearGradient(listOf(Color(0xFF064E3B), Color(0xFF022C22))),
+//
+//    borderSubtle  = Color(0x12FFFFFF),
+//    borderPurple  = Color(0x3DDF46EF),
+//    borderActive  = Color(0xFFE879F9),
+//    glowPurple    = Color(0x26D946EF),
+//    glowBlue      = Color(0x2638BDF8),
+//    glowTeal      = Color(0x2634D399),
+//    glowRed       = Color(0x26F87171),
+//
+//    appColor       = Brush.horizontalGradient(listOf(Color(0xFFEC4899), Color(0xFF8B5CF6))), // Premium horizontal flow header matching logo
+//    borderColor   = Brush.verticalGradient(listOf(Color(0xFFF472B6), Color(0xFF6D28D9))),
+//    screenBlockedBg = Brush.verticalGradient(listOf(Color(0xFF090410), Color(0xFF0D0618))),
+//
+//    timerTrack    = Color(0xFF1E1135),
+//    timerArc      = Color(0xFFD946EF),
+//    switchTrackOn  = Color(0xFFD946EF),
+//    switchTrackOff = Color(0xFF1A122B),
+//    sheetBg         = Color(0xFF0D0618),
+//    sheetDragHandle = Color(0x33FFFFFF),
+//)
+//
+//fun lightAppColors() = darkAppColors().copy(isDark = false) // Dark mode focus optimized
+//
+//private fun Int.toColor() = Color(this)

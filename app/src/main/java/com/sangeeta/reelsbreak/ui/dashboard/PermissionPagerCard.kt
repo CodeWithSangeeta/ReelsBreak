@@ -145,7 +145,133 @@ private fun ReelBreakAnimatedLogo() {
         painter = painterResource(id = R.drawable.applogo),
         contentDescription = "ReelBreak logo",
         modifier = Modifier
-            .size(56.dp)
+            .size(52.dp)
             .scale(scale)
     )
 }
+
+
+
+
+//package com.sangeeta.reelsbreak.ui.dashboard
+//
+//import androidx.compose.animation.core.*
+//import androidx.compose.foundation.Image
+//import androidx.compose.foundation.background
+//import androidx.compose.foundation.border
+//import androidx.compose.foundation.clickable
+//import androidx.compose.foundation.interaction.MutableInteractionSource
+//import androidx.compose.foundation.layout.*
+//import androidx.compose.foundation.shape.RoundedCornerShape
+//import androidx.compose.material3.Text
+//import androidx.compose.runtime.Composable
+//import androidx.compose.runtime.remember
+//import androidx.compose.ui.Alignment
+//import androidx.compose.ui.Modifier
+//import androidx.compose.ui.draw.clip
+//import androidx.compose.ui.draw.scale
+//import androidx.compose.ui.graphics.Color
+//import androidx.compose.ui.res.painterResource
+//import androidx.compose.ui.text.font.FontWeight
+//import androidx.compose.ui.unit.dp
+//import androidx.compose.ui.unit.sp
+//import com.sangeeta.reelsbreak.R
+//import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
+//
+//@Composable
+//fun PermissionPagerCard(
+//    item: PermissionPagerItem,
+//    isGranted: Boolean,
+//    onClick: () -> Unit
+//) {
+//    if (isGranted) return
+//
+//    val colors = LocalAppColors.current
+//
+//    Box(
+//        modifier = Modifier
+//            .padding(horizontal = 4.dp)
+//            .fillMaxWidth()
+//            .clip(RoundedCornerShape(24.dp))
+//            .background(colors.cardSurface)
+//            .border(
+//                width = 1.dp,
+//                color = colors.borderPurple,
+//                shape = RoundedCornerShape(24.dp)
+//            )
+//            .padding(all = 16.dp)
+//    ) {
+//        Column(
+//            verticalArrangement = Arrangement.spacedBy(12.dp),
+//            horizontalAlignment = Alignment.End
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.spacedBy(12.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                ReelBreakAnimatedLogo()
+//
+//                Text(
+//                    text = "Setup Protection Shield",
+//                    color = colors.textPrimary,
+//                    fontSize = 19.sp,
+//                    fontWeight = FontWeight.Bold,
+//                    lineHeight = 22.sp
+//                )
+//            }
+//
+//            // Play Store optimized compliance string mapping
+//            Text(
+//                text = "Enable accessibility tracking parameters to automatically analyze your digital usage behaviors and activate your self-set mindful scrolling limits.",
+//                color = colors.textSecondary,
+//                fontSize = 13.sp,
+//                lineHeight = 18.sp
+//            )
+//
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(44.dp)
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(colors.appColor)
+//                    .clickable(
+//                        interactionSource = remember { MutableInteractionSource() },
+//                        indication = null,
+//                        onClick = onClick
+//                    ),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Text(
+//                    text = "Activate Shield",
+//                    color = Color.White,
+//                    fontSize = 14.sp,
+//                    fontWeight = FontWeight.Bold
+//                )
+//            }
+//        }
+//    }
+//}
+//
+//@Composable
+//private fun ReelBreakAnimatedLogo() {
+//    val infiniteTransition = rememberInfiniteTransition(label = "permission_logo_pulse")
+//
+//    val scale = infiniteTransition.animateFloat(
+//        initialValue = 1f,
+//        targetValue = 1.15f,
+//        animationSpec = infiniteRepeatable(
+//            animation = tween(1400, easing = FastOutSlowInEasing),
+//            repeatMode = RepeatMode.Reverse
+//        ),
+//        label = "permission_logo_scale"
+//    ).value
+//
+//    Image(
+//        painter = painterResource(id = R.drawable.applogo),
+//        contentDescription = null,
+//        modifier = Modifier
+//            .size(42.dp)
+//            .scale(scale)
+//    )
+//}

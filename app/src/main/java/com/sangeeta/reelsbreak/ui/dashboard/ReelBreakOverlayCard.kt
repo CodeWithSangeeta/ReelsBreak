@@ -13,12 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.Slideshow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -32,18 +28,24 @@ fun ReelBreakOverlayCard(
     showReels: Boolean,
     showTimer: Boolean
 ) {
-   val  appColor = Brush.linearGradient(listOf(Color(0xFF6B3FA0), Color(0xFF4A2070)))
+    // Premium, deep translucent charcoal glass layer (85% opacity)
+    // Safe for Play Store guidelines as it doesn't aggressively blind or fully obstruct content
+    val glassBg = Color(0xD90D0D0D)
+
+    // Soft, premium neon purple hue for subtitle metrics to retain app identity elegantly
+    val brandingPurple = Color(0xFFA78BFA).copy(alpha = 0.75f)
+
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(50.dp))
-            .background(appColor)
+            .background(glassBg)
             .border(
                 width = 1.dp,
-              //  color = Color.White.copy(alpha = 0.15f),
-                color = Color.White,
+                // Soft translucent border that catches light without looking harsh
+                color = Color.White.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(50.dp)
             )
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -52,50 +54,32 @@ fun ReelBreakOverlayCard(
             painter = painterResource(id = R.drawable.applogo),
             contentDescription = "ReelBreak",
             tint = Color.Unspecified,
-            modifier = Modifier.size(36.dp)
+            modifier = Modifier.size(34.dp)
         )
 
-        if (showReels) {
+      //  if (showReels) {
             Box(
                 modifier = Modifier
                     .width(1.dp)
-                    .height(36.dp)
-                    .background(Color.White.copy(alpha = 0.18f))
+                    .height(32.dp)
+                    .background(Color.White.copy(alpha = 0.15f))
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-//                Box(
-//                    modifier = Modifier
-//                        .size(36.dp)
-//                        .border(
-//                            width = 2.dp,
-//                            color = Color.White.copy(alpha = 0.35f),
-//                            shape = RoundedCornerShape(50.dp)
-//                        ),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Outlined.Slideshow,
-//                        contentDescription = null,
-//                        tint = Color.White,
-//                        modifier = Modifier.size(20.dp)
-//                    )
-//                }
-
                 Column(horizontalAlignment = Alignment.Start) {
                     Text(
                         text = "$reelsWatched",
                         color = Color.White,
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        lineHeight = 22.sp
+                        lineHeight = 20.sp
                     )
                     Text(
                         text = "REELS",
-                        color = Color.White.copy(alpha = 0.50f),
+                        color = brandingPurple,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.2.sp,
@@ -103,55 +87,37 @@ fun ReelBreakOverlayCard(
                     )
                 }
             }
-        }
+   //     }
 
-        if (showTimer) {
+  //      if (showTimer) {
             Box(
                 modifier = Modifier
                     .width(1.dp)
-                    .height(36.dp)
-                    .background(Color.White.copy(alpha = 0.18f))
+                    .height(32.dp)
+                    .background(Color.White.copy(alpha = 0.15f))
             )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-//                Box(
-//                    modifier = Modifier
-//                        .size(36.dp)
-//                        .border(
-//                            width = 2.dp,
-//                            color = Color.White.copy(alpha = 0.35f),
-//                            shape = RoundedCornerShape(50.dp)
-//                        ),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Outlined.Timer,
-//                        contentDescription = null,
-//                        tint = Color.White,
-//                        modifier = Modifier.size(20.dp)
-//                    )
-//                }
-
                 Column(horizontalAlignment = Alignment.Start) {
                     Text(
                         text = timeDisplay,
                         color = Color.White,
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.ExtraBold,
-                        lineHeight = 22.sp
+                        lineHeight = 20.sp
                     )
                     Text(
                         text = "TIMER",
-                        color = Color.White.copy(alpha = 0.50f),
+                        color = brandingPurple,
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.2.sp,
                         lineHeight = 10.sp
                     )
-                }
+     //           }
             }
         }
     }
