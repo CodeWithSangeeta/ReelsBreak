@@ -31,4 +31,9 @@ object UserPreferences {
     val LIMIT_EXCEEDED_UNTIL_EPOCH_MILLIS = longPreferencesKey("limit_exceeded_until_epoch_millis")
     val IS_OVERLAY_REMINDER_ENABLED = booleanPreferencesKey("is_overlay_reminder_enabled")
     val PROTECTION_MODE = stringPreferencesKey("protection_mode")
+
+    val FLOW_MODE_INFO_SEEN = booleanPreferencesKey("flow_mode_info_seen")
+    val PAUSE_MODE_INFO_SEEN = booleanPreferencesKey("pause_mode_info_seen")
+    val CURIOUS_MODE_INFO_SEEN = booleanPreferencesKey("curious_mode_info_seen")
+
 }

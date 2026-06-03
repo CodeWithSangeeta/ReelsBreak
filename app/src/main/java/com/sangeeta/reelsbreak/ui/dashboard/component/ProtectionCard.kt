@@ -36,9 +36,7 @@ import androidx.compose.ui.unit.sp
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
-import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.LottieDynamicProperties
-import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.airbnb.lottie.compose.rememberLottieDynamicProperties
@@ -312,7 +310,9 @@ fun ProtectionCard(
                 Text(
                     text = when {
                         !state.isProtectionEnabled -> "Protection OFF"
+                        state.selectedMode == HomeProtectionMode.FLOW -> "Flow Mode is Active"
                         state.selectedMode == HomeProtectionMode.PAUSED -> "Protection Paused"
+                        state.selectedMode == HomeProtectionMode.CURIOUS -> "Curious Mode is Active"
                         else -> "Protection ON"
                     },
                     color = if (state.isProtectionEnabled) accent else colors.textSecondary,

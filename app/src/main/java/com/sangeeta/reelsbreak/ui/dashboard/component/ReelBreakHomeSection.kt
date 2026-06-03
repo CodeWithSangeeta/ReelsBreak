@@ -227,22 +227,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sangeeta.reelsbreak.ui.dashboard.CuriousResetPeriod
 import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
 import com.sangeeta.reelsbreak.ui.dashboard.HomeProtectionMode
+//import com.sangeeta.reelsbreak.ui.focusedmode.SupportedAppsCard
 
 @Composable
 fun ReelBreakHomeSection(
     state: DashboardHomeUiState,
     onProtectionToggle: () -> Unit,
     onModeSelected: (HomeProtectionMode) -> Unit,
-    onInfoClick: () -> Unit,
+    onProtectionInfoClick: () -> Unit,
     onOverlayToggle: (Boolean) -> Unit,
-    onCuriousCountToggle: (Boolean) -> Unit,
-    onCuriousTimeToggle: (Boolean) -> Unit,
-    onCuriousReelsLimitChange: (Int) -> Unit,
-    onCuriousTimeLimitChange: (Int) -> Unit,
-    onCuriousPeriodChange: (CuriousResetPeriod) -> Unit,
+    onPreviewOverlayClick: () -> Unit,
+    onEditCuriousSettingsClick: () -> Unit,
+    onSupportedAppToggle: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -253,41 +251,40 @@ fun ReelBreakHomeSection(
             state = state,
             onToggle = onProtectionToggle,
             onModeSelected = onModeSelected,
-            onInfoClick = onInfoClick
+            onInfoClick = onProtectionInfoClick
         )
 
         AnimatedVisibility(
             visible = state.selectedMode == HomeProtectionMode.CURIOUS,
-            enter = fadeIn(animationSpec = tween(220)) +
-                    expandVertically(
-                        animationSpec = tween(
-                            durationMillis = 260,
-                            easing = FastOutSlowInEasing
-                        )
-                    ),
-            exit = fadeOut(animationSpec = tween(160)) +
-                    shrinkVertically(
-                        animationSpec = tween(
-                            durationMillis = 220,
-                            easing = FastOutSlowInEasing
-                        )
-                    )
-        ) {
-            CuriousModeDetailsCard(
-                state = state,
-                onCountToggle = onCuriousCountToggle,
-                onTimeToggle = onCuriousTimeToggle,
-                onReelsLimitChange = onCuriousReelsLimitChange,
-                onTimeLimitChange = onCuriousTimeLimitChange,
-                onPeriodChange = onCuriousPeriodChange
+            enter = fadeIn(tween(220)) + expandVertically(
+                animationSpec = tween(260, easing = FastOutSlowInEasing)
+            ),
+            exit = fadeOut(tween(160)) + shrinkVertically(
+                animationSpec = tween(220, easing = FastOutSlowInEasing)
             )
+        ) {
+//            CuriousSettingsSummaryCard(
+//                reelsLimit = state.curiousReelsLimit,
+//                timeLimitMinutes = state.curiousTimeLimitMinutes,
+//                resetPeriod = state.curiousResetPeriod,
+//                onEditClick = onEditCuriousSettingsClick
+//            )
         }
 
-        OverlayToggleCard(
-            enabled = state.overlayEnabled,
-            onToggle = onOverlayToggle
+        StatsCapsule(state = state)
+
+        QuickControlsCard(
+            overlayEnabled = state.overlayEnabled,
+            onOverlayToggle = onOverlayToggle,
+            onPreviewOverlayClick = onPreviewOverlayClick
         )
 
-        TodayStatsCard(state = state)
+        TodayProgressCard(state = state)
+
+//        SupportedAppsCard(
+//            selectedPackages = state.selectedSupportedPackages,
+//            isEnabled = true,
+//            onToggle = onSupportedAppToggle
+//        )
     }
 }

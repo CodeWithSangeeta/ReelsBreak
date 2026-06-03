@@ -22,5 +22,8 @@ data class DashboardState(
     val curiousRemainingMinutes: Int = 0,
     val limitResetPeriod: LimitResetPeriod = LimitResetPeriod.DAY,
     val overlayEnabled: Boolean = false,
-    val protectionMode: ProtectionMode = ProtectionMode.FLOW
+    val protectionMode: ProtectionMode = ProtectionMode.FLOW,
+    val hasSeenFlowModeInfo: Boolean = false,
+    val hasSeenPauseModeInfo: Boolean = false,
+    val hasSeenCuriousModeInfo: Boolean = false,
 )

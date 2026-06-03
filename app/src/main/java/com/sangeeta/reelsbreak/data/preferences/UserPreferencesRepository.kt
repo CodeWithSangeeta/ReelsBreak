@@ -690,4 +690,23 @@ class UserPreferencesRepository(private val context: Context) {
             prefs[UserPreferences.LIMIT_EXCEEDED_UNTIL_EPOCH_MILLIS] = blockedUntil
         }
     }
+
+    val hasSeenFlowModeInfo: Flow<Boolean> = context.dataStore.data
+        .map { prefs -> prefs[UserPreferences.FLOW_MODE_INFO_SEEN] ?: false }
+
+    val hasSeenPauseModeInfo: Flow<Boolean> = context.dataStore.data
+        .map { prefs -> prefs[UserPreferences.PAUSE_MODE_INFO_SEEN] ?: false }
+
+    val hasSeenCuriousModeInfo: Flow<Boolean> = context.dataStore.data
+        .map { prefs -> prefs[UserPreferences.CURIOUS_MODE_INFO_SEEN] ?: false }
+
+    suspend fun markModeInfoSeen(mode: ProtectionMode) = writeMutex.withLock {
+        context.dataStore.edit { prefs ->
+            when (mode) {
+                ProtectionMode.FLOW -> prefs[UserPreferences.FLOW_MODE_INFO_SEEN] = true
+                ProtectionMode.PAUSED -> prefs[UserPreferences.PAUSE_MODE_INFO_SEEN] = true
+                ProtectionMode.CURIOUS -> prefs[UserPreferences.CURIOUS_MODE_INFO_SEEN] = true
+            }
+        }
+    }
 }

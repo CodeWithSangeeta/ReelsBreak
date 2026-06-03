@@ -245,8 +245,6 @@
 //
 
 
-
-
 package com.sangeeta.reelsbreak.ui.dashboard
 
 import androidx.compose.foundation.layout.Arrangement
@@ -275,6 +273,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sangeeta.reelsbreak.data.preferences.UserPreferences
 import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
 import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
 import com.sangeeta.reelsbreak.domain.model.ProtectionMode
@@ -282,6 +281,7 @@ import com.sangeeta.reelsbreak.ui.dashboard.component.CuriousSetupBottomSheet
 import com.sangeeta.reelsbreak.ui.dashboard.component.DashboardHeader
 import com.sangeeta.reelsbreak.ui.dashboard.component.MainScaffold
 import com.sangeeta.reelsbreak.ui.dashboard.component.ModeInfoBottomSheet
+import com.sangeeta.reelsbreak.ui.dashboard.component.OverlayPreviewBottomSheet
 import com.sangeeta.reelsbreak.ui.dashboard.component.ReelBreakHomeSection
 import com.sangeeta.reelsbreak.ui.permission.PermissionBottomSheet
 import com.sangeeta.reelsbreak.ui.permission.PermissionSheetType
@@ -292,7 +292,8 @@ import kotlinx.coroutines.delay
 
 private enum class DashboardHomeSheet {
     MODE_INFO,
-    CURIOUS_SETUP
+    CURIOUS_SETUP,
+    OVERLAY_PREVIEW
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -312,6 +313,10 @@ fun DashboardScreen(
 
     val permissionUiState by permissionsViewModel.uiState.collectAsState()
     val permissionState = permissionUiState.permissionState
+
+    var hasSeenFlowSheet by remember { mutableStateOf(false) }
+    var hasSeenPauseSheet by remember { mutableStateOf(false) }
+    var hasSeenCuriousSheet by remember { mutableStateOf(false) }
 
     var activeHomeSheet by remember { mutableStateOf<DashboardHomeSheet?>(null) }
     var selectedSheetMode by remember { mutableStateOf<HomeProtectionMode?>(null) }
@@ -353,7 +358,8 @@ fun DashboardScreen(
         reelsClosedToday = dashboardState.reelsCount,
         timeBackTodayMinutes = dashboardState.timeSpentMinutes,
         curiousRemainingCount = dashboardState.curiousRemainingCount,
-        curiousRemainingMinutes = dashboardState.curiousRemainingMinutes
+        curiousRemainingMinutes = dashboardState.curiousRemainingMinutes,
+      //  selectedSupportedPackages = dashboardState.selectedApps
     )
 
     LaunchedEffect(Unit) {
@@ -381,29 +387,14 @@ fun DashboardScreen(
                 HomeProtectionMode.CURIOUS -> "Curious Mode"
             },
             description = when (mode) {
-                HomeProtectionMode.FLOW ->
-                    "Instantly closes reels as soon as they appear."
-                HomeProtectionMode.PAUSED ->
-                    "Temporarily disable protection while keeping settings."
-                HomeProtectionMode.CURIOUS ->
-                    "Watch intentionally with self-imposed limits."
+                HomeProtectionMode.FLOW -> "Instantly closes reels as soon as they appear."
+                HomeProtectionMode.PAUSED -> "Temporarily disable protection while keeping settings."
+                HomeProtectionMode.CURIOUS -> "Watch intentionally with self-imposed limits."
             },
             features = when (mode) {
-                HomeProtectionMode.FLOW -> listOf(
-                    "Instant blocking",
-                    "Deep focus",
-                    "No setup required"
-                )
-                HomeProtectionMode.PAUSED -> listOf(
-                    "Easy to resume",
-                    "No data loss",
-                    "Flexible control"
-                )
-                HomeProtectionMode.CURIOUS -> listOf(
-                    "Reel limits",
-                    "Time limits",
-                    "Daily reset"
-                )
+                HomeProtectionMode.FLOW -> listOf("Instant blocking", "Deep focus", "No setup required")
+                HomeProtectionMode.PAUSED -> listOf("Easy to resume", "No data loss", "Flexible control")
+                HomeProtectionMode.CURIOUS -> listOf("Reel limits", "Time limits", "Daily reset")
             },
             buttonText = if (mode == HomeProtectionMode.CURIOUS) "Continue" else "Got It",
             onDismiss = {
@@ -413,18 +404,17 @@ fun DashboardScreen(
             onPrimaryClick = {
                 when (mode) {
                     HomeProtectionMode.FLOW -> {
-                        dashboardViewModel.onModeSelected(HomeProtectionMode.FLOW)
+                        hasSeenFlowSheet = true
                         activeHomeSheet = null
                         selectedSheetMode = null
                     }
-
                     HomeProtectionMode.PAUSED -> {
-                        dashboardViewModel.onModeSelected(HomeProtectionMode.PAUSED)
+                        hasSeenPauseSheet = true
                         activeHomeSheet = null
                         selectedSheetMode = null
                     }
-
                     HomeProtectionMode.CURIOUS -> {
+                        hasSeenCuriousSheet = true
                         activeHomeSheet = DashboardHomeSheet.CURIOUS_SETUP
                     }
                 }
@@ -459,6 +449,14 @@ fun DashboardScreen(
                 dashboardViewModel.onModeSelected(HomeProtectionMode.CURIOUS)
                 activeHomeSheet = null
                 selectedSheetMode = null
+            }
+        )
+    }
+
+    if (activeHomeSheet == DashboardHomeSheet.OVERLAY_PREVIEW) {
+        OverlayPreviewBottomSheet(
+            onDismiss = {
+                activeHomeSheet = null
             }
         )
     }
@@ -535,12 +533,8 @@ fun DashboardScreen(
                             }
 
                             when (dashboardState.activeMode) {
-                                ActiveBlockMode.STRICT -> dashboardViewModel.onBlockModeCardClicked(
-                                    BlockMode.BLOCK_NOW
-                                )
-                                ActiveBlockMode.LIMIT -> dashboardViewModel.onBlockModeCardClicked(
-                                    BlockMode.LIMIT_BASED
-                                )
+                                ActiveBlockMode.STRICT -> dashboardViewModel.onBlockModeCardClicked(BlockMode.BLOCK_NOW)
+                                ActiveBlockMode.LIMIT -> dashboardViewModel.onBlockModeCardClicked(BlockMode.LIMIT_BASED)
                             }
                         },
                         onModeSelected = { mode ->
@@ -549,10 +543,41 @@ fun DashboardScreen(
                                 return@ReelBreakHomeSection
                             }
 
-                            selectedSheetMode = mode
-                            activeHomeSheet = DashboardHomeSheet.MODE_INFO
+                            when (mode) {
+                                HomeProtectionMode.FLOW -> {
+                                    dashboardViewModel.onModeSelected(HomeProtectionMode.FLOW)
+                                    if (!hasSeenFlowSheet) {
+                                        selectedSheetMode = HomeProtectionMode.FLOW
+                                        activeHomeSheet = DashboardHomeSheet.MODE_INFO
+                                    }
+                                }
+
+                                HomeProtectionMode.PAUSED -> {
+                                    dashboardViewModel.onModeSelected(HomeProtectionMode.PAUSED)
+                                    if (!hasSeenPauseSheet) {
+                                        selectedSheetMode = HomeProtectionMode.PAUSED
+                                        activeHomeSheet = DashboardHomeSheet.MODE_INFO
+                                    }
+                                }
+
+                                HomeProtectionMode.CURIOUS -> {
+                                    val hasCuriousConfig =
+                                        dashboardState.dailyReelLimit > 0 || dashboardState.dailyTimeLimitMinutes > 0
+
+                                    if (!hasCuriousConfig) {
+                                        selectedSheetMode = HomeProtectionMode.CURIOUS
+                                        activeHomeSheet = DashboardHomeSheet.CURIOUS_SETUP
+                                    } else {
+                                        dashboardViewModel.onModeSelected(HomeProtectionMode.CURIOUS)
+                                        if (!hasSeenCuriousSheet) {
+                                            selectedSheetMode = HomeProtectionMode.CURIOUS
+                                            activeHomeSheet = DashboardHomeSheet.MODE_INFO
+                                        }
+                                    }
+                                }
+                            }
                         },
-                        onInfoClick = {
+                        onProtectionInfoClick = {
                             if (!permissionState.accessibilityGranted) {
                                 permissionsViewModel.showSheet(PermissionSheetType.ACCESSIBILITY)
                                 return@ReelBreakHomeSection
@@ -568,29 +593,25 @@ fun DashboardScreen(
                             }
                             dashboardViewModel.onOverlayReminderToggle(enabled)
                         },
-                        onCuriousCountToggle = { enabled ->
-                            dashboardViewModel.setCuriousCountEnabled(enabled)
+                        onPreviewOverlayClick = {
+                            activeHomeSheet = DashboardHomeSheet.OVERLAY_PREVIEW
                         },
-                        onCuriousTimeToggle = { enabled ->
-                            dashboardViewModel.setCuriousTimeEnabled(enabled)
+                        onEditCuriousSettingsClick = {
+                            activeHomeSheet = DashboardHomeSheet.CURIOUS_SETUP
+                            selectedSheetMode = HomeProtectionMode.CURIOUS
                         },
-                        onCuriousReelsLimitChange = { value ->
-                            if (value > 0) dashboardViewModel.setDailyReelLimit(value)
-                        },
-                        onCuriousTimeLimitChange = { value ->
-                            if (value > 0) dashboardViewModel.setDailyTimeLimit(value)
-                        },
-                        onCuriousPeriodChange = { period ->
-                            dashboardViewModel.setLimitResetPeriod(
-                                when (period) {
-                                    CuriousResetPeriod.HOUR -> LimitResetPeriod.HOUR
-                                    CuriousResetPeriod.DAY -> LimitResetPeriod.DAY
-                                }
-                            )
+                        onSupportedAppToggle = { pkg ->
+                           // dashboardViewModel.toggleAppSelection(pkg)
                         }
                     )
                 }
             }
         }
     }
+
+//    LaunchedEffect(activeHomeSheet, selectedSheetMode) {
+//        if (activeHomeSheet == DashboardHomeSheet.MODE_INFO && selectedSheetMode != null) {
+//            DashboardModeSheetPreferences.markSeen(context, selectedSheetMode!!)
+//        }
+//    }
 }
