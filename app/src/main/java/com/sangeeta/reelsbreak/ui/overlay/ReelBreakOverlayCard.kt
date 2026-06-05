@@ -1,4 +1,4 @@
-package com.sangeeta.reelsbreak.ui.dashboard
+package com.sangeeta.reelsbreak.ui.app_component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,21 +19,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.sangeeta.reelsbreak.R
+import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 @Composable
 fun ReelBreakOverlayCard(
     reelsWatched: Int,
     reelLimit: Int,
     timeDisplay: String,
-    showReels: Boolean,
-    showTimer: Boolean
 ) {
-    // Premium, deep translucent charcoal glass layer (85% opacity)
-    // Safe for Play Store guidelines as it doesn't aggressively blind or fully obstruct content
+    val colors = LocalAppColors.current
     val glassBg = Color(0xD90D0D0D)
 
-    // Soft, premium neon purple hue for subtitle metrics to retain app identity elegantly
-    val brandingPurple = Color(0xFFA78BFA).copy(alpha = 0.75f)
 
     Row(
         modifier = Modifier
@@ -41,7 +37,6 @@ fun ReelBreakOverlayCard(
             .background(glassBg)
             .border(
                 width = 1.dp,
-                // Soft translucent border that catches light without looking harsh
                 color = Color.White.copy(alpha = 0.15f),
                 shape = RoundedCornerShape(50.dp)
             )
@@ -52,12 +47,11 @@ fun ReelBreakOverlayCard(
 
         Icon(
             painter = painterResource(id = R.drawable.applogo),
-            contentDescription = "ReelBreak",
+            contentDescription = "ReelsBreak",
             tint = Color.Unspecified,
             modifier = Modifier.size(34.dp)
         )
 
-      //  if (showReels) {
             Box(
                 modifier = Modifier
                     .width(1.dp)
@@ -79,7 +73,7 @@ fun ReelBreakOverlayCard(
                     )
                     Text(
                         text = "REELS",
-                        color = brandingPurple,
+                        color = colors.purpleSoft.copy(alpha = 0.75f),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.2.sp,
@@ -87,9 +81,7 @@ fun ReelBreakOverlayCard(
                     )
                 }
             }
-   //     }
 
-  //      if (showTimer) {
             Box(
                 modifier = Modifier
                     .width(1.dp)
@@ -111,13 +103,12 @@ fun ReelBreakOverlayCard(
                     )
                     Text(
                         text = "TIMER",
-                        color = brandingPurple,
+                        color = colors.purpleSoft.copy(alpha = 0.75f),
                         fontSize = 9.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.2.sp,
                         lineHeight = 10.sp
                     )
-     //           }
             }
         }
     }
