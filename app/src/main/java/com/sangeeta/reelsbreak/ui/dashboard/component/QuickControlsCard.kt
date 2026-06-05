@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -72,11 +72,10 @@ fun QuickControlsCard(
                         onCheckedChange = onOverlayToggle,
                         colors = SwitchDefaults.colors(
                             checkedThumbColor = Color.White,
-                            checkedTrackColor = colors.successGreen,
-                            uncheckedThumbColor = Color.White,
-                            uncheckedTrackColor = colors.pausedAccentSoft.copy(alpha = 0.8f),
-                            uncheckedBorderColor = Color.Transparent,
-                            checkedBorderColor = Color.Transparent
+                            checkedTrackColor = colors.switchTrackOn,
+                            uncheckedThumbColor = colors.textMuted,
+                            uncheckedTrackColor = colors.switchTrackOff,
+                            uncheckedBorderColor = colors.borderSubtle
                         )
                     )
                 }
@@ -116,8 +115,8 @@ fun QuickControlsCard(
 fun SettingsActionRow(
     title: String,
     subtitle: String,
-    icon: @Composable RowScope.() -> Unit,
-    trailingContent: @Composable RowScope.() -> Unit,
+    icon: @Composable () -> Unit,
+    trailingContent: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
@@ -138,65 +137,53 @@ fun SettingsActionRow(
                         )
                         .background(
                             if (colors.isDark) Color.White.copy(alpha = 0.02f)
-                            else Color.Black.copy(alpha = 0.015f)
+                            else Color.Black.copy(alpha = 0.02f)
                         )
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
-                } else {
-                    Modifier.padding(horizontal = 2.dp)
-                }
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
+                } else Modifier
+            )
+            .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(colors.purplePrimary.copy(alpha = 0.10f))
+                .border(1.dp, colors.borderSubtle, CircleShape),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (colors.isDark) Color.White.copy(alpha = 0.05f)
-                        else Color.Black.copy(alpha = 0.04f)
-                    )
-                    .border(
-                        1.dp,
-                        colors.borderSubtle.copy(alpha = if (colors.isDark) 0.34f else 0.12f),
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    content = icon
-                )
-            }
-
-            Spacer(modifier = Modifier.size(12.dp))
-
-            Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(
-                    text = title,
-                    color = colors.textPrimary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = subtitle,
-                    color = colors.textMuted,
-                    fontSize = 12.sp,
-                    lineHeight = 16.sp
-                )
-            }
+            icon()
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-            content = trailingContent
-        )
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                text = title,
+                color = colors.textPrimary,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = subtitle,
+                color = colors.textSecondary,
+                fontSize = 12.sp,
+                lineHeight = 16.sp,
+                maxLines = 2
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Box(
+            modifier = Modifier.width(52.dp),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            trailingContent()
+        }
     }
 }
 

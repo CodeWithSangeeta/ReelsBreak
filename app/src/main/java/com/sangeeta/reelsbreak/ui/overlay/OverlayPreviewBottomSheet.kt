@@ -1,78 +1,40 @@
-package com.sangeeta.reelsbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.overlay
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.SizeTransform
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.NotificationsNone
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sangeeta.reelsbreak.R
-import com.sangeeta.reelsbreak.ui.overlay.OverlayPreviewCard
-import com.sangeeta.reelsbreak.ui.overlay.OverlayPreviewPhoneMockup
 import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
-import kotlinx.coroutines.delay
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -96,10 +58,10 @@ fun OverlayPreviewBottomSheet(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OverlaySheetDragHandle()
-
             Column(
-                modifier = Modifier.
-                padding(16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(32.dp, end = 32.dp, top = 0.dp, bottom = 0.dp),
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "Overlay Preview",
@@ -114,37 +76,41 @@ fun OverlayPreviewBottomSheet(
                     color = colors.textSecondary,
                     modifier = Modifier.align(alignment = Alignment.CenterHorizontally),
                     fontSize = 14.sp,
-                    lineHeight = 20.sp
+                    lineHeight = 20.sp,
+                    textAlign = TextAlign.Center
                 )
             }
 
             OverlayPreviewPhoneMockup()
 
-            HorizontalDivider(
-                color = colors.borderSubtle.copy(alpha = if (colors.isDark) 0.72f else 0.4f),
-                thickness = 1.dp
-            )
+//            HorizontalDivider(
+//                color = colors.borderSubtle.copy(alpha = if (colors.isDark) 0.34f else 0.10f),
+//                thickness = 1.dp
+//            )
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OverlayInfoRow(
                     icon = Icons.Outlined.NotificationsNone,
-                    color = colors.purplePrimary.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                    bgcolor = colors.purplePrimary.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                    tintcolor = colors.purplePrimary,
                     title = "Shows only on reels",
                     description = "The overlay appears only when a short-video reel screen is detected."
                 )
 
                 OverlayInfoRow(
                     icon = Icons.Outlined.Timer,
-                    color = colors.blueAccent.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                    bgcolor = colors.blueAccent.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                    tintcolor = colors.blueAccent,
                     title = "Tracks your time & reels",
                     description = "It can show your reel count and watch time for the current session."
                 )
 
                 OverlayInfoRow(
                     icon = Icons.Outlined.Shield,
-                    color = colors.successGreen.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                    bgcolor = colors.successGreen.copy(alpha = if (colors.isDark) 0.22f else 0.12f),
+                    tintcolor = colors.successGreen,
                     title = "Reminds when your limit is reached",
                     description = "When your set limit is reached, ReelBreak shows a reminder and can close the reel screen based on your selected mode."
                 )
@@ -180,12 +146,12 @@ private fun OverlaySheetDragHandle() {
 @Composable
 private fun OverlayInfoRow(
     icon: ImageVector,
-    color: Color,
+    bgcolor: Color,
+    tintcolor: Color,
     title: String,
     description: String
 ) {
     val colors = LocalAppColors.current
-    val accent = colors.purplePrimary
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -194,17 +160,15 @@ private fun OverlayInfoRow(
     ) {
         Box(
             modifier = Modifier
-                .size(44.dp)
-                .background(
-                    color = accent.copy(alpha = if (colors.isDark) 0.16f else 0.10f),
-                    shape = CircleShape
-                ),
+                .size(40.dp)
+                .clip(CircleShape)
+                .background( bgcolor),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = color,
+                tint = tintcolor,
                 modifier = Modifier.size(20.dp)
             )
         }
