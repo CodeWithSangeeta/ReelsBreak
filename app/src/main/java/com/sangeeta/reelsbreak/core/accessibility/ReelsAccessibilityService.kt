@@ -19,7 +19,7 @@
 //import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
 //import kotlinx.coroutines.flow.combine
 //import android.graphics.PixelFormat
-//import com.sangeeta.reelsbreak.ui.dashboard.ReelBreakOverlayCard
+//import com.sangeeta.reelsbreak.ui.overlay.ReelBreakOverlayCard
 //import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 //import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
 //import com.sangeeta.reelsbreak.domain.model.ProtectionMode
@@ -355,7 +355,7 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
 import kotlinx.coroutines.flow.combine
 import android.graphics.PixelFormat
-import com.sangeeta.reelsbreak.ui.dashboard.ReelBreakOverlayCard
+import com.sangeeta.reelsbreak.ui.overlay.ReelBreakOverlayCard
 import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
 import com.sangeeta.reelsbreak.domain.model.ProtectionMode
@@ -629,8 +629,6 @@ class ReelsAccessibilityService : AccessibilityService() {
                             val totalSeconds = liveTimeSpent / 1000L
                             String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
                         },
-                        showReels = showReels,
-                        showTimer = showTimer
                     )
                 }
                 delay(1000)

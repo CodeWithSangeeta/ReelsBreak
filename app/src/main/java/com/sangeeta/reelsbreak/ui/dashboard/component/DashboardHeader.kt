@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.sangeeta.reelsbreak.ui.app_component.AppScreenHeader
 
 @Composable
 fun DashboardHeader(
@@ -23,9 +24,9 @@ fun DashboardHeader(
     onThemeToggle: () -> Unit
 ) {
     AppScreenHeader(
-        title    = "ReelBreak",
+        title = "ReelBreak",
         subtitle = "Reduce short-video distractions",
-        actions  = {
+        actions = {
             HeaderActionButton(
                 icon = if (isDarkMode)
                     Icons.Outlined.DarkMode else Icons.Outlined.LightMode,

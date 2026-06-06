@@ -26,4 +26,5 @@ data class DashboardState(
     val hasSeenFlowModeInfo: Boolean = false,
     val hasSeenPauseModeInfo: Boolean = false,
     val hasSeenCuriousModeInfo: Boolean = false,
+    val currentStreakDays: Int = 0,
 )

@@ -8,16 +8,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.sangeeta.reelsbreak.ui.dashboard.DashboardHomeUiState
 import com.sangeeta.reelsbreak.ui.dashboard.HomeProtectionMode
+import com.sangeeta.reelsbreak.ui.focused_mode.SupportedAppsCard
 
 @Composable
-fun ReelBreakHomeSection(
+fun DashboardHomeSection(
     state: DashboardHomeUiState,
     onProtectionToggle: () -> Unit,
     onModeSelected: (HomeProtectionMode) -> Unit,
     onProtectionInfoClick: () -> Unit,
     onOverlayToggle: (Boolean) -> Unit,
     onPreviewOverlayClick: () -> Unit,
-    onEditCuriousSettingsClick: () -> Unit,
     onSupportedAppToggle: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -40,10 +40,10 @@ fun ReelBreakHomeSection(
 
         TodayProgressCard(state = state)
 
-//        SupportedAppsCard(
-//            selectedPackages = state.selectedSupportedPackages,
-//            isEnabled = true,
-//            onToggle = onSupportedAppToggle
-//        )
+        SupportedAppsCard(
+            selectedPackages = state.selectedSupportedPackages,
+            isEnabled = true,
+            onToggle = onSupportedAppToggle
+        )
     }
 }

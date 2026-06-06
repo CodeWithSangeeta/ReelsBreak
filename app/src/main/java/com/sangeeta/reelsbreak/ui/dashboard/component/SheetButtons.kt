@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 
 @Composable
-fun PrimarySheetButton(
+fun SheetButton(
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier

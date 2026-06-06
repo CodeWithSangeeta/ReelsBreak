@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +46,15 @@ fun CuriousSetupBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
     val colors = LocalAppColors.current
+    val reelTitle = when (resetPeriod) {
+        CuriousResetPeriod.HOUR -> "Hourly Reel Limit"
+        CuriousResetPeriod.DAY -> "Daily Reel Limit"
+    }
 
+    val timeTitle = when (resetPeriod) {
+        CuriousResetPeriod.HOUR -> "Hourly Time Limit"
+        CuriousResetPeriod.DAY -> "Daily Time Limit"
+    }
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
@@ -84,25 +93,25 @@ fun CuriousSetupBottomSheet(
                 )
 
                 SliderSettingBlock(
-                    title = "Daily Reel Limit",
+                    title = reelTitle,
                     valueText = "$reelsLimit reels"
                 ) {
                     Slider(
                         value = reelsLimit.toFloat(),
                         onValueChange = { onReelsLimitChange(it.roundToInt().coerceAtLeast(1)) },
-                        valueRange = 1f..100f,
+                        valueRange = if( resetPeriod == CuriousResetPeriod.HOUR) 1f..60f else 1f .. 180f,
                         colors = sliderColors()
                     )
                 }
 
                 SliderSettingBlock(
-                    title = "Daily Time Limit",
+                    title = timeTitle,
                     valueText = "$timeLimitMinutes min"
                 ) {
                     Slider(
                         value = timeLimitMinutes.toFloat(),
-                        onValueChange = { onTimeLimitChange(it.roundToInt().coerceAtLeast(5)) },
-                        valueRange = 5f..180f,
+                        onValueChange = { onTimeLimitChange(it.roundToInt().coerceAtLeast(1)) },
+                        valueRange = if(resetPeriod == CuriousResetPeriod.HOUR)1f..20f else 1f .. 90f,
                         colors = sliderColors()
                     )
                 }
@@ -130,7 +139,7 @@ fun CuriousSetupBottomSheet(
                     }
                 }
 
-                PrimarySheetButton(
+                SheetButton(
                     text = "Save Settings",
                     onClick = onSaveClick
                 )
@@ -177,6 +186,7 @@ private fun ResetChip(
     modifier: Modifier = Modifier
 ) {
     val colors = LocalAppColors.current
+
     Box(
         modifier = modifier
             .background(
@@ -214,8 +224,15 @@ private fun ResetChip(
 }
 
 @Composable
-private fun sliderColors() = SliderDefaults.colors(
-    thumbColor = LocalAppColors.current.purplePrimary,
-    activeTrackColor = LocalAppColors.current.purplePrimary,
-    inactiveTrackColor = LocalAppColors.current.borderSubtle.copy(alpha = 0.25f)
-)
+private fun sliderColors(): androidx.compose.material3.SliderColors {
+    val colors = LocalAppColors.current
+    val accent = if (colors.isDark) Color(0xFF7C3AED) else Color(0xFF6B3FA0)
+
+    return SliderDefaults.colors(
+        thumbColor = accent,
+        activeTrackColor = accent,
+        inactiveTrackColor = accent.copy(alpha = if (colors.isDark) 0.22f else 0.20f),
+        activeTickColor = Color.White.copy(alpha = if (colors.isDark) 0.65f else 0.85f),
+        inactiveTickColor = accent.copy(alpha = 0.18f)
+    )
+}

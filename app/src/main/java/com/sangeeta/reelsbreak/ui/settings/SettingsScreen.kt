@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sangeeta.reelsbreak.ui.dashboard.component.AppScreenHeader
-import com.sangeeta.reelsbreak.ui.dashboard.component.MainScaffold
+import com.sangeeta.reelsbreak.ui.app_component.AppScreenHeader
+import com.sangeeta.reelsbreak.ui.app_component.MainScaffold
 import com.sangeeta.reelsbreak.ui.theme.LocalAppColors
 import com.sangeeta.reelsbreak.viewmodel.SettingsViewModel
 

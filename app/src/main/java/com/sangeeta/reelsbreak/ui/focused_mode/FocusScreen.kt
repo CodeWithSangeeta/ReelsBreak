@@ -37,8 +37,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sangeeta.reelsbreak.core.accessibility.ReelsAccessibilityService
-import com.sangeeta.reelsbreak.ui.dashboard.component.AppScreenHeader
-import com.sangeeta.reelsbreak.ui.dashboard.component.MainScaffold
+import com.sangeeta.reelsbreak.ui.app_component.AppScreenHeader
+import com.sangeeta.reelsbreak.ui.app_component.MainScaffold
 import com.sangeeta.reelsbreak.ui.permission.PermissionBottomSheet
 import com.sangeeta.reelsbreak.ui.permission.PermissionSheetType
 import com.sangeeta.reelsbreak.ui.theme.LocalAppColors

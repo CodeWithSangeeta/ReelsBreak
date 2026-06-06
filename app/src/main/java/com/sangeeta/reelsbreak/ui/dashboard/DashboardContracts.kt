@@ -13,23 +13,6 @@ enum class CuriousResetPeriod {
     HOUR, DAY
 }
 
-//@Immutable
-//data class DashboardHomeUiState(
-//    val isProtectionEnabled: Boolean = false,
-//    val selectedMode: HomeProtectionMode = HomeProtectionMode.PAUSED,
-//    val accessibilityGranted: Boolean = true,
-//    val overlayEnabled: Boolean = false,
-//    val curiousCountEnabled: Boolean = true,
-//    val curiousTimeEnabled: Boolean = true,
-//    val curiousReelsLimit: Int = 10,
-//    val curiousTimeLimitMinutes: Int = 20,
-//    val curiousResetPeriod: CuriousResetPeriod = CuriousResetPeriod.HOUR,
-//    val reelsClosedToday: Int = 0,
-//    val timeBackTodayMinutes: Int = 0,
-//    val curiousRemainingCount: Int = 7,
-//    val curiousRemainingMinutes: Int = 12,
-//)
-
 @Immutable
 data class DashboardHomeUiState(
     val isProtectionEnabled: Boolean = false,
@@ -45,7 +28,8 @@ data class DashboardHomeUiState(
     val timeBackTodayMinutes: Int = 0,
     val curiousRemainingCount: Int = 7,
     val curiousRemainingMinutes: Int = 12,
-    val selectedSupportedPackages: Set<String> = emptySet()
+    val selectedSupportedPackages: Set<String> = emptySet(),
+    val currentStreakDays: Int = 0,
 )
 
 

@@ -1,4 +1,4 @@
-package com.sangeeta.reelsbreak.ui.app_component
+package com.sangeeta.reelsbreak.ui.overlay
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -113,3 +113,4 @@ fun ReelBreakOverlayCard(
         }
     }
 }
+

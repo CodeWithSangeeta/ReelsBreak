@@ -1,4 +1,4 @@
-package com.sangeeta.reelsbreak.ui.dashboard.component
+package com.sangeeta.reelsbreak.ui.app_component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

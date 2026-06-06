@@ -35,5 +35,6 @@ object UserPreferences {
     val FLOW_MODE_INFO_SEEN = booleanPreferencesKey("flow_mode_info_seen")
     val PAUSE_MODE_INFO_SEEN = booleanPreferencesKey("pause_mode_info_seen")
     val CURIOUS_MODE_INFO_SEEN = booleanPreferencesKey("curious_mode_info_seen")
-
+    val CURRENT_STREAK_DAYS = intPreferencesKey("current_streak_days")
+    val LAST_ACTIVE_PROTECTION_DATE = stringPreferencesKey("last_active_protection_date")
 }

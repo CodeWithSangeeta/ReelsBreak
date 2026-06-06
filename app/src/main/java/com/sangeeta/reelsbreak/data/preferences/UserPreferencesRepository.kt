@@ -516,7 +516,7 @@ class UserPreferencesRepository(private val context: Context) {
         }
 
     val isNotificationsEnabled: Flow<Boolean> = context.dataStore.data
-        .map { prefs -> prefs[UserPreferences.IS_NOTIFICATIONS_ENABLED] ?: true }
+        .map { prefs -> prefs[UserPreferences.IS_NOTIFICATIONS_ENABLED] ?: false }
 
     val isWeekendRelaxEnabled: Flow<Boolean> = context.dataStore.data
         .map { prefs -> prefs[UserPreferences.IS_WEEKEND_RELAX_ENABLED] ?: false }
@@ -632,17 +632,17 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { prefs -> prefs[UserPreferences.IS_OVERLAY_REMINDER_ENABLED] = enabled }
     }
 
-    suspend fun setProtectionMode(mode: ProtectionMode) = writeMutex.withLock {
-        context.dataStore.edit { prefs ->
-            prefs[UserPreferences.PROTECTION_MODE] = mode.name
-            prefs[UserPreferences.ACTIVE_MODE] = when (mode) {
-                ProtectionMode.FLOW -> ActiveBlockMode.STRICT.value
-                ProtectionMode.CURIOUS -> ActiveBlockMode.LIMIT.value
-                ProtectionMode.PAUSED -> ActiveBlockMode.LIMIT.value
-            }
-            prefs[UserPreferences.IS_STRICT_MODE] = (mode == ProtectionMode.FLOW)
-        }
-    }
+//    suspend fun setProtectionMode(mode: ProtectionMode) = writeMutex.withLock {
+//        context.dataStore.edit { prefs ->
+//            prefs[UserPreferences.PROTECTION_MODE] = mode.name
+//            prefs[UserPreferences.ACTIVE_MODE] = when (mode) {
+//                ProtectionMode.FLOW -> ActiveBlockMode.STRICT.value
+//                ProtectionMode.CURIOUS -> ActiveBlockMode.LIMIT.value
+//                ProtectionMode.PAUSED -> ActiveBlockMode.LIMIT.value
+//            }
+//            prefs[UserPreferences.IS_STRICT_MODE] = (mode == ProtectionMode.FLOW)
+//        }
+//    }
 
     suspend fun ensureCountersAreFresh() = writeMutex.withLock {
         val now = System.currentTimeMillis()
@@ -700,12 +700,54 @@ class UserPreferencesRepository(private val context: Context) {
     val hasSeenCuriousModeInfo: Flow<Boolean> = context.dataStore.data
         .map { prefs -> prefs[UserPreferences.CURIOUS_MODE_INFO_SEEN] ?: false }
 
-    suspend fun markModeInfoSeen(mode: ProtectionMode) = writeMutex.withLock {
+    suspend fun markModeInfoSeen(mode: ProtectionMode) {
         context.dataStore.edit { prefs ->
             when (mode) {
                 ProtectionMode.FLOW -> prefs[UserPreferences.FLOW_MODE_INFO_SEEN] = true
                 ProtectionMode.PAUSED -> prefs[UserPreferences.PAUSE_MODE_INFO_SEEN] = true
                 ProtectionMode.CURIOUS -> prefs[UserPreferences.CURIOUS_MODE_INFO_SEEN] = true
+            }
+        }
+    }
+    val currentStreakDays: Flow<Int> = context.dataStore.data.map { prefs ->
+        prefs[UserPreferences.CURRENT_STREAK_DAYS] ?: 0
+    }
+
+    suspend fun setProtectionMode(mode: ProtectionMode) = writeMutex.withLock {
+        context.dataStore.edit { prefs ->
+            prefs[UserPreferences.PROTECTION_MODE] = mode.name
+            prefs[UserPreferences.ACTIVE_MODE] = when (mode) {
+                ProtectionMode.FLOW -> ActiveBlockMode.STRICT.value
+                ProtectionMode.CURIOUS -> ActiveBlockMode.LIMIT.value
+                ProtectionMode.PAUSED -> ActiveBlockMode.LIMIT.value
+            }
+            prefs[UserPreferences.IS_STRICT_MODE] = mode == ProtectionMode.FLOW
+
+            val today = LocalDate.now()
+            val lastActiveDateString = prefs[UserPreferences.LAST_ACTIVE_PROTECTION_DATE]
+            val currentStreak = prefs[UserPreferences.CURRENT_STREAK_DAYS] ?: 0
+
+            when (mode) {
+                ProtectionMode.PAUSED -> {
+                    prefs[UserPreferences.CURRENT_STREAK_DAYS] = 0
+                }
+
+                ProtectionMode.FLOW,
+                ProtectionMode.CURIOUS -> {
+                    val updatedStreak = if (lastActiveDateString == null) {
+                        1
+                    } else {
+                        val lastActiveDate = LocalDate.parse(lastActiveDateString)
+                        when {
+                            lastActiveDate.isEqual(today) -> currentStreak.coerceAtLeast(1)
+                            lastActiveDate.plusDays(1).isEqual(today) -> currentStreak + 1
+                            else -> 1
+                        }
+                    }
+
+                    prefs[UserPreferences.CURRENT_STREAK_DAYS] = updatedStreak
+                    prefs[UserPreferences.LAST_ACTIVE_PROTECTION_DATE] = today.toString()
+                }
             }
         }
     }

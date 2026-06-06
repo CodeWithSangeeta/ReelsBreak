@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -134,49 +133,32 @@ fun ProtectionCard(
 
     val lottieAnimatable = rememberLottieAnimatable()
 
-    LaunchedEffect(
-        composition,
-        state.isProtectionEnabled,
-        state.selectedMode
-    ) {
+
+    LaunchedEffect(composition, state.isProtectionEnabled, state.selectedMode) {
         if (composition == null) return@LaunchedEffect
 
         if (!state.isProtectionEnabled) {
-            lottieAnimatable.snapTo(
-                composition = composition,
-                progress = 0f
-            )
+            lottieAnimatable.snapTo(composition = composition, progress = 0.5f)
             return@LaunchedEffect
         }
 
         if (isPaused) {
-            lottieAnimatable.snapTo(
-                composition = composition,
-                progress = 0.90f
-            )
+            lottieAnimatable.snapTo(composition = composition, progress = 0f)
             return@LaunchedEffect
         }
 
-        while (true) {
-            lottieAnimatable.animate(
-                composition = composition,
-                initialProgress = 0f,
-                speed = when (state.selectedMode) {
-                    HomeProtectionMode.FLOW -> 1f
-                    HomeProtectionMode.CURIOUS -> 0.7f
-                    HomeProtectionMode.PAUSED -> 0f
-                }
-            )
+        val playSpeed = when (state.selectedMode) {
+            HomeProtectionMode.FLOW -> 0.45f
+            HomeProtectionMode.CURIOUS -> 0.40f
+            HomeProtectionMode.PAUSED -> 0f
+        }
 
-            lottieAnimatable.animate(
-                composition = composition,
-                initialProgress = 1f,
-                speed = when (state.selectedMode) {
-                    HomeProtectionMode.FLOW -> -1f
-                    HomeProtectionMode.CURIOUS -> -0.7f
-                    HomeProtectionMode.PAUSED -> 0f
-                }
-            )
+        while (true) {
+            lottieAnimatable.snapTo(composition = composition, progress = 0f)
+            lottieAnimatable.animate(composition = composition, speed = playSpeed)
+
+            lottieAnimatable.snapTo(composition = composition, progress = 1f)
+            lottieAnimatable.animate(composition = composition, speed = -playSpeed)
         }
     }
     val dynamicProperties = rememberPowerButtonDynamicProperties(palette)
@@ -187,7 +169,7 @@ fun ProtectionCard(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
 
             Row(
@@ -206,6 +188,7 @@ fun ProtectionCard(
                 Box(
                     modifier = Modifier
                         .height(32.dp)
+                        .align(Alignment.CenterVertically)
                         .clip(RoundedCornerShape(999.dp))
                         .background(colors.cardSurface)
                         .border(
@@ -222,7 +205,7 @@ fun ProtectionCard(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(7.dp)
+                                .size(6.dp)
                                 .clip(CircleShape)
                                 .background(
                                     if (state.isProtectionEnabled) accent
@@ -230,14 +213,15 @@ fun ProtectionCard(
                                 )
                         )
                         Text(
-                            text = if (!state.isProtectionEnabled) "Inactive" else if(state.selectedMode == HomeProtectionMode.PAUSED)"Paused" else "Active",
+                            text = if (!state.isProtectionEnabled || state.selectedMode == HomeProtectionMode.PAUSED)"Paused" else "Active",
                             color = if (state.isProtectionEnabled) accent else colors.textSecondary,
                             fontSize = 12.sp,
+                            modifier = Modifier.align(Alignment.CenterVertically),
                             fontWeight = FontWeight.SemiBold
                         )
                     }
                 }
-                Spacer(modifier =Modifier.width(4.dp))
+                Spacer(modifier =Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
                         .size(32.dp)
@@ -269,7 +253,7 @@ fun ProtectionCard(
 
             Box(
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(150.dp)
                     .clip(CircleShape)
                     .background(
                         Brush.radialGradient(
@@ -287,23 +271,14 @@ fun ProtectionCard(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                if (composition != null) {
                     LottieAnimation(
                         composition = composition,
                         progress = { lottieAnimatable.progress },
                         dynamicProperties = dynamicProperties,
                         modifier = Modifier
-                            .size(200.dp)
+                            .size(150.dp)
                             .alpha(if (isPaused) 0.82f else 1f)
                     )
-                } else {
-                    Icon(
-                        imageVector = Icons.Outlined.Shield,
-                        contentDescription = null,
-                        tint = accent,
-                        modifier = Modifier.size(44.dp)
-                    )
-                }
             }
 
 
@@ -320,7 +295,7 @@ fun ProtectionCard(
                     fontWeight = FontWeight.Bold
                 )
 
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             ModeSelection(
                 selectedMode = state.selectedMode,

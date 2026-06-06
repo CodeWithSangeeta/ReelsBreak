@@ -23,8 +23,6 @@ import kotlinx.coroutines.launch
 class DashboardViewModel @Inject constructor(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
-
-    // Isolate pure view-local interactive properties from disk pipeline streams
     private val _isDarkMode = MutableStateFlow(true)
     private val _expandedMode = MutableStateFlow<BlockMode?>(null)
 
@@ -38,8 +36,12 @@ class DashboardViewModel @Inject constructor(
         userPreferencesRepository.limitResetPeriod,
         userPreferencesRepository.isOverlayReminderEnabled,
         userPreferencesRepository.protectionMode,
+        userPreferencesRepository.hasSeenFlowModeInfo,
+        userPreferencesRepository.hasSeenPauseModeInfo,
+        userPreferencesRepository.hasSeenCuriousModeInfo,
+        userPreferencesRepository.currentStreakDays,
         _isDarkMode,
-        _expandedMode
+        _expandedMode,
     ) { params ->
         val dailyReelLimit = params[0] as Int
         val dailyTimeLimitMinutes = params[1] as Int
@@ -50,8 +52,12 @@ class DashboardViewModel @Inject constructor(
         val limitResetPeriod = params[6] as LimitResetPeriod
         val overlayEnabled = params[7] as Boolean
         val protectionMode = params[8] as ProtectionMode
-        val darkChoice = params[9] as Boolean
-        val expandedChoice = params[10] as BlockMode?
+        val hasSeenFlowModeInfo = params[9] as Boolean
+        val hasSeenPauseModeInfo = params[10] as Boolean
+        val hasSeenCuriousModeInfo = params[11] as Boolean
+        val currentStreakDays = params[12] as Int
+        val darkChoice = params[13] as Boolean
+        val expandedChoice = params[14] as BlockMode?
 
         val remainingCount = (dailyReelLimit - reelsCount).coerceAtLeast(0)
         val remainingMinutes = (dailyTimeLimitMinutes - timeSpentMinutes).coerceAtLeast(0)
@@ -68,6 +74,10 @@ class DashboardViewModel @Inject constructor(
             protectionMode = protectionMode,
             curiousRemainingCount = remainingCount,
             curiousRemainingMinutes = remainingMinutes,
+            hasSeenFlowModeInfo = hasSeenFlowModeInfo,
+            hasSeenPauseModeInfo = hasSeenPauseModeInfo,
+            hasSeenCuriousModeInfo = hasSeenCuriousModeInfo,
+            currentStreakDays = currentStreakDays,
             isDarkMode = darkChoice,
             expandedMode = expandedChoice
         )
@@ -144,5 +154,17 @@ class DashboardViewModel @Inject constructor(
 
     fun setDailyTimeLimit(value: Int) = viewModelScope.launch {
         userPreferencesRepository.setDailyTimeLimitMinutes(value.coerceAtLeast(0))
+    }
+
+    fun markModeInfoSeen(mode: HomeProtectionMode) {
+        viewModelScope.launch {
+            userPreferencesRepository.markModeInfoSeen(
+                when (mode) {
+                    HomeProtectionMode.FLOW -> ProtectionMode.FLOW
+                    HomeProtectionMode.PAUSED -> ProtectionMode.PAUSED
+                    HomeProtectionMode.CURIOUS -> ProtectionMode.CURIOUS
+                }
+            )
+        }
     }
 }
