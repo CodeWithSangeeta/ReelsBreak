@@ -112,7 +112,7 @@ fun DashboardScreen(
         currentStreakDays = dashboardState.currentStreakDays,
         curiousRemainingCount = dashboardState.curiousRemainingCount,
         curiousRemainingMinutes = dashboardState.curiousRemainingMinutes,
-        selectedSupportedPackages = dashboardState.selectedApps
+      //  selectedSupportedPackages = dashboardState.selectedApps
     )
 
     LaunchedEffect(Unit) {
@@ -375,7 +375,7 @@ fun DashboardScreen(
                             activeHomeSheet = DashboardHomeSheet.OVERLAY_PREVIEW
                         },
                         onSupportedAppToggle = { pkg ->
-                           dashboardViewModel.toggleAppSelection(pkg)
+                         //  dashboardViewModel.toggleAppSelection(pkg)
                         }
                     )
                 }

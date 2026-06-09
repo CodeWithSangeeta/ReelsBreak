@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.foundation.layout)
     implementation(libs.androidx.animation)
     implementation(libs.androidx.compose.ui)
+    testImplementation(libs.junit.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     //Compose UI
@@ -86,6 +87,9 @@ dependencies {
 
     //unit test
     testImplementation(libs.junit)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("io.mockk:mockk:1.13.11")
+    testImplementation("app.cash.turbine:turbine:1.1.0")
 
     //Android Test
     androidTestImplementation(libs.androidx.junit)

@@ -85,7 +85,6 @@ class BlockingDecisionEngine(
     enum class Decision {
         BLOCK,
         ALLOW,
-        SKIP_REEL
     }
 
     /**
