@@ -19,6 +19,8 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
 import kotlinx.coroutines.flow.combine
 import android.graphics.PixelFormat
+import com.sangeeta.reelsbreak.core.debug.AccessibilityDebugLogger
+//import com.sangeeta.reelsbreak.core.debug.AccessibilityDebugLogger
 import com.sangeeta.reelsbreak.ui.overlay.ReelBreakOverlayCard
 import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
@@ -116,15 +118,35 @@ class ReelsAccessibilityService : AccessibilityService() {
         val shouldInspectTree = when (event.eventType) {
             AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
             AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-            AccessibilityEvent.TYPE_VIEW_SCROLLED -> true
+            AccessibilityEvent.TYPE_VIEW_SCROLLED,
+            AccessibilityEvent.TYPE_VIEW_CLICKED -> true
             else -> false
         }
 
         val rootNode: AccessibilityNodeInfo? = if (shouldInspectTree) rootInActiveWindow else null
 
+//        //only for debugging
+        AccessibilityDebugLogger.logEvent(
+            event = event,
+            rootNodeRequested = shouldInspectTree,
+            rootNode = rootNode,
+            detectorState = currentProtectionMode.name
+        )
+
+
+
         try {
             if (::detectionManager.isInitialized) {
+
+
                 detectionManager.processEvent(event, rootNode)
+
+
+                AccessibilityDebugLogger.logDetectionSnapshot(
+                    packageName = packageName,
+                    rootNode = rootNode,
+                    isDetected = detectionManager.isOnReelsScreen
+                )
 
                 if (!detectionManager.isOnReelsScreen) {
                     reelsScreenEnteredAt = null
@@ -330,354 +352,5 @@ private data class OverlayUiModel(
     val timeSpentMillis: Long,
     val resetPeriod: LimitResetPeriod
 )
-
-
-
-//package com.sangeeta.reelsbreak.core.accessibility
-//
-//import android.accessibilityservice.AccessibilityService
-//import android.accessibilityservice.AccessibilityServiceInfo
-//import android.util.Log
-//import android.view.accessibility.AccessibilityEvent
-//import android.view.accessibility.AccessibilityNodeInfo
-//import com.sangeeta.reelsbreak.core.action.ActionController
-//import com.sangeeta.reelsbreak.core.detection.ReelsDetectionManager
-//import com.sangeeta.reelsbreak.core.engine.BlockingDecisionEngine
-//import com.sangeeta.reelsbreak.data.FocusStateHolder
-//import com.sangeeta.reelsbreak.core.registry.ReelsDetectionRegistry
-//import android.os.PowerManager
-//import android.view.Gravity
-//import android.view.WindowManager
-//import androidx.compose.ui.platform.ComposeView
-//import androidx.lifecycle.setViewTreeLifecycleOwner
-//import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-//import com.sangeeta.reelsbreak.core.overlay.OverlayLifecycleOwner
-//import kotlinx.coroutines.flow.combine
-//import android.graphics.PixelFormat
-//import com.sangeeta.reelsbreak.core.debug.AccessibilityDebugLogger
-//import com.sangeeta.reelsbreak.ui.overlay.ReelBreakOverlayCard
-//import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
-//import com.sangeeta.reelsbreak.domain.model.LimitResetPeriod
-//import com.sangeeta.reelsbreak.domain.model.ProtectionMode
-//import dagger.hilt.android.AndroidEntryPoint
-//import kotlinx.coroutines.CoroutineScope
-//import kotlinx.coroutines.Dispatchers
-//import kotlinx.coroutines.SupervisorJob
-//import kotlinx.coroutines.Job
-//import kotlinx.coroutines.cancel
-//import kotlinx.coroutines.delay
-//import kotlinx.coroutines.isActive
-//import kotlinx.coroutines.launch
-//import javax.inject.Inject
-//
-//@AndroidEntryPoint
-//class ReelsAccessibilityService : AccessibilityService() {
-//
-//    @Inject
-//    lateinit var repository: UserPreferencesRepository
-//
-//    private lateinit var engine: BlockingDecisionEngine
-//    private lateinit var actionController: ActionController
-//    private lateinit var detectionManager: ReelsDetectionManager
-//
-//    private val powerManager by lazy { getSystemService(POWER_SERVICE) as PowerManager }
-//    private lateinit var windowManager: WindowManager
-//
-//    private var overlayView: ComposeView? = null
-//    private val overlayLifecycleOwner = OverlayLifecycleOwner()
-//    private var overlayScope: CoroutineScope? = null
-//
-//    private var currentOverlayUi: OverlayUiModel? = null
-//    private var liveTimerJob: Job? = null
-//    private var reelsScreenEnteredAt: Long? = null
-//    private var persistedBaseTimeMillis: Long = 0L
-//
-//    override fun onServiceConnected() {
-//        super.onServiceConnected()
-//
-//        val info = serviceInfo ?: return
-//        info.packageNames = arrayOf(
-//            "com.google.android.youtube",
-//            "com.instagram.android",
-//            "com.instagram.lite",
-//            "com.snapchat.android",
-//            "com.facebook.katana",
-//            "com.facebook.lite"
-//        )
-//        info.flags = info.flags or
-//                AccessibilityServiceInfo.FLAG_REPORT_VIEW_IDS or
-//                AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
-//
-//        serviceInfo = info
-//
-//        engine = BlockingDecisionEngine(repository)
-//        actionController = ActionController(this)
-//        detectionManager = ReelsDetectionManager(actionController, engine)
-//
-//        windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-//
-//        overlayLifecycleOwner.onCreate()
-//        overlayLifecycleOwner.onStart()
-//        overlayLifecycleOwner.onResume()
-//
-//        startOverlayUpdates()
-//    }
-//
-//    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-//        if (event == null || !powerManager.isInteractive) return
-//
-//        val packageName = event.packageName?.toString() ?: ""
-//
-////val pkgName = event.packageName?.toString().orEmpty()
-////        val eventTypeName = AccessibilityEvent.eventTypeToString(event.eventType)
-////
-////        // Print a single header line for every event to confirm the service is alive
-////        Log.d("REELS_BREAK_RAW_DUMP", "Incoming Event: Package=$pkgName | Type=$eventTypeName")
-////
-////        val rootNode = rootInActiveWindow
-////        if (rootNode != null) {
-////            val queue = ArrayDeque<Pair<AccessibilityNodeInfo, Int>>()
-////            queue.add(rootNode to 0)
-////
-////            while (queue.isNotEmpty()) {
-////                val (current, depth) = queue.removeFirst()
-////                val cls = current.className?.toString().orEmpty().substringAfterLast(".")
-////                val resId = current.viewIdResourceName?.toString().orEmpty().substringAfterLast("/")
-////                val txt = current.text?.toString().orEmpty().take(40).replace("\n", " ")
-////                val desc = current.contentDescription?.toString().orEmpty().take(40).replace("\n", " ")
-////
-////                // Log out nodes holding valid user-visible traits or scrolling components
-////                if (resId.isNotEmpty() || txt.isNotEmpty() || desc.isNotEmpty() || cls.contains("ViewPager") || cls.contains("RecyclerView")) {
-////                    Log.d("REELS_BREAK_RAW_DUMP", "--> Package:$pkgName | Depth[$depth] Class:$cls | ID:$resId | Text:\"$txt\" | Desc:\"$desc\" | Selected:${current.isSelected}")
-////                }
-////
-////                for (i in 0 until current.childCount) {
-////                    current.getChild(i)?.let { queue.addLast(it to (depth + 1)) }
-////                }
-////                if (current != rootNode) current.recycle()
-////            }
-////        }
-//
-//
-//        val isTargetApp = ReelsDetectionRegistry.isDetectionSupported(packageName)
-//        val isFocusBlocked = FocusStateHolder.isFocusActive && FocusStateHolder.blockedPackages.contains(packageName)
-//
-//        if (!isTargetApp && !isFocusBlocked) return
-//
-//        if (isFocusBlocked && event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-//            if (FocusStateHolder.getRemainingMillis() > 0L) {
-//                actionController.triggerFullAppBlock(packageName)
-//            } else {
-//                FocusStateHolder.isFocusActive = false
-//            }
-//            return
-//        }
-//
-//        if (!isTargetApp) return
-//
-//        val shouldInspectTree = when (event.eventType) {
-//            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-//            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-//            AccessibilityEvent.TYPE_VIEW_SCROLLED -> true
-//            else -> false
-//        }
-//
-//        val rootNode: AccessibilityNodeInfo? = if (shouldInspectTree) rootInActiveWindow else null
-//
-//        try {
-//            if (::detectionManager.isInitialized) {
-//                detectionManager.processEvent(event, rootNode)
-//
-//                if (!detectionManager.isOnReelsScreen) {
-//                    reelsScreenEnteredAt = null
-//                    liveTimerJob?.cancel()
-//                    liveTimerJob = null
-//                    hideOverlay()
-//                } else if (reelsScreenEnteredAt == null) {
-//                    reelsScreenEnteredAt = System.currentTimeMillis()
-//                    currentOverlayUi?.let { ui ->
-//                        persistedBaseTimeMillis = ui.timeSpentMillis
-//                    }
-//                    startLiveOverlayTimer()
-//                }
-//            }
-//        } finally {
-//            // Context tree safely recycled by system bounds handler
-//        }
-//    }
-//
-//    override fun onInterrupt() {}
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        if (::detectionManager.isInitialized) {
-//            detectionManager.cancel()
-//        }
-//
-//        overlayScope?.cancel()
-//        overlayScope = null
-//
-//        hideOverlay()
-//
-//        overlayLifecycleOwner.onPause()
-//        overlayLifecycleOwner.onStop()
-//        overlayLifecycleOwner.onDestroy()
-//    }
-//
-//    private fun startOverlayUpdates() {
-//        overlayScope?.cancel()
-//        overlayScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-//
-//        overlayScope?.launch {
-//            // Flattened structure to guarantee layout update loops receive emissions cleanly
-//            combine(
-//                repository.isOverlayReminderEnabled,
-//                repository.protectionMode,
-//                repository.dailyReelLimit,
-//                repository.dailyTimeLimitMinutes,
-//                repository.reelsWatchedToday,
-//                repository.timeSpentTodayMillis,
-//                repository.limitResetPeriod
-//            ) { params ->
-//                val overlayEnabled = params[0] as Boolean
-//                val protectionMode = params[1] as ProtectionMode
-//                val reelLimit = params[2] as Int
-//                val timeLimitMinutes = params[3] as Int
-//                val reelsWatched = params[4] as Int
-//                val timeSpentMillis = params[5] as Long
-//                val resetPeriod = params[6] as LimitResetPeriod
-//
-//                overlayEnabled to OverlayUiModel(
-//                    protectionMode = protectionMode,
-//                    reelLimit = reelLimit,
-//                    timeLimitMinutes = timeLimitMinutes,
-//                    reelsWatched = reelsWatched,
-//                    timeSpentMillis = timeSpentMillis,
-//                    resetPeriod = resetPeriod
-//                )
-//            }.collect { (overlayEnabled, ui) ->
-//                currentOverlayUi = ui
-//                persistedBaseTimeMillis = ui.timeSpentMillis
-//
-//                val shouldShow = detectionManager.isOnReelsScreen && when (ui.protectionMode) {
-//                    ProtectionMode.PAUSED -> overlayEnabled
-//                    ProtectionMode.CURIOUS -> true
-//                    ProtectionMode.FLOW -> false
-//                }
-//
-//                if (!shouldShow) {
-//                    liveTimerJob?.cancel()
-//                    liveTimerJob = null
-//                    reelsScreenEnteredAt = null
-//                    hideOverlay()
-//                } else {
-//                    showOverlayIfNeeded()
-//                    if (reelsScreenEnteredAt == null) {
-//                        reelsScreenEnteredAt = System.currentTimeMillis()
-//                    }
-//                    startLiveOverlayTimer()
-//                }
-//            }
-//        }
-//    }
-//
-//    private fun showOverlayIfNeeded() {
-//        if (overlayView != null) return
-//
-//        val params = WindowManager.LayoutParams(
-//            WindowManager.LayoutParams.WRAP_CONTENT,
-//            WindowManager.LayoutParams.WRAP_CONTENT,
-//            WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-//            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-//                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
-//                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
-//            PixelFormat.TRANSLUCENT
-//        ).apply {
-//            gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-//            x = 0
-//            y = 56
-//        }
-//
-//        overlayView = ComposeView(this).apply {
-//            setViewTreeLifecycleOwner(overlayLifecycleOwner)
-//            setViewTreeSavedStateRegistryOwner(overlayLifecycleOwner)
-//        }
-//
-//        try {
-//            windowManager.addView(overlayView, params)
-//        } catch (e: Exception) {
-//            Log.e("RB_ACC_SERVICE", "Failed to mount window context layer", e)
-//            overlayView = null
-//        }
-//    }
-//
-//    private fun hideOverlay() {
-//        overlayView?.let { view ->
-//            try {
-//                // Fixed: explicitly tear down layout tree context prior to screen separation
-//                overlayLifecycleOwner.onPause()
-//                overlayLifecycleOwner.onStop()
-//                windowManager.removeViewImmediate(view)
-//            } catch (e: IllegalArgumentException) {
-//                Log.w("RB_ACC_SERVICE", "Layout context already removed internally.")
-//            } finally {
-//                overlayView = null
-//            }
-//        }
-//    }
-//
-//    private fun startLiveOverlayTimer() {
-//        if (liveTimerJob?.isActive == true) return
-//
-//        liveTimerJob = overlayScope?.launch {
-//            while (isActive) {
-//                val ui = currentOverlayUi
-//                val enteredAt = reelsScreenEnteredAt
-//
-//                if (ui == null || enteredAt == null || !detectionManager.isOnReelsScreen) {
-//                    hideOverlay()
-//                    break
-//                }
-//
-//                val liveTimeSpent = persistedBaseTimeMillis + (System.currentTimeMillis() - enteredAt)
-//
-//                val showReels = when (ui.protectionMode) {
-//                    ProtectionMode.PAUSED -> true
-//                    ProtectionMode.CURIOUS -> ui.reelLimit > 0
-//                    ProtectionMode.FLOW -> false
-//                }
-//
-//                val showTimer = when (ui.protectionMode) {
-//                    ProtectionMode.PAUSED -> true
-//                    ProtectionMode.CURIOUS -> ui.timeLimitMinutes > 0
-//                    ProtectionMode.FLOW -> false
-//                }
-//
-//                overlayView?.setContent {
-//                    ReelBreakOverlayCard(
-//                        reelsWatched = ui.reelsWatched,
-//                        reelLimit = ui.reelLimit,
-//                        timeDisplay = run {
-//                            val totalSeconds = liveTimeSpent / 1000L
-//                            String.format("%02d:%02d", totalSeconds / 60, totalSeconds % 60)
-//                        },
-//                    )
-//                }
-//                delay(1000)
-//            }
-//        }
-//    }
-//}
-//
-//private data class OverlayUiModel(
-//    val protectionMode: ProtectionMode,
-//    val reelLimit: Int,
-//    val timeLimitMinutes: Int,
-//    val reelsWatched: Int,
-//    val timeSpentMillis: Long,
-//    val resetPeriod: LimitResetPeriod
-//)
-
-
 
 

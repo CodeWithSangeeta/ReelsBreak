@@ -1,79 +1,6 @@
-//package com.practice.reelbreak.core.engine
-//
-//
-//import android.util.Log
-//import com.practice.reelbreak.data.preferences.UserPreferencesRepository
-//import com.practice.reelbreak.domain.model.ActiveBlockMode
-//import com.practice.reelbreak.domain.model.ProtectionMode
-//import kotlinx.coroutines.flow.first
-//
-//class BlockingDecisionEngine(
-//    private val repository: UserPreferencesRepository
-//) {
-//    enum class Decision {
-//        BLOCK,
-//        ALLOW,
-//        SKIP_REEL
-//    }
-//
-//    suspend fun onMindfulTimeSpent(deltaMillis: Long) {
-//        val activeMode = repository.activeMode.first()
-//        if (activeMode != ActiveBlockMode.LIMIT) return
-//        repository.addTimeSpentMillis(deltaMillis)
-//    }
-//
-//    suspend fun decide(detectedCreator: String? = null): Decision {
-//        repository.ensureCountersAreFresh()
-//
-//        val activeMode = repository.activeMode.first()
-//        val isStrictMode = repository.isStrictMode.first()
-//
-//        // PAUSED: never block, just observe
-//        val protectionMode = repository.protectionMode.first()
-//        if (protectionMode == ProtectionMode.PAUSED) return Decision.ALLOW
-//
-//        // DEFAULT: instant block always
-//        if (activeMode == ActiveBlockMode.STRICT && isStrictMode) return Decision.BLOCK
-//
-//        // CURIOUS: limit-based
-//        if (activeMode == ActiveBlockMode.LIMIT) {
-//            val isLimitExceeded = repository.isLimitExceededNow.first()
-//            if (isLimitExceeded) return Decision.BLOCK
-//
-//            val dailyReelLimit        = repository.dailyReelLimit.first()
-//            val dailyTimeLimitMinutes = repository.dailyTimeLimitMinutes.first()
-//            val reelsWatched          = repository.reelsWatchedToday.first()
-//            val timeSpentMillis       = repository.timeSpentTodayMillis.first()
-//
-//            val reelLimitHit = dailyReelLimit > 0 && reelsWatched >= dailyReelLimit
-//            val timeLimitHit = dailyTimeLimitMinutes > 0 && timeSpentMillis >= dailyTimeLimitMinutes * 60000L
-//
-//            if (reelLimitHit || timeLimitHit) {
-//                repository.markLimitExceededForCurrentWindow()
-//                return Decision.BLOCK
-//            }
-//        }
-//
-//        return Decision.ALLOW
-//    }
-//
-//    suspend fun onReelAllowed() {
-//        val protectionMode = repository.protectionMode.first()
-//        // Count reels in PAUSED and CURIOUS, not in DEFAULT (DEFAULT blocks instantly anyway)
-//        if (protectionMode == ProtectionMode.DEFAULT) return
-//
-//        val activeMode = repository.activeMode.first()
-//        if (activeMode != ActiveBlockMode.LIMIT) return
-//        repository.incrementReelsWatched()
-//    }
-//}
-
-
-
-
-
 package com.sangeeta.reelsbreak.core.engine
 
+import android.util.Log
 import com.sangeeta.reelsbreak.data.preferences.UserPreferencesRepository
 import com.sangeeta.reelsbreak.domain.model.ActiveBlockMode
 import com.sangeeta.reelsbreak.domain.model.ProtectionMode
@@ -108,6 +35,13 @@ class BlockingDecisionEngine(
         // DEFAULT Protection Mode: Instant, un-timed block on all short-form content targets.
         if (protectionMode == ProtectionMode.FLOW) {
             if (activeMode == ActiveBlockMode.STRICT && isStrictMode) {
+
+                Log.d(
+                    "RB_DECISION",
+                    "mode=$protectionMode " +
+                            "active=$activeMode"
+                )
+                Log.d("RB_DECISION", "BLOCK")
                 return Decision.BLOCK
             }
         }
@@ -133,7 +67,7 @@ class BlockingDecisionEngine(
                 return Decision.BLOCK
             }
         }
-
+        Log.d("RB_DECISION", "ALLOW")
         return Decision.ALLOW
     }
 
